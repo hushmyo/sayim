@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sayım">
+<meta name="theme-color" content="#0b5cab">
+<link rel="manifest" href="manifest.json">
+<title>Sayım</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#f2f4f7;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#1a1a1a;-webkit-text-size-adjust:100%}
+header{background:#0b5cab;color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:5}
+header h1{font-size:18px;margin:0}
+#durum{font-size:13px;opacity:.95;text-align:right}
+main{max-width:900px;margin:0 auto;padding:12px}
+.kart{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+label{display:block;font-size:13px;color:#555;margin:10px 0 4px}
+input,select,textarea,button{font-size:18px;font-family:inherit}
+input,select,textarea{width:100%;padding:12px;border:1px solid #bbb;border-radius:8px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid #0b5cab;border-color:#0b5cab}
+button{padding:13px 16px;border:0;border-radius:10px;background:#0b5cab;color:#fff;font-weight:600}
+button.gri{background:#6b7785}
+button.kirmizi{background:#c62828}
+button.yesil{background:#2e7d32}
+button:disabled{opacity:.5}
+.sira{display:flex;gap:10px;flex-wrap:wrap}
+.sira>*{flex:1;min-width:130px}
+.sekmeler{display:flex;gap:6px;margin-bottom:12px}
+.sekmeler button{flex:1;background:#dfe5ec;color:#234;padding:11px 6px;font-size:16px}
+.sekmeler button.aktif{background:#0b5cab;color:#fff}
+.gizli{display:none}
+.rozet{display:inline-block;padding:2px 9px;border-radius:12px;font-size:13px;font-weight:700}
+.r-bekle{background:#fff1cc;color:#8a5a00}
+.r-ok{background:#d8f1dc;color:#1b5e20}
+.r-hata{background:#fbd8d8;color:#a31515}
+.kayit{padding:10px 0;border-bottom:1px solid #e5e8ec;font-size:15px}
+.kayit:last-child{border-bottom:0}
+.kayit small{color:#667}
+.mesaj{padding:10px 12px;border-radius:8px;margin:8px 0;font-size:15px}
+.m-ok{background:#d8f1dc;color:#1b5e20}
+.m-hata{background:#fbd8d8;color:#a31515}
+.m-bilgi{background:#e3eefc;color:#0b3d78}
+.buyuk{font-size:22px;padding:16px}
+.say{font-size:34px;font-weight:800;text-align:center;color:#0b5cab}
+
+.medya{margin-top:10px;padding:12px;border:1px dashed #9db4cf;border-radius:10px;background:#f7faff}
+.medya h3{margin:0 0 8px;font-size:15px;color:#234}
+.medya img,.medya video{width:100%;max-height:260px;object-fit:contain;border-radius:8px;background:#000;margin-bottom:8px}
+.medya .sira button{font-size:16px;padding:11px 8px}
+.medya input[type=file]{display:none}
+.medyaBas{cursor:pointer;padding:2px 0;font-size:15px;color:#234}
+.medya button.aktifM{background:#0b5cab}
+.medya button.pasifM{background:#6b7785}
+
+/* ===== Rehber (beklenen liste) ===== */
+.rehber{margin:10px 0;padding:12px;border-radius:12px;background:#eef5ff;border:1px solid #c5d9f2}
+.rehber .ust{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.rehber .ust b{font-size:16px;color:#0b3d78}
+.rehber .oran{font-size:26px;font-weight:800;color:#0b5cab}
+.cubuk{height:12px;background:#d5dfeb;border-radius:8px;overflow:hidden;margin:8px 0}
+.cubuk>i{display:block;height:100%;background:#2e7d32;width:0;transition:width .25s}
+.rehber .alt{display:flex;gap:6px;flex-wrap:wrap;font-size:13px}
+.rehber .alt span{padding:2px 8px;border-radius:10px;background:#fff;color:#234}
+.sonuc{margin:8px 0;padding:16px;border-radius:12px;font-size:19px;font-weight:700;text-align:center;line-height:1.3}
+.sonuc small{display:block;font-weight:500;font-size:14px;margin-top:4px}
+.s-tamam{background:#d8f1dc;color:#1b5e20}
+.s-yerfark{background:#ffe9c7;color:#8a4b00}
+.s-kayitsiz{background:#fbd8d8;color:#a31515}
+.s-tekrar{background:#e3eefc;color:#0b3d78}
+.s-nötr{background:#eceff3;color:#445}
+.noksan{margin-top:10px;max-height:260px;overflow:auto;border-top:1px solid #d5dfeb}
+.noksan .n{padding:8px 0;border-bottom:1px solid #e5e8ec;font-size:15px}
+.noksan .n small{color:#667;display:block}
+.noksan .n .sec{margin-top:6px;display:flex;gap:8px}
+.noksan .n .sec button{font-size:14px;padding:7px 10px;flex:1}
+.cubukBtn{width:100%;margin-top:8px}
+
+@media(min-width:700px){.iki{display:grid;grid-template-columns:1fr 1fr;gap:12px}.iki .kart{margin-bottom:0}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Sayım</h1>
+  <div id="durum">…</div>
+</header>
+<main>
+
+<div class="sekmeler">
+  <button id="s-sayim" class="aktif" onclick="sekme('sayim')">Sayım</button>
+  <button id="s-kuyruk" onclick="sekme('kuyruk')">Kuyruk <span id="kSay" class="rozet r-bekle">0</span></button>
+  <button id="s-ayar" onclick="sekme('ayar')">Ayarlar</button>
+</div>
+
+<!-- SAYIM -->
+<section id="b-sayim">
+  <div class="kart">
+    <label for="yer">Yer / Kişi</label>
+    <input id="yer" list="yerListe" placeholder="Örn: ARŞİV-1.KAT veya kişi adı" autocomplete="off">
+    <datalist id="yerListe"></datalist>
+    <div id="rehberKutu" class="rehber gizli">
+      <div class="ust"><b id="rehberBaslik">—</b><span class="oran" id="rehberOran">0/0</span></div>
+      <div class="cubuk"><i id="rehberCubuk"></i></div>
+      <div class="alt" id="rehberAlt"></div>
+      <button class="gri cubukBtn" id="noksanBtn" onclick="noksanGoster()">Eksikleri göster / yerden çık</button>
+      <div id="noksanListe" class="noksan gizli"></div>
+    </div>
+    <div id="sonucKutu"></div>
+    <label for="sicil">Sicil No / Barkod (okutun)</label>
+    <input id="sicil" class="buyuk" inputmode="none" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Okutun…">
+    <div class="sira" style="margin-top:8px">
+      <button class="gri" onclick="klavyeAc()">⌨ Elle yaz</button>
+      <button class="yesil" onclick="ekleBtn()">Ekle</button>
+    </div>
+    <label for="not">Not</label>
+    <select id="notSec">
+      <option value="">(not yok)</option>
+      <option>Etiket yok</option>
+      <option>Etiket silik</option>
+      <option>Hasarlı</option>
+      <option>Başka odadan geldi</option>
+      <option>Noksan</option>
+      <option>Sistemde kaydı yok</option>
+      <option>Kullanılmıyor</option>
+      <option>Arızalı</option>
+      <option>Zimmet Yap</option>
+      <option>Bakılacak</option>
+      <option>Diğer</option>
+    </select>
+
+    <div id="medyaKutu" class="medya gizli">
+      <div class="medyaBas" onclick="medyaAcKapat()">
+        <b>Fotoğraf / Video</b> <span id="medyaOzet" style="color:#667"></span>
+        <span id="medyaOk" style="float:right">▾</span>
+      </div>
+      <div id="medyaGovde">
+        <div class="sira" style="margin:8px 0">
+          <button id="mHedefSicil" class="aktifM" onclick="medyaHedef('sicil')">Malzeme</button>
+          <button id="mHedefYer" class="gri" onclick="medyaHedef('yer')">Yer / Kişi</button>
+        </div>
+        <div id="medyaIcerik"></div>
+        <div class="sira">
+          <button class="gri" id="resimBtn" onclick="$('resimGir').click()">📷 Fotoğraf</button>
+          <button class="gri" id="videoBtn" onclick="$('videoGir').click()">🎥 Video</button>
+        </div>
+        <input type="file" id="resimGir" accept="image/*" capture="environment" onchange="medyaSec(this,1)">
+        <input type="file" id="videoGir" accept="video/*" capture="environment" onchange="medyaSec(this,2)">
+        <div id="medyaMesaj"></div>
+      </div>
+    </div>
+    <div id="malWrap" style="margin-top:4px">
+      <label for="mal">Malzeme adı (yalnız sicili olmayanlar için)</label>
+      <input id="mal" placeholder="Sicil okutamadıysanız malzemeyi yazın">
+    </div>
+  </div>
+  <div id="sonMesaj"></div>
+  <div class="kart">
+    <div class="say" id="bugunSay">0</div>
+    <div style="text-align:center;color:#667;font-size:13px">bu oturumda eklenen</div>
+  </div>
+  <div class="kart" id="sonKayitlar"></div>
+</section>
+
+<!-- KUYRUK -->
+<section id="b-kuyruk" class="gizli">
+  <div class="kart">
+    <div class="sira">
+      <button onclick="gonder(true)" id="gonderBtn">Şimdi gönder</button>
+      <button class="gri" onclick="hataliTekrar()">Hatalıları yeniden dene</button>
+    </div>
+    <div id="kuyrukMesaj"></div>
+  </div>
+  <div class="kart" id="kuyrukListe"></div>
+</section>
+
+<!-- AYARLAR -->
+<section id="b-ayar" class="gizli">
+  <div class="kart">
+    <label for="cihaz">Cihaz adı (dosya adına yazılır)</label>
+    <input id="cihaz" placeholder="Örn: Tablet, iPhone">
+    <label for="mobKlasor">OneDrive'daki Mobil klasörü (kökten yol)</label>
+    <input id="mobKlasor" placeholder="Sayım İşlemleri/Mobil">
+    <div style="font-size:13px;color:#667;margin-top:4px">Alt klasör olarak "Gelen" otomatik kullanılır.</div>
+    <label for="resimKlasorGir">Fotoğraf klasörü (OneDrive kökünden yol)</label>
+    <input id="resimKlasorGir" placeholder="Sayım İşlemleri/Sayım Fotografları">
+    <label for="videoKlasorGir">Video klasörü (OneDrive kökünden yol)</label>
+    <input id="videoKlasorGir" placeholder="Sayım İşlemleri/Sayım Videoları">
+    <div class="sira" style="margin-top:12px">
+      <button onclick="ayarKaydet()">Kaydet</button>
+      <button class="gri" onclick="yerleriYukle(true)">Yer listesini yenile</button>
+    </div>
+    <div class="sira" style="margin-top:10px">
+      <button class="gri" onclick="beklenenYukle(true)">Beklenen malzeme listesini yenile</button>
+      <button class="kirmizi" onclick="okunanSifirla()">Bu yerin okumasını sıfırla</button>
+    </div>
+    <div id="ayarMesaj"></div>
+  </div>
+  <div class="kart">
+    <div id="hesapDurum" style="margin-bottom:10px">Giriş yapılmadı.</div>
+    <div class="sira">
+      <button onclick="girisYap()" id="girisBtn">Microsoft ile giriş</button>
+      <button class="gri" onclick="cikisYap()">Çıkış</button>
+    </div>
+    <div style="font-size:13px;color:#667;margin-top:10px">Giriş yapmadan da kayıt eklenir; kayıtlar telefonda/tablette saklanır, giriş yapınca gönderilir.</div>
+  </div>
+  <div class="kart">
+    <button class="gri" onclick="testDosyasi()">Bağlantıyı dene (test dosyası yaz)</button>
+    <div id="testMesaj"></div>
+  </div>
+</section>
+
+</main>
+
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" crossorigin="anonymous"></script>
+<script>
+"use strict";
+/* ============================ AYAR (SONRA DOLDURULACAK) ============================ */
+const CLIENT_ID = "BURAYA-UYGULAMA-KIMLIGI";             // Azure/Entra'dan alinacak
+const AUTHORITY = "https://login.microsoftonline.com/organizations";
+const REDIRECT_URI = location.origin + location.pathname.replace(/index\.html$/,"");
+const SCOPES = ["Files.ReadWrite","User.Read"];
+const VARSAYILAN_KLASOR = "Sayım İşlemleri/Mobil";
+/* ================================================================================== */
+
+const $ = id => document.getElementById(id);
+const LS = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+};
+let oturumSay = LS.get("oturumSay_"+new Date().toDateString(),0);
+
+
+/* ============================ MEDYA (FOTOGRAF / VIDEO) ============================ */
+const VARS_RESIM = "Sayım İşlemleri/Sayım Fotografları";
+const VARS_VIDEO = "Sayım İşlemleri/Sayım Videoları";
+const RES_UZ = ["jpg","jpeg","png","gif","bmp","webp","heic","tif","tiff","pdf"];
+const VID_UZ = ["mp4","mov","avi","wmv","mkv","m4v","3gp","mpg","mpeg","webm"];
+const RES_YER_UZ = ["jpg","jpeg","png","gif","bmp"];          // Excel yer fotografinda bunlari tarar
+const GOSTER_RES = ["jpg","jpeg","png","gif","bmp","webp"];    // tarayici onizleyebilir
+function resimKlasoru(){ return (LS.get("resimKlasor",VARS_RESIM)||VARS_RESIM).replace(/^\/+|\/+$/g,""); }
+function videoKlasoru(){ return (LS.get("videoKlasor",VARS_VIDEO)||VARS_VIDEO).replace(/^\/+|\/+$/g,""); }
+function sicilKok(s){ return String(s||"").replace(/[.\/\s]/g,""); }          // Excel anahtar()
+function sayiBasi(ad){ const m=/^\d+/.exec(ad); return m?m[0]:""; }            // Excel SayiKok()
+function normAd(t){                                                            // Excel NormAd()
+  t=String(t||"").replace(/İ/g,"i").replace(/I/g,"i").toLowerCase();
+  t=t.replace(/ı/g,"i").replace(/ş/g,"s").replace(/ğ/g,"g").replace(/ü/g,"u").replace(/ö/g,"o").replace(/ç/g,"c");
+  return t.replace(/[^a-z0-9]/g,"");
+}
+function gUrl(yol){ return "https://graph.microsoft.com/v1.0/me/drive/root:/"+yol.split("/").map(encodeURIComponent).join("/"); }
+function uzanti(ad){ const i=ad.lastIndexOf("."); return i<0?"":ad.slice(i+1).toLowerCase(); }
+function govdesiz(ad){ const i=ad.lastIndexOf("."); return i<0?ad:ad.slice(0,i); }
+
+// Klasoru (alt klasorler dahil) tarar; eslesme(ad) true donen ilk dosyayi dondurur.
+async function medyaTara(klasor,uzlar,eslesme,jt,derin){
+  let url=gUrl(klasor)+":/children?$top=999&$select=id,name,folder,file,@microsoft.graph.downloadUrl";
+  const adaylar=[];
+  while(url){
+    const r=await fetch(url,{headers:{Authorization:"Bearer "+jt}});
+    if(r.status===404) return null;
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const j=await r.json();
+    for(const o of j.value){
+      if(o.folder){ if(derin<3){ const a=await medyaTara(klasor+"/"+o.name,uzlar,eslesme,jt,derin+1); if(a) adaylar.push(a); } continue; }
+      if(!uzlar.includes(uzanti(o.name))) continue;
+      const puan=eslesme(o.name); if(puan>0) adaylar.push({ad:o.name,url:o["@microsoft.graph.downloadUrl"],id:o.id,puan:puan,klasor:klasor});
+    }
+    url=j["@odata.nextLink"]||null;
+  }
+  adaylar.sort((a,b)=>b.puan-a.puan);
+  return adaylar[0]||null;
+}
+const sicilEsle=kok=>ad=>sayiBasi(ad)===kok?2:0;
+const yerEsle=n=>ad=>{ const a=normAd(govdesiz(ad)); if(!n||!a) return 0; return a===n?2:(a.indexOf(n)>=0?1:0); };
+
+let medya={hedef:"sicil",sicil:"",sicilGoster:"",yer:"",bul:{res:null,vid:null},sira:0};
+function medyaAcik(){ return LS.get("medyaAcik",true); }
+function medyaGorunum(){
+  const ac=medyaAcik();
+  $("medyaGovde").classList.toggle("gizli",!ac);
+  $("medyaOk").textContent=ac?"▾":"▸";
+}
+function medyaAcKapat(){ LS.set("medyaAcik",!medyaAcik()); medyaGorunum(); }
+function medyaHedef(h){
+  medya.hedef=h;
+  $("mHedefSicil").className=h==="sicil"?"aktifM":"pasifM";
+  $("mHedefYer").className=h==="yer"?"aktifM":"pasifM";
+  medyaAra();
+}
+function medyaGoster(sicilDeger,yerDeger){
+  medya.sicilGoster=sicilDeger||""; medya.sicil=sicilKok(sicilDeger); medya.yer=normAd(yerDeger);
+  if(!medya.sicil && !medya.yer){ $("medyaKutu").classList.add("gizli"); return; }
+  $("medyaKutu").classList.remove("gizli");
+  if(!medya.sicil && medya.hedef==="sicil") medya.hedef="yer";
+  $("mHedefSicil").disabled=!medya.sicil;
+  medyaGorunum();
+  medyaHedef(medya.hedef);
+}
+function hedefEtiket(){ return medya.hedef==="sicil"?("Malzeme "+medya.sicilGoster):("Yer: "+$("yer").value); }
+
+async function medyaAra(){
+  const sira=++medya.sira;
+  $("medyaIcerik").innerHTML=""; $("medyaMesaj").innerHTML="";
+  $("medyaOzet").textContent="— "+hedefEtiket();
+  medya.bul={res:null,vid:null};
+  if(!hesap||!navigator.onLine){ mesajGoster("medyaMesaj","bilgi","Giriş yapılınca / bağlantı gelince mevcut fotoğraf-video aranır. Yine de yeni ekleyebilirsiniz."); return; }
+  mesajGoster("medyaMesaj","bilgi","Aranıyor…");
+  try{
+    const jt=await belirtec();
+    const sic=medya.hedef==="sicil";
+    const [res,vid]=await Promise.all([
+      medyaTara(resimKlasoru(), sic?RES_UZ:RES_YER_UZ, sic?sicilEsle(medya.sicil):yerEsle(medya.yer), jt,0),
+      medyaTara(videoKlasoru(), VID_UZ,                sic?sicilEsle(medya.sicil):yerEsle(medya.yer), jt,0)
+    ]);
+    if(sira!==medya.sira) return;                 // bu arada hedef/sicil degisti
+    medya.bul={res,vid};
+    let htm="";
+    if(res){
+      if(res.url&&GOSTER_RES.includes(uzanti(res.ad))) htm+='<img src="'+kacis(res.url)+'" alt="'+kacis(res.ad)+'">';
+      else htm+='<div class="mesaj m-bilgi">Fotoğraf var: '+kacis(res.ad)+'</div>';
+    }
+    if(vid){
+      if(vid.url) htm+='<video controls preload="metadata" playsinline src="'+kacis(vid.url)+'"></video>';
+      else htm+='<div class="mesaj m-bilgi">Video var: '+kacis(vid.ad)+'</div>';
+    }
+    $("medyaIcerik").innerHTML=htm;
+    // Dugme yazilari: varsa "Degistir", yoksa "Ekle"
+    $("resimBtn").textContent=res?"📷 Fotoğrafı değiştir":"📷 Fotoğraf ekle";
+    $("videoBtn").textContent=vid?"🎥 Videoyu değiştir":"🎥 Video ekle";
+    const ozet=(res?"📷":"")+(vid?"🎥":"");
+    $("medyaOzet").textContent="— "+hedefEtiket()+(ozet?"  "+ozet:"  (yok)");
+    $("medyaMesaj").innerHTML="";
+    if(!res&&!vid) mesajGoster("medyaMesaj","bilgi","Fotoğraf ve video yok. Aşağıdan ekleyebilirsiniz.");
+  }catch(e){ if(sira===medya.sira) mesajGoster("medyaMesaj","hata","Medya aranamadı: "+e.message); }
+}
+
+// Dosya adi: sicilde "SICILKOKU_tarih_saat.uzanti" (Excel basindaki rakamlardan bulur),
+// yerde "YER ADI.uzanti" (Excel adla eslestirir). Degistirmede eski dosya silinmez, yenisi eklenir
+// ve Excel'in buldugu ilk dosya olan en yeni olan onceliklendirilir (bkz. asagi: eskiyi arsive tasima).
+async function medyaSec(girdi,tur){
+  const f=girdi.files&&girdi.files[0]; girdi.value="";
+  if(!f) return;
+  const sic=medya.hedef==="sicil";
+  if(sic&&!medya.sicil){ mesajGoster("medyaMesaj","hata","Önce sicil okutun."); return; }
+  if(!sic&&!medya.yer){ mesajGoster("medyaMesaj","hata","Önce yer seçin."); return; }
+  if(!hesap||!navigator.onLine){ mesajGoster("medyaMesaj","hata","Yükleme için internet ve Microsoft girişi gerekli."); return; }
+  let uz=uzanti(f.name)||(tur===1?"jpg":"mp4");
+  const izin=tur===1?(sic?RES_UZ:RES_YER_UZ):VID_UZ;
+  if(!izin.includes(uz)) uz=tur===1?"jpg":"mp4";
+  const z=new Date();
+  const damga=z.getFullYear()+p2(z.getMonth()+1)+p2(z.getDate())+"_"+p2(z.getHours())+p2(z.getMinutes())+p2(z.getSeconds());
+  const taban=sic?medya.sicil:temizDosya($("yer").value);
+  const ad=taban+"_"+damga+"."+uz;
+  const klasor=tur===1?resimKlasoru():videoKlasoru();
+  const eski=tur===1?medya.bul.res:medya.bul.vid;
+  mesajGoster("medyaMesaj","bilgi","Yükleniyor: "+ad+" ("+Math.round(f.size/1024/1024*10)/10+" MB)…");
+  try{
+    const jt=await belirtec();
+    await buluta(klasor,ad,f,jt);
+    if(eski){ await eskiyiTasi(eski,jt); }          // degistirme: eski dosya Eski klasorune alinir
+    mesajGoster("medyaMesaj","ok",(eski?"Değiştirildi: ":"Yüklendi: ")+ad+". Excel'de Rapor Güncelle ile satıra bağlanır.");
+    setTimeout(medyaAra,1500);
+  }catch(e){ mesajGoster("medyaMesaj","hata","Yüklenemedi: "+e.message); }
+}
+async function buluta(klasor,ad,f,jt){
+  if(f.size<=4*1024*1024){
+    const r=await fetch(gUrl(klasor+"/"+ad)+":/content?@microsoft.graph.conflictBehavior=rename",{method:"PUT",headers:{Authorization:"Bearer "+jt,"Content-Type":f.type||"application/octet-stream"},body:f});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    return;
+  }
+  const o=await fetch(gUrl(klasor+"/"+ad)+":/createUploadSession",{method:"POST",headers:{Authorization:"Bearer "+jt,"Content-Type":"application/json"},body:JSON.stringify({item:{"@microsoft.graph.conflictBehavior":"rename"}})});
+  if(!o.ok) throw new Error("Oturum açılamadı: HTTP "+o.status);
+  const up=(await o.json()).uploadUrl, PARCA=5*320*1024;
+  for(let bas=0;bas<f.size;bas+=PARCA){
+    const son=Math.min(bas+PARCA,f.size);
+    const r=await fetch(up,{method:"PUT",headers:{"Content-Range":"bytes "+bas+"-"+(son-1)+"/"+f.size},body:f.slice(bas,son)});
+    if(!r.ok&&r.status!==202) throw new Error("Parça yüklenemedi: HTTP "+r.status);
+    mesajGoster("medyaMesaj","bilgi","Yükleniyor… %"+Math.round(son/f.size*100));
+  }
+}
+// Eski dosyayi silmez; "Eski" adli alt klasore tasir. Boylece Excel yeni dosyayi bulur,
+// eski dosya ise gerekirse OneDrive'dan geri alinabilir. (Excel alt klasorlere de baktigi icin
+// eski dosyanin adinin basina "x" konur; boylece rakamla/yer adiyla baslamaz ve eslesmez.)
+async function eskiyiTasi(e,jt){
+  const hedef=e.klasor+"/Eski";
+  const kl=await fetch(gUrl(e.klasor)+":/children",{method:"POST",headers:{Authorization:"Bearer "+jt,"Content-Type":"application/json"},body:JSON.stringify({name:"Eski",folder:{},"@microsoft.graph.conflictBehavior":"replace"})}).catch(()=>null);
+  let kid=null; try{ kid=kl&&kl.ok?(await kl.json()).id:null; }catch(_){}
+  if(!kid){ const g=await fetch(gUrl(hedef),{headers:{Authorization:"Bearer "+jt}}); if(g.ok) kid=(await g.json()).id; }
+  const govde={name:"x_"+e.ad}; if(kid) govde.parentReference={id:kid};
+  const r=await fetch("https://graph.microsoft.com/v1.0/me/drive/items/"+e.id,{method:"PATCH",headers:{Authorization:"Bearer "+jt,"Content-Type":"application/json"},body:JSON.stringify(govde)});
+  if(!r.ok) throw new Error("Eski dosya taşınamadı: HTTP "+r.status);
+}
+/* ================================================================================== */
+
+/* ---------- Yardimcilar ---------- */
+function p2(n){return String(n).padStart(2,"0");}
+function zamanDamga(d){return d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+"-"+p2(d.getHours())+p2(d.getMinutes())+p2(d.getSeconds());}
+function tarihTR(d){return p2(d.getDate())+"."+p2(d.getMonth()+1)+"."+d.getFullYear();}
+function saatTR(d){return p2(d.getHours())+":"+p2(d.getMinutes())+":"+p2(d.getSeconds());}
+function temizDosya(s){return String(s||"").replace(/[^A-Za-z0-9_-]/g,"").slice(0,20)||"cihaz";}
+function rastgele(n){const a="abcdefghijklmnopqrstuvwxyz0123456789";let s="";const b=new Uint8Array(n);crypto.getRandomValues(b);for(const x of b)s+=a[x%a.length];return s;}
+function kacis(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function temizAlan(s){return String(s||"").replace(/[\r\n]+/g," ").trim();}  // satir sonu degeri bozmasin
+function mesajGoster(id,tur,metin){$(id).innerHTML='<div class="mesaj m-'+tur+'">'+kacis(metin)+'</div>';}
+
+/* ---------- Kuyruk: IndexedDB ile kalici saklama ---------- */
+let db;
+function dbAc(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open("sayimDB",1);
+    r.onupgradeneeded=()=>{r.result.createObjectStore("kuyruk",{keyPath:"kimlik"});};
+    r.onsuccess=()=>{db=r.result;res();};
+    r.onerror=()=>rej(r.error);
+  });
+}
+function tx(mod){return db.transaction("kuyruk",mod).objectStore("kuyruk");}
+function dbHepsi(){return new Promise((res,rej)=>{const q=tx("readonly").getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(q.error);});}
+function dbYaz(k){return new Promise((res,rej)=>{const q=tx("readwrite").put(k);q.onsuccess=()=>res();q.onerror=()=>rej(q.error);});}
+function dbSil(id){return new Promise((res,rej)=>{const q=tx("readwrite").delete(id);q.onsuccess=()=>res();q.onerror=()=>rej(q.error);});}
+
+/* ---------- Kayit dosyasi icerigi (Excel makrosunun bekledigi biçim) ---------- */
+function dosyaIcerik(k){
+  return ["yer="+temizAlan(k.yer),"tarih="+k.tarih,"saat="+k.saat,"sicil="+temizAlan(k.sicil),
+          "malzeme="+temizAlan(k.malzeme),"not="+temizAlan(k.not),"kimlik="+k.kimlik].join("\n")+"\n";
+}
+function dosyaAdi(k){return k.dosya;}
+
+/* ---------- Sekmeler ---------- */
+function sekme(ad){
+  for(const s of ["sayim","kuyruk","ayar"]){
+    $("b-"+s).classList.toggle("gizli",s!==ad);
+    $("s-"+s).classList.toggle("aktif",s===ad);
+  }
+  if(ad==="kuyruk")kuyrukCiz();
+  if(ad==="sayim")odak();
+}
+function odak(){setTimeout(()=>{if(!klavyeAcik)$("sicil").focus();},50);}
+let klavyeAcik=false;
+function klavyeAc(){klavyeAcik=true;const s=$("sicil");s.setAttribute("inputmode","text");s.blur();setTimeout(()=>s.focus(),50);}
+function aktifNot(){return $("notSec").value;}
+
+
+/* ============================ REHBER (BEKLENEN LISTE) ============================ */
+// Excel MobilBeklenenYaz makrosu Mobil\beklenen.txt yazar: yer<TAB>sicil<TAB>cinsi<TAB>marka-model
+const BEKLENEN_ANAHTAR = "beklenenListe_v1";
+let beklenen = { yerler:{}, sicilYer:{}, ad:{}, hazir:false };   // yerler[normYer] = {ad, sicil:[...]}
+let okunan = {};            // okunan[normYer] = { sicilKok: {durum, zaman} }
+let rehberYer = "";         // su an aktif normalize yer
+
+function beklenenKur(metin){
+  const yerler={}, sicilYer={}, ad={};
+  for(const satir of metin.replace(/^\uFEFF/,"").split(/\r?\n/)){
+    if(!satir.trim()) continue;
+    const p=satir.split("\t"); if(p.length<2) continue;
+    const yerAd=p[0].trim(), sicil=p[1].trim(); if(!yerAd||!sicil) continue;
+    const ny=normAd(yerAd), sk=sicilKok(sicil);
+    if(!yerler[ny]) yerler[ny]={ad:yerAd, sicil:[]};
+    yerler[ny].sicil.push(sk);
+    (sicilYer[sk]=sicilYer[sk]||[]).push(ny);
+    ad[sk]={sicil:sicil, cins:(p[2]||"").trim(), mm:(p[3]||"").trim()};
+  }
+  return {yerler,sicilYer,ad,hazir:Object.keys(yerler).length>0};
+}
+function beklenenYukleYerel(){
+  try{
+    const m=localStorage.getItem(BEKLENEN_ANAHTAR);
+    if(m){ beklenen=beklenenKur(m); }
+  }catch(e){}
+}
+async function beklenenYukle(elle){
+  if(!hesap||!navigator.onLine){ if(elle) mesajGoster("ayarMesaj","bilgi","Beklenen liste için giriş yapılmış ve internet açık olmalı."); return; }
+  try{
+    const jt=await belirtec();
+    const yol=klasorYolu()+"/beklenen.txt";
+    const r=await fetch("https://graph.microsoft.com/v1.0/me/drive/root:/"+yol.split("/").map(encodeURIComponent).join("/")+":/content",{headers:{Authorization:"Bearer "+jt}});
+    if(r.ok){
+      const m=await r.text();
+      try{ localStorage.setItem(BEKLENEN_ANAHTAR,m); }catch(e){ mesajGoster("ayarMesaj","hata","Liste telefona sığmadı: "+e.message); return; }
+      beklenen=beklenenKur(m);
+      if(elle) mesajGoster("ayarMesaj","ok",Object.keys(beklenen.yerler).length+" yer/kişi, "+Object.keys(beklenen.ad).length+" malzeme yüklendi.");
+      rehberGuncelle();
+    }else if(elle) mesajGoster("ayarMesaj","bilgi","Mobil klasöründe beklenen.txt yok. Excel'de MobilBeklenenYaz makrosunu çalıştırın.");
+  }catch(e){ if(elle) mesajGoster("ayarMesaj","hata","Beklenen liste alınamadı: "+e.message); }
+}
+function okunanYukle(){ okunan=LS.get("okunan_v1",{}); }
+function okunanKaydet(){ LS.set("okunan_v1",okunan); }
+function okunanSifirla(){
+  if(!rehberYer){return;}
+  if(!confirm("Bu yerin okuma durumu sıfırlansın mı? (Kayıtlar kuyruktan silinmez)")) return;
+  delete okunan[rehberYer]; okunanKaydet(); rehberGuncelle(); $("sonucKutu").innerHTML="";
+}
+
+// Bir okutmayi siniflandir: tamam | yerfark | kayitsiz | tekrar | nötr
+function siniflandir(yerDeger, sicilDeger){
+  const ny=normAd(yerDeger), sk=sicilKok(sicilDeger);
+  if(!beklenen.hazir||!sk) return {tur:"nötr"};
+  const kayit=beklenen.sicilYer[sk];
+  if(!kayit) return {tur:"kayitsiz", ny, sk};
+  const bilgi=beklenen.ad[sk];
+  if(okunan[ny] && okunan[ny][sk]) return {tur:"tekrar", ny, sk, bilgi};
+  if(kayit.indexOf(ny)>=0) return {tur:"tamam", ny, sk, bilgi};
+  return {tur:"yerfark", ny, sk, bilgi, kayitli:kayit.map(x=>beklenen.yerler[x]?beklenen.yerler[x].ad:x)};
+}
+function sonucCiz(c){
+  const kutu=$("sonucKutu");
+  if(c.tur==="nötr"){ kutu.innerHTML=""; return; }
+  const tanim=c.bilgi?(c.bilgi.cins+(c.bilgi.mm?" · "+c.bilgi.mm:"")):"";
+  let sinif="s-nötr", ana="", alt="";
+  if(c.tur==="tamam"){ sinif="s-tamam"; ana="✔ Tamam, burada olması gereken"; alt=tanim; }
+  else if(c.tur==="tekrar"){ sinif="s-tekrar"; ana="Bu zaten okutuldu"; alt=tanim; }
+  else if(c.tur==="yerfark"){ sinif="s-yerfark"; ana="⚠ Başka yerde kayıtlı"; alt=tanim+(tanim?" — ":"")+"Kayıtlı yer: "+c.kayitli.join(", "); }
+  else if(c.tur==="kayitsiz"){ sinif="s-kayitsiz"; ana="✖ Sistemde kaydı yok (sayım fazlası)"; alt="Not alanına “Sistemde kaydı yok” yazıldı"; }
+  kutu.innerHTML='<div class="sonuc '+sinif+'">'+kacis(ana)+(alt?'<small>'+kacis(alt)+'</small>':'')+'</div>';
+}
+// Sinifa gore not sec (kullanici elle not secmediyse)
+function otomatikNot(c){
+  if(c.tur==="yerfark") return "Başka odadan geldi";
+  if(c.tur==="kayitsiz") return "Sistemde kaydı yok";
+  return "";
+}
+function sesCal(tur){
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+    const ctx=sesCal.ctx||(sesCal.ctx=new AC());
+    if(ctx.state==="suspended") ctx.resume();
+    const nota={tamam:[880],tekrar:[520,520],yerfark:[660,440],kayitsiz:[300,220,300]}[tur]; if(!nota) return;
+    let t=ctx.currentTime;
+    for(const f of nota){
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.frequency.value=f; o.type=tur==="kayitsiz"?"square":"sine";
+      g.gain.setValueAtTime(0.18,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.16);
+      o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t+0.17); t+=0.19;
+    }
+  }catch(e){}
+  if(navigator.vibrate){ navigator.vibrate({tamam:[30],tekrar:[30,60,30],yerfark:[80,60,80],kayitsiz:[200,80,200]}[tur]||[30]); }
+}
+function rehberGuncelle(){
+  const kutu=$("rehberKutu");
+  const y=temizAlan($("yer").value), ny=normAd(y);
+  rehberYer=ny;
+  if(!beklenen.hazir||!ny||!beklenen.yerler[ny]){
+    if(beklenen.hazir&&y){ kutu.classList.remove("gizli"); $("rehberBaslik").textContent=y+" (listede yok)"; $("rehberOran").textContent="—"; $("rehberCubuk").style.width="0"; $("rehberAlt").innerHTML='<span>Bu yer/kişi için beklenen kayıt bulunamadı</span>'; $("noksanBtn").classList.add("gizli"); }
+    else kutu.classList.add("gizli");
+    $("noksanListe").classList.add("gizli");
+    return;
+  }
+  const bek=beklenen.yerler[ny];
+  const tekil=[...new Set(bek.sicil)];
+  const ok=okunan[ny]||{};
+  let tamam=0,yerfark=0,kayitsiz=0;
+  for(const k of Object.keys(ok)){ const d=ok[k].durum; if(d==="tamam")tamam++; else if(d==="yerfark")yerfark++; else if(d==="kayitsiz")kayitsiz++; }
+  const islendi=k=>ok[k]&&(ok[k].durum==="tamam"||ok[k].durum==="noksan"||ok[k].durum==="atla");
+  const kalan=tekil.filter(k=>!islendi(k)).length;
+  let noksanSay=0, atlaSay=0;
+  for(const k of tekil){ if(ok[k]&&ok[k].durum==="noksan")noksanSay++; else if(ok[k]&&ok[k].durum==="atla")atlaSay++; }
+  $("noksanBtn").classList.remove("gizli");
+  kutu.classList.remove("gizli");
+  $("rehberBaslik").textContent=bek.ad;
+  $("rehberOran").textContent=tamam+" / "+tekil.length;
+  $("rehberCubuk").style.width=(tekil.length?Math.round(100*tamam/tekil.length):0)+"%";
+  $("rehberAlt").innerHTML='<span>Kalan: '+kalan+'</span>'+(noksanSay?'<span>Noksan: '+noksanSay+'</span>':'')+(atlaSay?'<span>Atlanan: '+atlaSay+'</span>':'')+(yerfark?'<span>Başka yerden: '+yerfark+'</span>':'')+(kayitsiz?'<span>Kayıtsız: '+kayitsiz+'</span>':'');
+}
+function noksanGoster(){
+  const kutu=$("noksanListe");
+  if(!kutu.classList.contains("gizli")){ kutu.classList.add("gizli"); return; }
+  const ny=rehberYer; const bek=beklenen.yerler[ny]; if(!bek) return;
+  const ok=okunan[ny]||{};
+  const tekil=[...new Set(bek.sicil)].filter(k=>!(ok[k]&&(ok[k].durum==="tamam"||ok[k].durum==="noksan"||ok[k].durum==="atla")));
+  if(!tekil.length){
+    kutu.innerHTML='<div class="n"><b>Tüm kalemler okutuldu 🎉</b><small>Bir sonraki yere geçebilirsiniz.</small></div>';
+  }else{
+    kutu.innerHTML='<div class="n"><b>'+tekil.length+' kalem okutulmadı</b><small>Yerinde değilse “Noksan” ile kaydedin; yerindeyse barkodu okutun.</small></div>'+
+      tekil.slice(0,200).map(k=>{ const b=beklenen.ad[k]||{sicil:k,cins:"",mm:""};
+        return '<div class="n"><b>'+kacis(b.sicil)+'</b><small>'+kacis(b.cins+(b.mm?" · "+b.mm:""))+'</small>'+
+        '<div class="sec"><button class="kirmizi" onclick="noksanKaydet(\''+kacis(k)+'\')">Noksan</button><button class="gri" onclick="noksanAtla(\''+kacis(k)+'\')">Atla</button></div></div>'; }).join("");
+  }
+  kutu.classList.remove("gizli");
+}
+// Noksani kayit olarak ekle: sicil + not "Noksan"
+async function noksanKaydet(sk){
+  const b=beklenen.ad[sk]; if(!b) return;
+  $("sicil").value=b.sicil;
+  $("notSec").value="Noksan";
+  await ekle();       // ekle() "Noksan" notuyla kaydeder
+  $("noksanListe").classList.add("gizli"); noksanGoster();   // listeyi yenile
+}
+function noksanAtla(sk){
+  const ny=rehberYer; (okunan[ny]=okunan[ny]||{})[sk]={durum:"atla",zaman:Date.now()}; okunanKaydet();
+  $("noksanListe").classList.add("gizli"); noksanGoster(); rehberGuncelle();
+}
+
+/* ---------- Kayit ekleme ---------- */
+let sonSicil="",sonSicilZaman=0;
+async function ekle(){
+  const yer=temizAlan($("yer").value);
+  const sicil=temizAlan($("sicil").value);
+  const mal=temizAlan($("mal").value);
+  if(!yer){mesajGoster("sonMesaj","hata","Önce yer / kişi seçin.");$("yer").focus();return;}
+  if(!sicil && !mal){mesajGoster("sonMesaj","hata","Sicil okutun ya da malzeme adı yazın.");return;}
+  const simdi=Date.now();
+  if(sicil && sicil===sonSicil && simdi-sonSicilZaman<1500){ $("sicil").value=""; odak(); return; } // cift okuma korumasi
+  sonSicil=sicil; sonSicilZaman=simdi;
+  const d=new Date();
+  const cihaz=temizDosya(LS.get("cihaz",""));
+  const kimlik=zamanDamga(d)+"-"+cihaz+"-"+rastgele(5);
+  // --- Rehber: bu okutmayi siniflandir ---
+  const sinif=siniflandir(yer,sicil);
+  let notDeger=aktifNot();
+  if(!notDeger && sinif.tur!=="nötr") notDeger=otomatikNot(sinif);
+  if(sinif.tur==="tekrar" && sicil && notDeger!=="Noksan"){        // ayni sicil bu yerde zaten okundu
+    sonucCiz(sinif); sesCal("tekrar"); $("sicil").value=""; odak(); return;
+  }
+  const k={kimlik,dosya:kimlik+".txt",yer,tarih:tarihTR(d),saat:saatTR(d),sicil,malzeme:mal,not:notDeger,durum:"bekliyor",deneme:0,hata:""};
+  try{ await dbYaz(k); }
+  catch(e){ mesajGoster("sonMesaj","hata","KAYIT SAKLANAMADI: "+e.message+" — bu kaydı elle not edin."); return; }
+  LS.set("sonYer",yer); LS.set("yerGecmis",[yer,...LS.get("yerGecmis",[]).filter(x=>x!==yer)].slice(0,50));
+  oturumSay++; LS.set("oturumSay_"+new Date().toDateString(),oturumSay);
+  $("bugunSay").textContent=oturumSay;
+  $("sicil").value=""; $("mal").value=""; $("notSec").value="";
+  mesajGoster("sonMesaj","ok","Eklendi: "+(sicil||mal)+" ("+yer+")");
+  if(sinif.tur!=="nötr" && sinif.sk){
+    const ny=sinif.ny; (okunan[ny]=okunan[ny]||{})[sinif.sk]={durum:(notDeger==="Noksan"?"noksan":sinif.tur),zaman:Date.now()};
+    okunanKaydet(); sonucCiz(sinif); sesCal(sinif.tur); rehberGuncelle();
+  }else{ $("sonucKutu").innerHTML=""; }
+  if(navigator.vibrate)navigator.vibrate(40);
+  medyaGoster(sicil,yer);
+  await sayacGuncelle(); sonKayitCiz();
+  odak();
+  gonder(false);   // varsa hemen arka planda gonder
+}
+function ekleBtn(){klavyeAcik=false;$("sicil").setAttribute("inputmode","none");ekle();}
+
+/* ---------- Gorunum ---------- */
+async function sayacGuncelle(){
+  const t=await dbHepsi();
+  const b=t.filter(x=>x.durum!=="gitti").length;
+  $("kSay").textContent=b;
+  $("kSay").className="rozet "+(b===0?"r-ok":"r-bekle");
+}
+async function sonKayitCiz(){
+  const t=(await dbHepsi()).sort((a,b)=>a.kimlik<b.kimlik?1:-1).slice(0,8);
+  $("sonKayitlar").innerHTML=t.length?t.map(k=>'<div class="kayit"><b>'+kacis(k.sicil||k.malzeme)+'</b> <span class="rozet '+(k.durum==="gitti"?"r-ok":k.durum==="hata"?"r-hata":"r-bekle")+'">'+(k.durum==="gitti"?"gönderildi":k.durum==="hata"?"hata":"bekliyor")+'</span><br><small>'+kacis(k.yer)+' · '+k.tarih+' '+k.saat+'</small></div>').join(""):'<small>Henüz kayıt yok.</small>';
+}
+async function kuyrukCiz(){
+  const t=(await dbHepsi()).sort((a,b)=>a.kimlik<b.kimlik?1:-1);
+  $("kuyrukListe").innerHTML=t.length?t.map(k=>'<div class="kayit"><b>'+kacis(k.sicil||k.malzeme)+'</b> <span class="rozet '+(k.durum==="gitti"?"r-ok":k.durum==="hata"?"r-hata":"r-bekle")+'">'+k.durum+'</span><br><small>'+kacis(k.yer)+' · '+k.tarih+' '+k.saat+(k.hata?' · '+kacis(k.hata):'')+'</small></div>').join(""):'<small>Kuyruk boş.</small>';
+}
+
+/* ---------- Microsoft girisi (MSAL) ---------- */
+let msalApp=null, hesap=null;
+function msalHazir(){
+  if(CLIENT_ID.startsWith("BURAYA")) return false;
+  if(!window.msal || !window.msal.PublicClientApplication) return false;
+  if(!msalApp){
+    msalApp=new window.msal.PublicClientApplication({
+      auth:{clientId:CLIENT_ID,authority:AUTHORITY,redirectUri:REDIRECT_URI},
+      cache:{cacheLocation:"localStorage"}
+    });
+  }
+  return true;
+}
+async function oturumYukle(){
+  if(!msalHazir()){ $("hesapDurum").textContent="Uygulama kimliği henüz tanımlı değil (kurulum bekleniyor)."; return; }
+  try{
+    await msalApp.initialize();
+    const r=await msalApp.handleRedirectPromise();
+    if(r&&r.account) hesap=r.account;
+    else { const h=msalApp.getAllAccounts(); if(h.length)hesap=h[0]; }
+    hesapGoster();
+  }catch(e){ $("hesapDurum").textContent="Giriş hatası: "+e.message; }
+}
+function hesapGoster(){
+  $("hesapDurum").textContent=hesap?("Giriş yapıldı: "+hesap.username):"Giriş yapılmadı.";
+  $("durum").textContent=hesap?"Bağlı":"Çevrimdışı";
+}
+async function girisYap(){
+  if(!msalHazir()){ mesajGoster("ayarMesaj","hata","Uygulama kimliği tanımlanmamış."); return; }
+  try{ await msalApp.initialize(); await msalApp.loginRedirect({scopes:SCOPES}); }
+  catch(e){ mesajGoster("ayarMesaj","hata","Giriş başlatılamadı: "+e.message); }
+}
+async function cikisYap(){
+  if(msalApp&&hesap){ try{ await msalApp.logoutRedirect({account:hesap}); }catch(e){} }
+  hesap=null; hesapGoster();
+}
+async function belirtec(){
+  if(!msalHazir()||!hesap) throw new Error("Giriş yapılmamış");
+  try{
+    const r=await msalApp.acquireTokenSilent({scopes:SCOPES,account:hesap});
+    return r.accessToken;
+  }catch(e){
+    await msalApp.acquireTokenRedirect({scopes:SCOPES,account:hesap});  // sayfa yonlenir; kuyruk korunur
+    throw new Error("Yeniden giriş gerekiyor");
+  }
+}
+
+/* ---------- OneDrive'a yazma (Graph) ---------- */
+function klasorYolu(){return (LS.get("mobKlasor",VARSAYILAN_KLASOR)||VARSAYILAN_KLASOR).replace(/^\/+|\/+$/g,"");}
+function graphYol(ad){
+  const yol=klasorYolu()+"/Gelen/"+ad;
+  return "https://graph.microsoft.com/v1.0/me/drive/root:/"+yol.split("/").map(encodeURIComponent).join("/")+":/content?@microsoft.graph.conflictBehavior=fail";
+}
+async function dosyaYukle(ad,icerik,jt){
+  const r=await fetch(graphYol(ad),{method:"PUT",headers:{"Authorization":"Bearer "+jt,"Content-Type":"text/plain; charset=utf-8"},body:new Blob([icerik],{type:"text/plain;charset=utf-8"})});
+  if(r.status===409) return "var";            // ayni ad zaten yuklenmis: tekrar yok sayilir
+  if(!r.ok){ let m=""; try{ m=(await r.json()).error.message; }catch(e){} throw new Error("HTTP "+r.status+" "+m); }
+  return "yuklendi";
+}
+
+let gonderiyor=false;
+async function gonder(elle){
+  if(gonderiyor) return;
+  if(!navigator.onLine){ if(elle)mesajGoster("kuyrukMesaj","bilgi","İnternet yok; kayıtlar saklı, bağlanınca gönderilecek."); return; }
+  const bekleyen=(await dbHepsi()).filter(k=>k.durum==="bekliyor").sort((a,b)=>a.kimlik<b.kimlik?-1:1);
+  if(!bekleyen.length){ if(elle)mesajGoster("kuyrukMesaj","ok","Gönderilecek kayıt yok."); return; }
+  gonderiyor=true; $("durum").textContent="Gönderiliyor…";
+  let ok=0,hata=0,jt;
+  try{ jt=await belirtec(); }
+  catch(e){ gonderiyor=false; hesapGoster(); if(elle)mesajGoster("kuyrukMesaj","hata","Gönderilemedi: "+e.message+". Kayıtlar saklı."); return; }
+  for(const k of bekleyen){
+    try{
+      await dosyaYukle(k.dosya,dosyaIcerik(k),jt);
+      k.durum="gitti"; k.hata=""; await dbYaz(k); ok++;
+    }catch(e){
+      k.deneme=(k.deneme||0)+1; k.hata=e.message;
+      k.durum=k.deneme>=5?"hata":"bekliyor"; await dbYaz(k); hata++;
+      if(String(e.message).startsWith("HTTP 401")||String(e.message).startsWith("HTTP 403")) break;  // yetki sorunu: bosuna denemeyi birak
+    }
+  }
+  gonderiyor=false; hesapGoster();
+  await sayacGuncelle(); sonKayitCiz(); if(!$("b-kuyruk").classList.contains("gizli"))kuyrukCiz();
+  if(elle)mesajGoster("kuyrukMesaj",hata?"hata":"ok",ok+" kayıt gönderildi"+(hata?(", "+hata+" gönderilemedi (kuyrukta duruyor)"):"")+".");
+  // gonderilmis eski kayitlari 3 gunden sonra temizle
+  temizle();
+}
+async function temizle(){
+  const sinir=Date.now()-3*86400000;
+  for(const k of await dbHepsi()){
+    if(k.durum==="gitti"){ const t=k.kimlik.slice(0,8); const d=new Date(t.slice(0,4),+t.slice(4,6)-1,t.slice(6,8)).getTime(); if(d<sinir) await dbSil(k.kimlik); }
+  }
+}
+async function hataliTekrar(){
+  for(const k of await dbHepsi()){ if(k.durum==="hata"){ k.durum="bekliyor"; k.deneme=0; await dbYaz(k);} }
+  await sayacGuncelle(); gonder(true);
+}
+
+/* ---------- Yer listesi (OneDrive'daki yerler.txt varsa) ---------- */
+async function yerleriYukle(elle){
+  const g=LS.get("yerGecmis",[]);
+  $("yerListe").innerHTML=g.map(y=>'<option value="'+kacis(y)+'">').join("");
+  if(!hesap||!navigator.onLine){ if(elle)mesajGoster("ayarMesaj","bilgi","Giriş yapılmadan yalnız son kullanılan yerler listelenir."); return; }
+  try{
+    const jt=await belirtec();
+    const yol=klasorYolu()+"/yerler.txt";
+    const r=await fetch("https://graph.microsoft.com/v1.0/me/drive/root:/"+yol.split("/").map(encodeURIComponent).join("/")+":/content",{headers:{Authorization:"Bearer "+jt}});
+    if(r.ok){
+      const satirlar=(await r.text()).replace(/^\uFEFF/,"").split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      LS.set("yerSunucu",satirlar);
+      $("yerListe").innerHTML=[...new Set([...satirlar,...g])].map(y=>'<option value="'+kacis(y)+'">').join("");
+      if(elle)mesajGoster("ayarMesaj","ok",satirlar.length+" yer yüklendi.");
+    }else if(elle) mesajGoster("ayarMesaj","bilgi","Mobil klasöründe yerler.txt bulunamadı; yalnız son kullanılan yerler listelenir.");
+  }catch(e){ if(elle)mesajGoster("ayarMesaj","hata","Yer listesi alınamadı: "+e.message); }
+}
+
+/* ---------- Ayarlar / test ---------- */
+function ayarKaydet(){
+  LS.set("cihaz",temizAlan($("cihaz").value));
+  LS.set("mobKlasor",temizAlan($("mobKlasor").value)||VARSAYILAN_KLASOR);
+  LS.set("resimKlasor",temizAlan($("resimKlasorGir").value)||VARS_RESIM);
+  LS.set("videoKlasor",temizAlan($("videoKlasorGir").value)||VARS_VIDEO);
+  mesajGoster("ayarMesaj","ok","Kaydedildi.");
+}
+async function testDosyasi(){
+  try{
+    const jt=await belirtec();
+    const ad="TEST-"+zamanDamga(new Date())+".tmp";
+    const r=await fetch(graphYol(ad).replace("/Gelen/","/"),{method:"PUT",headers:{Authorization:"Bearer "+jt,"Content-Type":"text/plain"},body:"test"});
+    if(!r.ok){ let m=""; try{m=(await r.json()).error.message;}catch(e){} throw new Error("HTTP "+r.status+" "+m); }
+    const j=await r.json();
+    await fetch("https://graph.microsoft.com/v1.0/me/drive/items/"+j.id,{method:"DELETE",headers:{Authorization:"Bearer "+jt}});
+    mesajGoster("testMesaj","ok","Bağlantı çalışıyor: Mobil klasörüne yazıldı ve test dosyası silindi.");
+  }catch(e){ mesajGoster("testMesaj","hata","Bağlantı kurulamadı: "+e.message); }
+}
+
+/* ---------- Baslat ---------- */
+async function basla(){
+  $("cihaz").value=LS.get("cihaz","");
+  $("mobKlasor").value=LS.get("mobKlasor",VARSAYILAN_KLASOR);
+  $("resimKlasorGir").value=LS.get("resimKlasor",VARS_RESIM);
+  $("videoKlasorGir").value=LS.get("videoKlasor",VARS_VIDEO);
+  $("bugunSay").textContent=oturumSay;
+  $("yer").value=LS.get("sonYer","");
+  beklenenYukleYerel(); okunanYukle(); rehberGuncelle();
+  $("yer").addEventListener("input",()=>{ rehberGuncelle(); $("sonucKutu").innerHTML=""; });
+  $("yer").addEventListener("change",()=>{ rehberGuncelle(); $("sonucKutu").innerHTML=""; });
+  try{ await dbAc(); }catch(e){ mesajGoster("sonMesaj","hata","Yerel depolama açılamadı: "+e.message); return; }
+  if(navigator.storage&&navigator.storage.persist) navigator.storage.persist();
+  await sayacGuncelle(); sonKayitCiz();
+  await oturumYukle(); hesapGoster();
+  yerleriYukle(false); beklenenYukle(false);
+  // Enter (tarayici sonuna eklenir) -> ekle
+  $("sicil").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); ekle(); } });
+  $("sicil").addEventListener("blur",()=>{ if(!klavyeAcik && !$("b-sayim").classList.contains("gizli")) setTimeout(()=>{ if(document.activeElement===document.body) $("sicil").focus(); },200); });
+  window.addEventListener("online",()=>gonder(false));
+  setInterval(()=>gonder(false),60000);
+  if(!$("cihaz").value){ sekme("ayar"); mesajGoster("ayarMesaj","bilgi","Önce cihaz adını yazıp Kaydet'e basın (örn: Tablet)."); } else odak();
+  gonder(false);
+  if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+basla();
+</script>
+</body>
+</html>

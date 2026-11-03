@@ -55,6 +55,22 @@ button:disabled{opacity:.5}
 .medya button.aktifM{background:#0b5cab}
 .medya button.pasifM{background:#6b7785}
 
+
+/* ===== v4: oneri, malzeme karti ===== */
+.oner{border:1px solid #bbb;border-radius:8px;background:#fff;margin-top:4px;max-height:220px;overflow:auto}
+.oner div{padding:11px 12px;border-bottom:1px solid #eef0f3;font-size:16px}
+.oner div:last-child{border-bottom:0}
+.oner div:active{background:#e3eefc}
+.oner small{color:#667;margin-left:6px}
+.malkart{margin:8px 0;padding:12px;border-radius:12px;background:#fff;border:1px solid #d5dfeb}
+.malkart .bas{font-weight:800;font-size:17px;color:#0b3d78;margin-bottom:6px}
+.malkart table{width:100%;border-collapse:collapse;font-size:14px}
+.malkart td{padding:4px 0;vertical-align:top;border-bottom:1px solid #f0f2f5}
+.malkart td:first-child{color:#667;width:38%;padding-right:8px}
+.sayimOzet{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.sayimOzet span{flex:1;min-width:70px;text-align:center;padding:8px 4px;border-radius:10px;background:#eef5ff;font-size:12px;color:#234}
+.sayimOzet b{display:block;font-size:20px;color:#0b5cab}
+
 /* ===== Rehber (beklenen liste) ===== */
 .rehber{margin:10px 0;padding:12px;border-radius:12px;background:#eef5ff;border:1px solid #c5d9f2}
 .rehber .ust{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -97,31 +113,32 @@ button:disabled{opacity:.5}
 <!-- SAYIM -->
 <section id="b-sayim">
   <div class="kart">
-    <label for="yer">Yer / Kişi</label>
-    <input id="yer" list="yerListe" placeholder="Örn: ARŞİV-1.KAT veya kişi adı" autocomplete="off">
-    <datalist id="yerListe"></datalist>
+    <label for="yer">Yer / Kişi (yazdıkça öner)</label>
+    <input id="yer" placeholder="Örn: ARŞİV veya kişi adı" autocomplete="off" autocapitalize="characters">
+    <div id="yerOner" class="oner gizli"></div>
     <div id="rehberKutu" class="rehber gizli">
       <div class="ust"><b id="rehberBaslik">—</b><span class="oran" id="rehberOran">0/0</span></div>
       <div class="cubuk"><i id="rehberCubuk"></i></div>
+      <div class="sayimOzet" id="sayimOzet"></div>
       <div class="alt" id="rehberAlt"></div>
       <button class="gri cubukBtn" id="noksanBtn" onclick="noksanGoster()">Eksikleri göster / yerden çık</button>
       <div id="noksanListe" class="noksan gizli"></div>
     </div>
+    <label for="sicil">Sicil No / Barkod (okutun ya da yazın, Enter)</label>
+    <input id="sicil" class="buyuk" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Okutun veya yazın…">
     <div id="sonucKutu"></div>
-    <label for="sicil">Sicil No / Barkod (okutun)</label>
-    <input id="sicil" class="buyuk" inputmode="none" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Okutun…">
+    <div id="malKart" class="malkart gizli"></div>
     <div class="sira" style="margin-top:8px">
-      <button class="gri" onclick="klavyeAc()">⌨ Elle yaz</button>
       <button class="yesil" onclick="ekleBtn()">Ekle</button>
     </div>
-    <label for="not">Not</label>
+    <label for="notSec">Not (durum)</label>
     <select id="notSec">
       <option value="">(not yok)</option>
+      <option>Noksan</option>
       <option>Etiket yok</option>
       <option>Etiket silik</option>
       <option>Hasarlı</option>
       <option>Başka odadan geldi</option>
-      <option>Noksan</option>
       <option>Sistemde kaydı yok</option>
       <option>Kullanılmıyor</option>
       <option>Arızalı</option>
@@ -129,7 +146,12 @@ button:disabled{opacity:.5}
       <option>Bakılacak</option>
       <option>Diğer</option>
     </select>
-
+    <label for="acik">Açıklama / fazla açıklama (isteğe bağlı)</label>
+    <input id="acik" placeholder="Örn: ekranı çatlak, depodan getirildi" autocomplete="off">
+    <div id="malWrap" style="margin-top:4px">
+      <label for="mal">Malzeme adı (sicilsiz / elle eklenenler için)</label>
+      <input id="mal" placeholder="Sicil yoksa malzemeyi yazın">
+    </div>
     <div id="medyaKutu" class="medya gizli">
       <div class="medyaBas" onclick="medyaAcKapat()">
         <b>Fotoğraf / Video</b> <span id="medyaOzet" style="color:#667"></span>
@@ -149,10 +171,6 @@ button:disabled{opacity:.5}
         <input type="file" id="videoGir" accept="video/*" capture="environment" onchange="medyaSec(this,2)">
         <div id="medyaMesaj"></div>
       </div>
-    </div>
-    <div id="malWrap" style="margin-top:4px">
-      <label for="mal">Malzeme adı (yalnız sicili olmayanlar için)</label>
-      <input id="mal" placeholder="Sicil okutamadıysanız malzemeyi yazın">
     </div>
   </div>
   <div id="sonMesaj"></div>
@@ -422,7 +440,7 @@ function dbSil(id){return new Promise((res,rej)=>{const q=tx("readwrite").delete
 /* ---------- Kayit dosyasi icerigi (Excel makrosunun bekledigi biçim) ---------- */
 function dosyaIcerik(k){
   return ["yer="+temizAlan(k.yer),"tarih="+k.tarih,"saat="+k.saat,"sicil="+temizAlan(k.sicil),
-          "malzeme="+temizAlan(k.malzeme),"not="+temizAlan(k.not),"kimlik="+k.kimlik].join("\n")+"\n";
+          "malzeme="+temizAlan(k.malzeme),"not="+temizAlan(k.not)+(k.acik?(k.not?" – ":"")+temizAlan(k.acik):""),"kimlik="+k.kimlik].join("\n")+"\n";
 }
 function dosyaAdi(k){return k.dosya;}
 
@@ -435,7 +453,7 @@ function sekme(ad){
   if(ad==="kuyruk")kuyrukCiz();
   if(ad==="sayim")odak();
 }
-function odak(){setTimeout(()=>{if(!klavyeAcik)$("sicil").focus();},50);}
+function odak(){setTimeout(()=>{ const a=document.activeElement; if(a && (a.id==="yer"||a.id==="acik"||a.id==="mal"||a.id==="notSec")) return; $("sicil").focus(); },50);}
 let klavyeAcik=false;
 function klavyeAc(){klavyeAcik=true;const s=$("sicil");s.setAttribute("inputmode","text");s.blur();setTimeout(()=>s.focus(),50);}
 function aktifNot(){return $("notSec").value;}
@@ -449,18 +467,24 @@ let okunan = {};            // okunan[normYer] = { sicilKok: {durum, zaman} }
 let rehberYer = "";         // su an aktif normalize yer
 
 function beklenenKur(metin){
-  const yerler={}, sicilYer={}, ad={};
+  // Alanlar: 0 yer/kisi, 1 sicil, 2 barkod, 3 aciklama, 4 cinsi, 5 ekOzellik, 6 marka, 7 model,
+  //          8 fisSonDurum, 9 kayitliYer, 10 zimmetKisi, 11 zimmetFisNo, 12 zimmetTarihi
+  const yerler={}, sicilYer={}, ad={}, yerAdlari=new Map();
   for(const satir of metin.replace(/^\uFEFF/,"").split(/\r?\n/)){
     if(!satir.trim()) continue;
     const p=satir.split("\t"); if(p.length<2) continue;
-    const yerAd=p[0].trim(), sicil=p[1].trim(); if(!yerAd||!sicil) continue;
+    const yerAd=p[0].trim(), sicil=(p[1]||"").trim(); if(!yerAd||!sicil) continue;
     const ny=normAd(yerAd), sk=sicilKok(sicil);
     if(!yerler[ny]) yerler[ny]={ad:yerAd, sicil:[]};
     yerler[ny].sicil.push(sk);
     (sicilYer[sk]=sicilYer[sk]||[]).push(ny);
-    ad[sk]={sicil:sicil, cins:(p[2]||"").trim(), mm:(p[3]||"").trim()};
+    if(!ad[sk]) ad[sk]={sicil:sicil, barkod:(p[2]||"").trim(), aciklama:(p[3]||"").trim(), cins:(p[4]||"").trim(),
+      ek:(p[5]||"").trim(), marka:(p[6]||"").trim(), model:(p[7]||"").trim(), durum:(p[8]||"").trim(),
+      kayitliYer:(p[9]||"").trim(), zimmet:(p[10]||"").trim(), zimFis:(p[11]||"").trim(), zimTarih:(p[12]||"").trim(),
+      mm:((p[6]||"")+" "+(p[7]||"")).trim()};
+    if(!yerAdlari.has(ny)) yerAdlari.set(ny,yerAd);
   }
-  return {yerler,sicilYer,ad,hazir:Object.keys(yerler).length>0};
+  return {yerler,sicilYer,ad,yerAdlari,hazir:Object.keys(yerler).length>0};
 }
 function beklenenYukleYerel(){
   try{
@@ -488,7 +512,7 @@ function okunanKaydet(){ LS.set("okunan_v1",okunan); }
 function okunanSifirla(){
   if(!rehberYer){return;}
   if(!confirm("Bu yerin okuma durumu sıfırlansın mı? (Kayıtlar kuyruktan silinmez)")) return;
-  delete okunan[rehberYer]; okunanKaydet(); rehberGuncelle(); $("sonucKutu").innerHTML="";
+  delete okunan[rehberYer]; okunanKaydet(); { const m=LS.get("mukerrer_v1",{}); delete m[rehberYer]; LS.set("mukerrer_v1",m); } rehberGuncelle(); $("sonucKutu").innerHTML="";
 }
 
 // Bir okutmayi siniflandir: tamam | yerfark | kayitsiz | tekrar | nötr
@@ -503,15 +527,23 @@ function siniflandir(yerDeger, sicilDeger){
   return {tur:"yerfark", ny, sk, bilgi, kayitli:kayit.map(x=>beklenen.yerler[x]?beklenen.yerler[x].ad:x)};
 }
 function sonucCiz(c){
-  const kutu=$("sonucKutu");
-  if(c.tur==="nötr"){ kutu.innerHTML=""; return; }
+  const kutu=$("sonucKutu"), kart=$("malKart");
+  if(c.tur==="nötr"){ kutu.innerHTML=""; kart.classList.add("gizli"); kart.innerHTML=""; return; }
   const tanim=c.bilgi?(c.bilgi.cins+(c.bilgi.mm?" · "+c.bilgi.mm:"")):"";
   let sinif="s-nötr", ana="", alt="";
-  if(c.tur==="tamam"){ sinif="s-tamam"; ana="✔ Tamam, burada olması gereken"; alt=tanim; }
-  else if(c.tur==="tekrar"){ sinif="s-tekrar"; ana="Bu zaten okutuldu"; alt=tanim; }
-  else if(c.tur==="yerfark"){ sinif="s-yerfark"; ana="⚠ Başka yerde kayıtlı"; alt=tanim+(tanim?" — ":"")+"Kayıtlı yer: "+c.kayitli.join(", "); }
-  else if(c.tur==="kayitsiz"){ sinif="s-kayitsiz"; ana="✖ Sistemde kaydı yok (sayım fazlası)"; alt="Not alanına “Sistemde kaydı yok” yazıldı"; }
+  if(c.tur==="tamam"){ sinif="s-tamam"; ana="✔ YERİNDE"; alt="Burada olması gereken kayıt"; }
+  else if(c.tur==="tekrar"){ sinif="s-tekrar"; ana="MÜKERRER"; alt="Bu yerde zaten okutuldu"; }
+  else if(c.tur==="yerfark"){ sinif="s-yerfark"; ana="⚠ FAZLA – başka yerde kayıtlı"; alt="Kayıtlı yer: "+c.kayitli.join(", "); }
+  else if(c.tur==="kayitsiz"){ sinif="s-kayitsiz"; ana="✖ FAZLA – raporda yok"; alt="Sistemde kaydı bulunamadı. Açıklama / malzeme adı yazabilirsiniz."; }
   kutu.innerHTML='<div class="sonuc '+sinif+'">'+kacis(ana)+(alt?'<small>'+kacis(alt)+'</small>':'')+'</div>';
+  // Malzeme karti: Excel Malzeme Sorgu ile ayni alanlar
+  if(c.bilgi){
+    const b=c.bilgi, sat=[["Sicil No",b.sicil],["Bar_Kod",b.barkod],["Açıklama",b.aciklama],["Cinsi",b.cins],["Ek Özellik",b.ek],
+      ["Marka",b.marka],["Model",b.model],["Fiş Son Durum",b.durum],["Kayıtlı Yer / Birim",b.kayitliYer],
+      ["Zimmet (kişi / yer)",b.zimmet],["Zimmet Fiş No",b.zimFis],["Zimmet Tarihi",b.zimTarih]].filter(x=>x[1]);
+    kart.innerHTML='<div class="bas">'+kacis(tanim||b.sicil)+'</div><table>'+sat.map(x=>'<tr><td>'+kacis(x[0])+'</td><td>'+kacis(x[1])+'</td></tr>').join("")+'</table>';
+    kart.classList.remove("gizli");
+  }else{ kart.classList.add("gizli"); kart.innerHTML=""; }
 }
 // Sinifa gore not sec (kullanici elle not secmediyse)
 function otomatikNot(c){
@@ -540,7 +572,7 @@ function rehberGuncelle(){
   const y=temizAlan($("yer").value), ny=normAd(y);
   rehberYer=ny;
   if(!beklenen.hazir||!ny||!beklenen.yerler[ny]){
-    if(beklenen.hazir&&y){ kutu.classList.remove("gizli"); $("rehberBaslik").textContent=y+" (listede yok)"; $("rehberOran").textContent="—"; $("rehberCubuk").style.width="0"; $("rehberAlt").innerHTML='<span>Bu yer/kişi için beklenen kayıt bulunamadı</span>'; $("noksanBtn").classList.add("gizli"); }
+    if(beklenen.hazir&&y){ kutu.classList.remove("gizli"); $("rehberBaslik").textContent=y+" (listede yok)"; $("rehberOran").textContent="—"; $("rehberCubuk").style.width="0"; $("sayimOzet").innerHTML=""; $("rehberAlt").innerHTML='<span>Bu yer/kişi için beklenen kayıt bulunamadı</span>'; $("noksanBtn").classList.add("gizli"); }
     else kutu.classList.add("gizli");
     $("noksanListe").classList.add("gizli");
     return;
@@ -560,6 +592,13 @@ function rehberGuncelle(){
   $("rehberOran").textContent=tamam+" / "+tekil.length;
   $("rehberCubuk").style.width=(tekil.length?Math.round(100*tamam/tekil.length):0)+"%";
   $("rehberAlt").innerHTML='<span>Kalan: '+kalan+'</span>'+(noksanSay?'<span>Noksan: '+noksanSay+'</span>':'')+(atlaSay?'<span>Atlanan: '+atlaSay+'</span>':'')+(yerfark?'<span>Başka yerden: '+yerfark+'</span>':'')+(kayitsiz?'<span>Kayıtsız: '+kayitsiz+'</span>':'');
+  // Excel sayim ekraniyla ayni ozet: Kayitli / Okutulan / Yerinde / Noksan / Fazla / Mukerrer
+  let yerinde=0, fazla=0, mukerrer=0;
+  for(const k of Object.keys(ok)){ const d=ok[k].durum; if(d==="tamam") yerinde++; else if(d==="yerfark"||d==="kayitsiz") fazla++; }
+  mukerrer=(LS.get("mukerrer_v1",{})[ny])||0;
+  const okutulan=yerinde+fazla+noksanSay*0;
+  $("sayimOzet").innerHTML=[["Kayıtlı",tekil.length],["Okutulan",okutulan],["Yerinde",yerinde],["Noksan",Math.max(0,tekil.length-yerinde)],["Fazla",fazla],["Mükerrer",mukerrer]]
+    .map(x=>'<span><b>'+x[1]+'</b>'+x[0]+'</span>').join("");
 }
 function noksanGoster(){
   const kutu=$("noksanListe");
@@ -590,6 +629,24 @@ function noksanAtla(sk){
   $("noksanListe").classList.add("gizli"); noksanGoster(); rehberGuncelle();
 }
 
+
+/* ---------- Yer / Kisi onerisi (yazdikca) ---------- */
+function yerOneriCiz(){
+  const kutu=$("yerOner"), q=normAd($("yer").value);
+  if(!q || q.length<1){ kutu.classList.add("gizli"); kutu.innerHTML=""; return; }
+  const kaynak=[];
+  if(beklenen.yerAdlari){ for(const [n,ad] of beklenen.yerAdlari) kaynak.push([n,ad]); }
+  const ekle2=(LS.get("yerSunucu",[])||[]).concat(LS.get("yerGecmis",[])||[]);
+  const gorulen=new Set(kaynak.map(x=>x[0]));
+  for(const ad of ekle2){ const n=normAd(ad); if(n&&!gorulen.has(n)){ gorulen.add(n); kaynak.push([n,ad]); } }
+  const esle=kaynak.filter(x=>x[0].indexOf(q)>=0).sort((a,b)=>(a[0].indexOf(q)-b[0].indexOf(q))||a[1].localeCompare(b[1],"tr")).slice(0,8);
+  if(!esle.length || (esle.length===1 && esle[0][0]===q)){ kutu.classList.add("gizli"); kutu.innerHTML=""; return; }
+  kutu.innerHTML=esle.map(x=>{ const k=beklenen.yerler&&beklenen.yerler[x[0]]; const adet=k?[...new Set(k.sicil)].length:0;
+    return '<div data-yer="'+kacis(x[1])+'">'+kacis(x[1])+(adet?'<small>'+adet+' kalem</small>':'')+'</div>'; }).join("");
+  kutu.classList.remove("gizli");
+}
+function yerSec(ad){ $("yer").value=ad; $("yerOner").classList.add("gizli"); rehberGuncelle(); $("sonucKutu").innerHTML=""; $("malKart").classList.add("gizli"); odak(); }
+
 /* ---------- Kayit ekleme ---------- */
 let sonSicil="",sonSicilZaman=0;
 async function ekle(){
@@ -609,15 +666,17 @@ async function ekle(){
   let notDeger=aktifNot();
   if(!notDeger && sinif.tur!=="nötr") notDeger=otomatikNot(sinif);
   if(sinif.tur==="tekrar" && sicil && notDeger!=="Noksan"){        // ayni sicil bu yerde zaten okundu
-    sonucCiz(sinif); sesCal("tekrar"); $("sicil").value=""; odak(); return;
+    { const m=LS.get("mukerrer_v1",{}); m[sinif.ny]=(m[sinif.ny]||0)+1; LS.set("mukerrer_v1",m); }
+    sonucCiz(sinif); sesCal("tekrar"); rehberGuncelle(); $("sicil").value=""; odak(); return;
   }
-  const k={kimlik,dosya:kimlik+".txt",yer,tarih:tarihTR(d),saat:saatTR(d),sicil,malzeme:mal,not:notDeger,durum:"bekliyor",deneme:0,hata:""};
+  const acik=temizAlan($("acik").value);
+  const k={kimlik,dosya:kimlik+".txt",yer,tarih:tarihTR(d),saat:saatTR(d),sicil,malzeme:mal,not:notDeger,acik,durum:"bekliyor",deneme:0,hata:""};
   try{ await dbYaz(k); }
   catch(e){ mesajGoster("sonMesaj","hata","KAYIT SAKLANAMADI: "+e.message+" — bu kaydı elle not edin."); return; }
   LS.set("sonYer",yer); LS.set("yerGecmis",[yer,...LS.get("yerGecmis",[]).filter(x=>x!==yer)].slice(0,50));
   oturumSay++; LS.set("oturumSay_"+new Date().toDateString(),oturumSay);
   $("bugunSay").textContent=oturumSay;
-  $("sicil").value=""; $("mal").value=""; $("notSec").value="";
+  $("sicil").value=""; $("mal").value=""; $("notSec").value=""; $("acik").value="";
   mesajGoster("sonMesaj","ok","Eklendi: "+(sicil||mal)+" ("+yer+")");
   if(sinif.tur!=="nötr" && sinif.sk){
     const ny=sinif.ny; (okunan[ny]=okunan[ny]||{})[sinif.sk]={durum:(notDeger==="Noksan"?"noksan":sinif.tur),zaman:Date.now()};
@@ -629,7 +688,7 @@ async function ekle(){
   odak();
   gonder(false);   // varsa hemen arka planda gonder
 }
-function ekleBtn(){klavyeAcik=false;$("sicil").setAttribute("inputmode","none");ekle();}
+function ekleBtn(){ekle();}
 
 /* ---------- Gorunum ---------- */
 async function sayacGuncelle(){
@@ -747,7 +806,6 @@ async function hataliTekrar(){
 /* ---------- Yer listesi (OneDrive'daki yerler.txt varsa) ---------- */
 async function yerleriYukle(elle){
   const g=LS.get("yerGecmis",[]);
-  $("yerListe").innerHTML=g.map(y=>'<option value="'+kacis(y)+'">').join("");
   if(!hesap||!navigator.onLine){ if(elle)mesajGoster("ayarMesaj","bilgi","Giriş yapılmadan yalnız son kullanılan yerler listelenir."); return; }
   try{
     const jt=await belirtec();
@@ -756,7 +814,6 @@ async function yerleriYukle(elle){
     if(r.ok){
       const satirlar=(await r.text()).replace(/^\uFEFF/,"").split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
       LS.set("yerSunucu",satirlar);
-      $("yerListe").innerHTML=[...new Set([...satirlar,...g])].map(y=>'<option value="'+kacis(y)+'">').join("");
       if(elle)mesajGoster("ayarMesaj","ok",satirlar.length+" yer yüklendi.");
     }else if(elle) mesajGoster("ayarMesaj","bilgi","Mobil klasöründe yerler.txt bulunamadı; yalnız son kullanılan yerler listelenir.");
   }catch(e){ if(elle)mesajGoster("ayarMesaj","hata","Yer listesi alınamadı: "+e.message); }
@@ -791,8 +848,14 @@ async function basla(){
   $("bugunSay").textContent=oturumSay;
   $("yer").value=LS.get("sonYer","");
   beklenenYukleYerel(); okunanYukle(); rehberGuncelle();
-  $("yer").addEventListener("input",()=>{ rehberGuncelle(); $("sonucKutu").innerHTML=""; });
-  $("yer").addEventListener("change",()=>{ rehberGuncelle(); $("sonucKutu").innerHTML=""; });
+  $("yer").addEventListener("input",()=>{ rehberGuncelle(); yerOneriCiz(); $("sonucKutu").innerHTML=""; $("malKart").classList.add("gizli"); });
+  $("yer").addEventListener("focus",()=>{ klavyeAcik=true; yerOneriCiz(); });
+  $("yer").addEventListener("blur",()=>{ setTimeout(()=>{ $("yerOner").classList.add("gizli"); klavyeAcik=false; },180); });
+  $("yerOner").addEventListener("mousedown",e=>{ const d=e.target.closest("div[data-yer]"); if(d){ e.preventDefault(); yerSec(d.getAttribute("data-yer")); } });
+  $("yerOner").addEventListener("touchend",e=>{ const d=e.target.closest("div[data-yer]"); if(d){ e.preventDefault(); yerSec(d.getAttribute("data-yer")); } });
+  // Sicil yazilirken (Enter basmadan) kartı onizle: okuyucu Enter gondermeyebilir
+  let onizZaman=null;
+  $("sicil").addEventListener("input",()=>{ clearTimeout(onizZaman); onizZaman=setTimeout(()=>{ const v=temizAlan($("sicil").value); if(v.length>=6){ const c=siniflandir($("yer").value,v); if(c.tur!=="nötr") sonucCiz(c); } },350); });
   try{ await dbAc(); }catch(e){ mesajGoster("sonMesaj","hata","Yerel depolama açılamadı: "+e.message); return; }
   if(navigator.storage&&navigator.storage.persist) navigator.storage.persist();
   await sayacGuncelle(); sonKayitCiz();
@@ -800,7 +863,7 @@ async function basla(){
   yerleriYukle(false); beklenenYukle(false);
   // Enter (tarayici sonuna eklenir) -> ekle
   $("sicil").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); ekle(); } });
-  $("sicil").addEventListener("blur",()=>{ if(!klavyeAcik && !$("b-sayim").classList.contains("gizli")) setTimeout(()=>{ if(document.activeElement===document.body) $("sicil").focus(); },200); });
+  $("sicil").addEventListener("blur",()=>{ if(!$("b-sayim").classList.contains("gizli")) setTimeout(()=>{ if(document.activeElement===document.body) $("sicil").focus(); },200); });
   window.addEventListener("online",()=>gonder(false));
   setInterval(()=>gonder(false),60000);
   if(!$("cihaz").value){ sekme("ayar"); mesajGoster("ayarMesaj","bilgi","Önce cihaz adını yazıp Kaydet'e basın (örn: Tablet)."); } else odak();

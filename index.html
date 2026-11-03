@@ -4,229 +4,358 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1f4e79">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Sayım">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Sayım</title>
 <style>
-:root{--bg:#f3f5f8;--fg:#1b2430;--card:#fff;--ln:#d6dce5;--ac:#1f4e79;--ok:#1b7f3b;--wr:#b45309;--er:#b42318;--mu:#6b7686}
-@media(prefers-color-scheme:dark){:root{--bg:#10151c;--fg:#e8edf4;--card:#1a222d;--ln:#2d3847;--ac:#6aa7e0;--ok:#4cc27a;--wr:#f0a04b;--er:#ff7b72;--mu:#93a0b3}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:70px}
-header{position:sticky;top:0;z-index:5;background:var(--ac);color:#fff;padding:10px 14px;display:flex;gap:10px;align-items:center}
-header h1{font-size:18px;margin:0;flex:1}header .st{font-size:12px;opacity:.9}
+:root{--bg:#eef2f7;--fg:#17202c;--card:#fff;--ln:#d5dde8;--ac:#1f4e79;--ac2:#2f7fc1;--mu:#5d6b7e;
+--ok:#1b7f3b;--wr:#a15c00;--er:#b42318;
+--r-ok:#FFF2CC;--r-muk:#FFC7CE;--r-faz:#FCE4D6;--r-yer:#E8D5FF;--r-ac:#BDD7EE;--giris:#FDE9F2}
+@media(prefers-color-scheme:dark){:root{--bg:#0f141b;--fg:#e8edf4;--card:#19212c;--ln:#2b3646;--ac:#6aa7e0;--ac2:#4a8fd0;--mu:#93a0b3;--ok:#4cc27a;--wr:#f0a04b;--er:#ff7b72;
+--r-ok:#4a4020;--r-muk:#5a2a30;--r-faz:#573a28;--r-yer:#43305c;--r-ac:#26415c;--giris:#4a2a3a}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:78px}
+header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,#1f4e79,#2f7fc1);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;gap:10px;align-items:center}
+header h1{font-size:17px;margin:0;flex:1;line-height:1.15}header h1 small{display:block;font-weight:400;font-size:11px;opacity:.85}
+.pill{font-size:12px;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.2)}
 nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--ln);z-index:6;padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;border:0;background:none;color:var(--mu);padding:10px 2px;font-size:12px}nav button.on{color:var(--ac);font-weight:700}
-main{padding:12px;max-width:760px;margin:auto}section{display:none}section.on{display:block}
-.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:12px;margin-bottom:12px}
-label{display:block;font-size:13px;color:var(--mu);margin:8px 0 3px}
-input,select,textarea,button.b{width:100%;font:inherit;padding:11px;border:1px solid var(--ln);border-radius:9px;background:var(--bg);color:var(--fg)}
-button.b{background:var(--ac);color:#fff;border:0;font-weight:600;margin-top:8px}button.b.g{background:var(--bg);color:var(--fg);border:1px solid var(--ln)}
+nav button{flex:1;border:0;background:none;color:var(--mu);padding:8px 2px 7px;font-size:11px;position:relative}
+nav button b{display:block;font-size:19px;line-height:1.1}nav button.on{color:var(--ac);font-weight:700}
+nav button.on::before{content:"";position:absolute;top:0;left:20%;right:20%;height:3px;border-radius:0 0 3px 3px;background:var(--ac2)}
+main{padding:10px;max-width:820px;margin:auto}section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card h3{margin:0 0 6px;font-size:14px;color:var(--ac);text-transform:uppercase;letter-spacing:.03em}
+label{display:block;font-size:12px;color:var(--mu);margin:8px 0 3px}
+input,select,textarea{width:100%;font:inherit;padding:11px;border:1px solid var(--ln);border-radius:9px;background:var(--bg);color:var(--fg)}
+input.giris,select.giris{background:var(--giris)}
+input#sicil{font-size:20px;padding:14px;text-align:center;letter-spacing:.04em}
+button.b{width:100%;font:inherit;font-weight:600;padding:12px;border:0;border-radius:10px;background:var(--ac);color:#fff;margin-top:8px}
+button.b.g{background:var(--bg);color:var(--fg);border:1px solid var(--ln)}button.b.r{background:var(--er)}button.b.y{background:var(--ok)}
 .row{display:flex;gap:8px}.row>*{flex:1}
-.dur{font-weight:700;padding:8px 10px;border-radius:9px;margin:8px 0;background:var(--bg)}
-.ok{color:var(--ok)}.wr{color:var(--wr)}.er{color:var(--er)}
-.kv{display:grid;grid-template-columns:110px 1fr;gap:2px 8px;font-size:14px}.kv b{color:var(--mu);font-weight:500}
-.cnt{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;text-align:center}.cnt div{background:var(--bg);border-radius:8px;padding:6px 0;font-size:11px;color:var(--mu)}.cnt b{display:block;font-size:18px;color:var(--fg)}
-.it{border-top:1px solid var(--ln);padding:8px 0;font-size:14px}.it:first-child{border-top:0}.it small{color:var(--mu)}
-.x{float:right;border:0;background:none;color:var(--er);font-size:18px}
-.msg{font-size:13px;color:var(--mu)}details summary{cursor:pointer;color:var(--ac);padding:6px 0}
-img.th,video.th{max-width:100%;max-height:180px;border-radius:8px;margin:4px 0}
+.oner{border:1px solid var(--ln);border-radius:9px;background:var(--card);max-height:230px;overflow:auto;margin-top:3px}
+.oner div{padding:10px 12px;border-bottom:1px solid var(--ln)}.oner div small{color:var(--mu);float:right}
+.hide{display:none!important}
+.ban{border-radius:12px;padding:12px;margin:8px 0;font-weight:700;font-size:18px;text-align:center}
+.ban small{display:block;font-weight:500;font-size:13px;margin-top:2px;opacity:.85}
+.ban.ok{background:var(--r-ok);color:var(--ok)}.ban.muk{background:var(--r-muk);color:var(--er)}.ban.faz{background:var(--r-faz);color:var(--wr)}.ban.yer{background:var(--r-yer);color:#6a35b0}.ban.no{background:var(--bg);color:var(--mu)}
+.kv{display:grid;grid-template-columns:118px 1fr;gap:3px 8px;font-size:14px;margin-top:6px}.kv b{color:var(--mu);font-weight:500}.kv span{word-break:break-word}
+.kv .bas{grid-column:1/-1;font-weight:700;font-size:16px;color:var(--ac)}
+.cnt{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;text-align:center}
+.cnt div{border-radius:9px;padding:6px 0;font-size:10.5px;color:var(--mu);background:var(--bg)}.cnt b{display:block;font-size:19px;color:var(--fg)}
+.cnt .c1 b{color:var(--ac)}.cnt .c2 b{color:var(--ok)}.cnt .c3 b{color:var(--er)}.cnt .c4 b{color:var(--wr)}.cnt .c5 b{color:#d9482b}
+.bar{height:10px;background:var(--ln);border-radius:6px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2e9e57,#7bd18f);transition:width .25s}
+.it{border-radius:10px;padding:8px 10px;margin:5px 0;font-size:14px;background:var(--r-ok)}
+.it.muk{background:var(--r-muk)}.it.faz{background:var(--r-faz)}.it.yer{background:var(--r-yer)}.it.plain{background:var(--bg)}
+.it small{color:var(--mu);display:block}.it .x{float:right;border:0;background:none;color:var(--er);font-size:20px;line-height:1}
+.msg{font-size:13px;color:var(--mu);margin:6px 0}.msg.er{color:var(--er)}.msg.ok{color:var(--ok)}
+details>summary{cursor:pointer;color:var(--ac);padding:6px 0;font-weight:600}
+.med img,.med video{max-width:100%;max-height:230px;border-radius:10px;margin:6px 0;background:#000}
+table.t{width:100%;border-collapse:collapse;font-size:14px}table.t td,table.t th{padding:6px 4px;border-bottom:1px solid var(--ln);text-align:left}table.t td:last-child,table.t th:last-child{text-align:right}
+table.t tr.tp td{font-weight:700;background:var(--r-ac)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chips button{border:1px solid var(--ln);background:var(--bg);color:var(--fg);border-radius:16px;padding:5px 11px;font-size:13px}
+.chips button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 </style></head><body>
-<header><h1>Sayım</h1><span class="st" id="durum">—</span></header>
+<header><h1>Sayım<small id="altbas">Fiziki Saha Sayım</small></h1><span class="pill" id="bag">girişsiz</span><span class="pill" id="bek">0 bekliyor</span></header>
 <main>
+<!-- ============ FİZİKİ SAHA SAYIM ============ -->
 <section id="s-say" class="on">
  <div class="card">
-  <label>Sayım yeri / kişi</label>
-  <input id="yer" list="yerler" placeholder="Yer veya kişi seçin / yazın" autocomplete="off"><datalist id="yerler"></datalist>
+  <label>SAYIM YERİ / KİŞİ ►</label>
+  <input id="yer" class="giris" placeholder="Yer veya kişi yazın / seçin" autocomplete="off">
+  <div id="oner" class="oner hide"></div>
+  <div class="cnt" id="oz" style="margin-top:8px"></div>
+  <div class="bar"><i id="cub"></i></div>
+ </div>
+ <div class="card">
   <label>SİCİL NO / BARKOD (okutun)</label>
-  <input id="sicil" autocomplete="off" autocapitalize="off" placeholder="Okutun veya yazın, Enter">
-  <div id="kont" class="dur">—</div>
-  <div id="bilgi" class="kv"></div>
-  <details><summary>Sicilsiz / not ekle</summary>
-   <label>Malzeme adı (elle – sicilsiz)</label><input id="ad" autocomplete="off">
-   <label>Not / fazla açıklama</label><select id="not"></select>
-   <label>Ek açıklama (isteğe bağlı)</label><input id="not2" autocomplete="off">
+  <input id="sicil" class="giris" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Okutun veya yazın, Enter">
+  <div id="ban" class="ban no">—</div>
+  <div id="kart" class="kv"></div>
+  <details id="ekDet"><summary>Sicilsiz malzeme / not / açıklama</summary>
+   <label>Malzeme Adı (elle – sicilsiz)</label><input id="ad" class="giris" autocomplete="off">
+   <label>Not / Fazla Açıklama</label><select id="not" class="giris"></select>
+   <label>Ek açıklama (isteğe bağlı)</label><input id="acik" class="giris" autocomplete="off">
   </details>
-  <div class="row"><button class="b" id="ekle">Kaydet (Enter)</button><button class="b g" id="temizle">Temizle</button></div>
+  <div class="row"><button class="b y" id="ekle">Kaydet (Enter)</button><button class="b g" id="temizle">Temizle</button></div>
   <div class="msg" id="mesaj"></div>
  </div>
- <div class="card"><b id="ozbas">Yer özeti</b><div class="cnt" id="oz"></div>
-  <details><summary>Kalan ürünler (bu yerde okutulmayan)</summary><div id="kalan"></div></details></div>
- <div class="card"><b>Son kayıtlar</b><div id="son"></div></div>
+ <div class="card med hide" id="medK"><details id="medD"><summary id="medS">Resim / Video</summary>
+   <div class="row"><button class="b g" id="hSicil">Malzeme</button><button class="b g" id="hYer">Yer / Kişi</button></div>
+   <div id="medI"></div>
+   <div class="row"><button class="b g" id="rBtn">📷 Fotoğraf</button><button class="b g" id="vBtn">🎥 Video</button></div>
+   <input type="file" id="rGir" accept="image/*" capture="environment" class="hide"><input type="file" id="vGir" accept="video/*" capture="environment" class="hide">
+   <div class="msg" id="medM"></div></details></div>
+ <div class="card"><h3>Son kayıtlar</h3><div id="son"></div></div>
 </section>
-<section id="s-liste"><div class="card"><b>Tüm kayıtlar</b> <span class="msg" id="lsay"></span><input id="ara" placeholder="Ara…" style="margin-top:8px"><div id="tum"></div></div></section>
-<section id="s-gon">
- <div class="card"><b>Excel'e gönder</b>
-  <p class="msg" id="bek">Bekleyen kayıt: 0</p>
-  <button class="b" id="gonder">OneDrive'a gönder</button>
+<!-- ============ ÖZET / KALAN ÜRÜN ============ -->
+<section id="s-oz">
+ <div class="card"><h3>Sayım özeti · Kalan ürün</h3><div class="msg" id="ozYer"></div><div class="cnt" id="oz2"></div><div class="bar"><i id="cub2"></i></div></div>
+ <div class="card"><h3>Noksan (kayıtlı, okutulmadı)</h3><div id="noksan"></div></div>
+ <div class="card"><h3>Fazla (okutuldu, burada kayıtlı değil)</h3><div id="fazla"></div></div>
+</section>
+<!-- ============ ÜRÜN ÖZETİ ============ -->
+<section id="s-ur">
+ <div class="card"><h3>Ürün özeti (sistem kayıtlarına göre)</h3><div class="msg" id="urYer"></div><div id="urT"></div></div>
+</section>
+<!-- ============ MALZEME SORGU ============ -->
+<section id="s-sor">
+ <div class="card"><h3>Malzeme sorgu</h3><input id="sq" class="giris" placeholder="Sicil no / barkod okutun" autocomplete="off"><div id="sqK" class="kv"></div><div id="sqS"></div></div>
+</section>
+<!-- ============ KAYITLAR / GÖNDER ============ -->
+<section id="s-kay">
+ <div class="card"><h3>Excel'e gönder</h3>
+  <button class="b" id="gonder">OneDrive'a şimdi gönder</button>
   <button class="b g" id="paylas">Dosya olarak paylaş / indir (girişsiz yol)</button>
-  <div class="msg" id="gmsg"></div></div>
- <div class="card"><b>Listeler (Excel'den)</b>
-  <p class="msg" id="lbilgi"></p>
-  <button class="b" id="cek">OneDrive'dan listeleri al</button>
-  <label>veya dosyadan yükle (yerler.txt, notlar.txt, beklenen.txt – birlikte seçilebilir)</label>
-  <input type="file" id="dosya" accept=".txt" multiple></div>
+  <button class="b g" id="tekrar">Hatalıları yeniden dene</button>
+  <div class="msg" id="gm"></div></div>
+ <div class="card"><h3>Tüm kayıtlar <span id="kn" class="msg"></span></h3><input id="ara" placeholder="Ara…"><div id="tum"></div></div>
 </section>
-<section id="s-ayar">
- <div class="card"><b>Ayarlar</b>
-  <label>Cihaz adı (dosya adında kullanılır)</label><input id="cihaz" placeholder="ör. iphone-hasan">
-  <label>Microsoft uygulama (Client) kimliği – boşsa girişsiz mod</label><input id="cid" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
-  <label>OneDrive Mobil klasörü</label><input id="kok" value="Sayım İşlemleri/Mobil">
+<!-- ============ AYARLAR ============ -->
+<section id="s-ay">
+ <div class="card"><h3>Ayarlar</h3>
+  <label>Cihaz adı (dosya adında)</label><input id="cihaz" class="giris" placeholder="ör. iphone, tablet">
+  <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
+  <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
+  <label>Fotoğraf klasörü</label><input id="rk" class="giris">
+  <label>Video klasörü</label><input id="vk" class="giris">
   <button class="b" id="kaydet">Kaydet</button>
-  <button class="b g" id="giris">Microsoft ile giriş yap</button>
-  <p class="msg" id="amsg"></p>
-  <p class="msg">Yönlendirme adresi (Entra'da SPA olarak): <b id="ru"></b></p></div>
- <div class="card"><b>Veri</b><button class="b g" id="sil">Gönderilmiş kayıtları telefondan sil</button></div>
+  <div class="row"><button class="b g" id="giris">Microsoft ile giriş</button><button class="b g" id="cikis">Çıkış</button></div>
+  <button class="b g" id="test">Bağlantıyı dene</button>
+  <div class="msg" id="am"></div>
+  <div class="msg">Yönlendirme adresi (Entra'da SPA): <b id="ru"></b></div></div>
+ <div class="card"><h3>Listeler (Excel'den)</h3><div class="msg" id="lb"></div>
+  <button class="b" id="cek">OneDrive'dan listeleri al</button>
+  <label>veya dosyadan yükle (yerler.txt, notlar.txt, beklenen.txt)</label><input type="file" id="dosya" accept=".txt" multiple>
+  <button class="b r" id="sifir">Bu yerin okuma durumunu yeniden başlat…</button></div>
+ <div class="card"><button class="b g" id="sil">Gönderilmiş kayıtları telefondan sil</button></div>
 </section>
 </main>
-<nav><button data-s="s-say" class="on">Sayım</button><button data-s="s-liste">Liste</button><button data-s="s-gon">Gönder</button><button data-s="s-ayar">Ayarlar</button></nav>
+<nav>
+ <button data-s="s-say" class="on"><b>▦</b>Sayım</button><button data-s="s-oz"><b>◔</b>Özet</button><button data-s="s-ur"><b>☰</b>Ürün</button>
+ <button data-s="s-sor"><b>⌕</b>Sorgu</button><button data-s="s-kay"><b>⇅</b>Kayıt</button><button data-s="s-ay"><b>⚙</b>Ayar</button>
+</nav>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" crossorigin="anonymous"></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-const VER='1';
-// ---------- depolama ----------
-const idb=new Promise((res,rej)=>{const r=indexedDB.open('sayim',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
-const kvGet=async k=>{const d=await idb;return new Promise(r=>{const q=d.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(undefined)})};
-const kvSet=async(k,v)=>{const d=await idb;return new Promise(r=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=()=>r()})};
-const kvDel=async k=>{const d=await idb;return new Promise(r=>{const t=d.transaction('kv','readwrite');t.objectStore('kv').delete(k);t.oncomplete=()=>r()})};
-const ls=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}};
-const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-let kayit=ls('kayit',[]);   // {id,yer,sicil,ad,not,t:'yyyy-mm-dd hh:mm:ss',g:0/1,medya:[{ad,tur}]}
-let ayar=ls('ayar',{cihaz:'telefon',cid:'',kok:'Sayım İşlemleri/Mobil'});
-let yerler=[],notlar=[],bek=[],anah=new Map(),barm=new Map();
-// ---------- yardımcı ----------
-const p2=n=>String(n).padStart(2,'0');
-const zaman=()=>{const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())+' '+p2(d.getHours())+':'+p2(d.getMinutes())+':'+p2(d.getSeconds())};
+const NOT0=["Etiket yok","Etiket silik","Hasarlı","Başka odadan geldi","Sistemde kaydı yok","Kullanılmıyor","Arızalı","Zimmet Yap","Bakılacak","Diğer"]; // Excel G sütunu listesi
+const TUM='TÜM YERLER';
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const norm=s=>String(s||'').trim().toLocaleUpperCase('tr');
-// Excel BarkodDuzelt/Anahtar mantığı: içinde '-' varsa Bar_Kod (olduğu gibi), yoksa yalnız rakamlar
-function duzelt(k){k=String(k||'').trim();if(!k)return '';if(k.includes('-'))return k.replace(/\s+/g,'');return k.replace(/[^0-9]/g,'')}
-function ayr(l){return l.replace(/^﻿/,'').replace(/\r/g,'').split('\n').filter(x=>x.trim()!=='')}
-function indeksle(){anah=new Map();barm=new Map();for(const r of bek){anah.set(r[0],r);if(r[2]){const a=barm.get(r[2])||[];a.push(r);barm.set(r[2],a)}}}
+const p2=n=>String(n).padStart(2,'0');
+const norm=s=>String(s||'').trim().toLocaleUpperCase('tr').replace(/\s+/g,' ');
+const kurum=s=>norm(s).startsWith('YÜKSEKOKUL SEKRETERLİĞİ');
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const tarihTR=d=>p2(d.getDate())+'.'+p2(d.getMonth()+1)+'.'+d.getFullYear();
+const saatTR=d=>p2(d.getHours())+':'+p2(d.getMinutes())+':'+p2(d.getSeconds());
+const damga=d=>d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+'-'+p2(d.getHours())+p2(d.getMinutes())+p2(d.getSeconds());
+const isoTar=k=>{const a=k.tarih.split('.');return a[2]+'-'+a[1]+'-'+a[0]};
+const temiz=s=>String(s||'').replace(/[\t\r\n]+/g,' ').trim();
+function rast(n){const a='abcdefghijklmnopqrstuvwxyz0123456789';let s='';const b=new Uint8Array(n);crypto.getRandomValues(b);for(const x of b)s+=a[x%a.length];return s}
+// Excel BarkodDuzelt/Anahtar: '-' içeriyorsa Bar_Kod (olduğu gibi), yoksa yalnız rakamlar
+const duzelt=k=>{k=String(k||'').trim();if(!k)return '';return k.includes('-')?k.replace(/\s+/g,''):k.replace(/[^0-9]/g,'')};
+function normAd(t){return String(t||'').replace(/İ/g,'i').replace(/I/g,'i').toLowerCase().replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9]/g,'')}
+// ---------- IndexedDB ----------
+let db;
+const dbAc=()=>new Promise((res,rej)=>{const r=indexedDB.open('sayimDB',2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains('kuyruk'))d.createObjectStore('kuyruk',{keyPath:'kimlik'});if(!d.objectStoreNames.contains('kv'))d.createObjectStore('kv')};r.onsuccess=()=>{db=r.result;res()};r.onerror=()=>rej(r.error)});
+const st=(n,m)=>db.transaction(n,m).objectStore(n);
+const dbHepsi=()=>new Promise(r=>{const q=st('kuyruk','readonly').getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>r([])});
+const dbYaz=k=>new Promise((res,rej)=>{const q=st('kuyruk','readwrite').put(k);q.onsuccess=()=>res();q.onerror=()=>rej(q.error)});
+const dbSil=id=>new Promise(r=>{const q=st('kuyruk','readwrite').delete(id);q.onsuccess=()=>r();q.onerror=()=>r()});
+const kvG=k=>new Promise(r=>{const q=st('kv','readonly').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(undefined)});
+const kvS=(k,v)=>new Promise(r=>{const q=st('kv','readwrite').put(v,k);q.onsuccess=()=>r();q.onerror=()=>r()});
+// ---------- veri ----------
+let kayit=[];            // tüm kayıtlar (zaman sıralı)
+let yerler=[],notlar=NOT0.slice(),bek=[],anah=new Map(),barm=new Map(),yerSet=new Map();
+function indeksle(){anah=new Map();barm=new Map();yerSet=new Map();
+ for(const r of bek){anah.set(r[0],r);if(r[2]){(barm.get(r[2])||barm.set(r[2],[]).get(r[2])).push(r)}
+  for(const y of [r[9],kurum(r[11])?'':r[11]]){if(!y)continue;const n=norm(y);(yerSet.get(n)||yerSet.set(n,[]).get(n)).push(r)}}}
+function ayr(l){return String(l||'').replace(/^﻿/,'').replace(/\r/g,'').split('\n').filter(x=>x.trim()!=='')}
+function listeKur(y,n,b){if(y!=null)yerler=ayr(y);if(n!=null){const x=ayr(n);if(x.length)notlar=x}
+ if(b!=null){bek=ayr(b).map(l=>l.split('\t')).filter(r=>r.length>=10&&r[0]!=='Anahtar');indeksle()}
+ $('not').innerHTML='<option value=""></option>'+notlar.map(x=>'<option>'+esc(x)+'</option>').join('');
+ $('lb').textContent='Yer: '+yerler.length+' · Not: '+notlar.length+' · Sistem kaydı: '+bek.length+(bek.length?'':'  (liste yok: Excel\'de Ayarlar > Mobil Listeleri Yaz, sonra buradan alın)')}
 // ---------- durum (Excel Durum formülüyle aynı sıra) ----------
-function durum(k,yer,onceki){
-  const s=duzelt(k.sicil);
-  if(!s&&!k.ad)return['','',null];
-  if(!yer)return['YER SEÇİN','er',null];
-  if(!s)return['FAZLA – sicilsiz (elle)','wr',null];
-  if(onceki.has(s))return['MÜKERRER','wr',anah.get(s)||null];
-  const r=anah.get(s);
-  if(!r){if(barm.has(s))return['BARKOD (sicil değil)','wr',barm.get(s)[0]];
-    return bek.length?['FAZLA – raporda yok','er',null]:['(liste yok)','wr',null]}
-  const y=norm(yer);
-  if(norm(r[9])===y||norm(r[11])===y)return['YERİNDE','ok',r];
-  return['FAZLA – başka yerde kayıtlı','wr',r];
+function durum(sicil,ad,yer,gor){
+ const s=duzelt(sicil);
+ if(!s&&!ad)return{t:'—',c:'no',r:null};
+ if(!yer)return{t:'YER SEÇİN',c:'yer',r:null};
+ if(!s)return{t:'FAZLA – sicilsiz (elle)',c:'faz',r:null};
+ if(gor&&gor.has(s))return{t:'MÜKERRER',c:'muk',r:anah.get(s)||(barm.get(s)||[])[0]||null};
+ const r=anah.get(s);
+ if(!r){if(barm.has(s))return{t:'BARKOD (sicil değil)',c:'yer',r:barm.get(s)[0],n:barm.get(s).length};
+  return bek.length?{t:'FAZLA – raporda yok',c:'faz',r:null}:{t:'(sistem listesi yok)',c:'no',r:null}}
+ if(norm(yer)===TUM)return{t:'YERİNDE',c:'ok',r};
+ const y=norm(yer);
+ if(norm(r[9])===y||(!kurum(r[11])&&norm(r[11])===y))return{t:'YERİNDE',c:'ok',r};
+ return{t:'FAZLA – başka yerde kayıtlı',c:'faz',r};
 }
-function hesapla(liste){const gor=new Set(),out=[];for(const k of liste){const d=durum(k,k.yer,gor);const s=duzelt(k.sicil);if(s)gor.add(s);out.push(d)}return out}
-// ---------- arayüz ----------
-function bilgiKart(r){if(!r){$('bilgi').innerHTML='';return}
-  const a=[['Açıklama',r[3]],['Cinsi',r[4]],['Marka/Model',(r[6]||'')+' '+(r[7]||'')],['Ek özellik',r[5]],['Kayıtlı yer',r[9]],['Zimmet',r[11]],['Fiş / tarih',(r[12]||'')+' '+(r[13]||'')],['Sicil',r[1]],['Bar_Kod',r[2]]];
-  $('bilgi').innerHTML=a.filter(x=>x[1]&&String(x[1]).trim()).map(x=>'<b>'+x[0]+'</b><span>'+esc(x[1])+'</span>').join('')}
-function onizle(){const k=$('sicil').value;const yer=$('yer').value.trim();
-  const gor=new Set(kayit.filter(x=>duzelt(x.sicil)).map(x=>duzelt(x.sicil)));
-  const d=durum({sicil:k,ad:$('ad').value},yer,gor);
-  $('kont').textContent=d[0]||'—';$('kont').className='dur '+d[1];bilgiKart(d[2]);return d}
-function ozet(){const yer=$('yer').value.trim();const y=norm(yer);
-  $('ozbas').textContent='Yer özeti'+(yer?': '+yer:'');
-  if(!yer){$('oz').innerHTML='';$('kalan').innerHTML='';return}
-  const ds=hesapla(kayit),n={ok:0,faz:0,muk:0,okut:0};const okunan=new Set();
-  kayit.forEach((k,i)=>{if(norm(k.yer)!==y)return;n.okut++;const t=ds[i][0];if(t==='YERİNDE'){n.ok++;okunan.add(duzelt(k.sicil))}else if(t==='MÜKERRER')n.muk++;else if(t)n.faz++});
-  const kay=bek.filter(r=>norm(r[9])===y||norm(r[11])===y);
-  const kalan=kay.filter(r=>!okunan.has(r[0]));
-  $('oz').innerHTML=[['Kayıtlı',kay.length],['Okutulan',n.okut],['Yerinde',n.ok],['Noksan',kalan.length],['Fazla',n.faz],['Mükerrer',n.muk]].map(x=>'<div>'+x[0]+'<b>'+x[1]+'</b></div>').join('');
-  $('kalan').innerHTML=kalan.slice(0,300).map(r=>'<div class="it">'+esc(r[3])+' <small>'+esc(r[1])+' · '+esc(r[6]||'')+' '+esc(r[7]||'')+'</small></div>').join('')||'<div class="msg">Kalan ürün yok.</div>'}
-function kayitSatir(k,d,ms){return '<div class="it"><button class="x" data-sil="'+k.id+'">×</button><b>'+esc(k.sicil||k.ad)+'</b> <span class="'+d[1]+'">'+esc(d[0])+'</span><br><small>'+esc(k.yer)+' · '+esc(k.t)+(k.not?' · '+esc(k.not):'')+(k.g?' · ✓gönderildi':'')+'</small>'+(ms?medyaHtml(k):'')+'</div>'}
-function medyaHtml(k){return '<details data-m="'+k.id+'"><summary>Resim / video ('+(k.medya?k.medya.length:0)+')</summary><div class="mm" id="m'+k.id+'"></div>'+
- '<input type="file" accept="image/*,video/*" capture data-ekle="'+k.id+'"></details>'}
-function liste(){const ds=hesapla(kayit);
-  $('son').innerHTML=kayit.map((k,i)=>[k,ds[i]]).slice(-8).reverse().map(x=>kayitSatir(x[0],x[1],true)).join('')||'<div class="msg">Henüz kayıt yok.</div>';
-  const q=norm($('ara').value);
-  const t=kayit.map((k,i)=>[k,ds[i]]).filter(x=>!q||norm([x[0].sicil,x[0].ad,x[0].yer,x[0].not,x[1][0]].join(' ')).includes(q)).reverse();
-  $('lsay').textContent='('+kayit.length+')';$('tum').innerHTML=t.slice(0,400).map(x=>kayitSatir(x[0],x[1],false)).join('');
-  const b=kayit.filter(k=>!k.g).length;$('bek').textContent='Bekleyen kayıt: '+b;ozet();}
-function yenile(){onizle();liste()}
-function listeBilgi(){$('lbilgi').textContent='Yer: '+yerler.length+' · Not: '+notlar.length+' · Beklenen kayıt: '+bek.length+(bek.length?'':' (liste yok: Excel\'den beklenen.txt alın)');
-  $('yerler').innerHTML=yerler.map(y=>'<option value="'+esc(y)+'">').join('');
-  $('not').innerHTML='<option value=""></option>'+notlar.map(n=>'<option>'+esc(n)+'</option>').join('')}
-// ---------- kayıt ekleme ----------
-let sayac=0;
-async function ekle(){const yer=$('yer').value.trim();const sicil=$('sicil').value.trim();const ad=$('ad').value.trim();
-  if(!sicil&&!ad){$('sicil').focus();return}
-  if(!yer){$('mesaj').textContent='Önce sayım yerini seçin.';$('yer').focus();return}
-  const nt=[$('not').value,$('not2').value.trim()].filter(Boolean).join(' – ');
-  const k={id:Date.now()+'-'+(sayac++),yer,sicil:duzelt(sicil)||sicil,ad,not:nt,t:zaman(),g:0,medya:[]};
-  const gor=new Set(kayit.map(x=>duzelt(x.sicil)).filter(Boolean));const d=durum(k,yer,gor);
-  kayit.push(k);lsSet('kayit',kayit);lsSet('yer',yer);
-  $('mesaj').innerHTML='<span class="'+d[1]+'">'+esc(k.sicil||k.ad)+' – '+esc(d[0])+'</span>';
-  if(navigator.vibrate)navigator.vibrate(d[1]==='ok'?30:[60,40,60]);
-  $('sicil').value='';$('ad').value='';$('not').value='';$('not2').value='';
-  liste();onizle();$('sicil').focus();otoGonder()}
-$('ekle').onclick=ekle;
+function hesaplaTum(){const gor=new Set(),o=new Map();for(const k of kayit){const d=durum(k.sicil,k.malzeme,k.yer,gor);const s=duzelt(k.sicil);if(s)gor.add(s);o.set(k.kimlik,d)}return o}
+// ---------- bilgi kartı ----------
+function kartHtml(r,extra){if(!r)return'';
+ const a=[['Açıklama',r[3]],['Ek Özellik',r[5]],['Kayıtlı Yer / Kişi',r[9]],['Kime verildi / kimde',r[11]],['Zimmet Tarihi',r[13]],['Fiş No',r[12]],['Fiş Son Durum',r[8]],['Sicil No',r[1]],['Bar_Kod',r[2]]].concat(extra||[]);
+ return '<div class="bas">'+esc((r[4]||'')+' '+(r[6]||'')+' '+(r[7]||'')).trim()+'</div>'+a.filter(x=>x[1]&&String(x[1]).trim()).map(x=>'<b>'+x[0]+'</b><span>'+esc(x[1])+'</span>').join('')}
+function yerAdi(){return $('yer').value.trim()}
+function onizle(){const gor=new Set(kayit.map(k=>duzelt(k.sicil)).filter(Boolean));
+ const d=durum($('sicil').value,$('ad').value,yerAdi(),gor);const n=new Date();
+ $('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t)+(d.n?'<small>'+d.n+' kayıtta aynı barkod</small>':'');
+ $('kart').innerHTML=kartHtml(d.r,d.r?[['Tarih / Saat',tarihTR(n)+' '+saatTR(n)]]:[]);return d}
+// ---------- özetler ----------
+function yerKume(y){const n=norm(y);if(!n)return null;if(n===TUM)return bek;return yerSet.get(n)||[]}
+function yerOzet(y){const ds=hesaplaTum(),n=norm(y),tum=n===TUM;
+ const kay=yerKume(y)||[];const ok=new Set();let okut=0,faz=0,muk=0;const fz=[];
+ for(const k of kayit){if(!tum&&norm(k.yer)!==n)continue;okut++;const d=ds.get(k.kimlik);
+  if(d.t==='YERİNDE')ok.add(duzelt(k.sicil));else if(d.t==='MÜKERRER')muk++;else if(d.c==='faz'||d.c==='yer'){faz++;fz.push([k,d])}}
+ const nok=kay.filter(r=>!ok.has(r[0]));
+ return{kay:kay.length,okut,yerinde:ok.size,nok,fz,faz,muk,ds}}
+function cntHtml(o){return [['Kayıtlı',o.kay,'c1'],['Okutulan',o.okut,''],['Yerinde',o.yerinde,'c2'],['Noksan',o.nok.length,'c3'],['Fazla',o.faz,'c4'],['Mükerrer',o.muk,'c5']].map(x=>'<div class="'+x[2]+'">'+x[0]+'<b>'+x[1]+'</b></div>').join('')}
+function ozetCiz(){const y=yerAdi();
+ if(!y){$('oz').innerHTML='';$('cub').style.width='0';return}
+ const o=yerOzet(y);$('oz').innerHTML=cntHtml(o);$('cub').style.width=(o.kay?Math.round(100*o.yerinde/o.kay):0)+'%';return o}
+function ozetSayfa(){const y=yerAdi();$('ozYer').textContent=y?('Yer / kişi: '+y):'Önce Sayım sekmesinden yer / kişi seçin (veya TÜM YERLER yazın).';
+ if(!y){$('oz2').innerHTML='';$('noksan').innerHTML='';$('fazla').innerHTML='';return}
+ const o=yerOzet(y);$('oz2').innerHTML=cntHtml(o);$('cub2').style.width=(o.kay?Math.round(100*o.yerinde/o.kay):0)+'%';
+ $('noksan').innerHTML=o.nok.slice(0,300).map(r=>'<div class="it faz"><b>'+esc(r[1])+'</b> '+esc(r[4])+'<small>'+esc((r[6]||'')+' '+(r[7]||''))+' · '+esc(r[9])+(r[11]?' · '+esc(r[11]):'')+'</small></div>').join('')||'<div class="msg">Noksan yok.</div>';
+ $('fazla').innerHTML=o.fz.slice(0,300).map(x=>'<div class="it '+x[1].c+'"><b>'+esc(x[0].sicil||x[0].malzeme)+'</b> '+esc(x[1].t)+'<small>'+esc(x[1].r?(x[1].r[4]+' · kayıtlı: '+x[1].r[9]):'')+'</small></div>').join('')||'<div class="msg">Fazla yok.</div>'}
+function urunSayfa(){const y=yerAdi();$('urYer').textContent=y?('Yer / kişi: '+y):'Yer seçilmedi: tüm sistem kayıtları';
+ const kay=y?yerKume(y):bek;const m=new Map();for(const r of kay){const c=r[4]||r[3]||'(adsız)';m.set(c,(m.get(c)||0)+1)}
+ const l=[...m.entries()].sort((a,b)=>b[1]-a[1]);
+ $('urT').innerHTML='<table class="t"><tr><th>Cinsi</th><th>Adet</th></tr>'+l.map(x=>'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td></tr>').join('')+'<tr class="tp"><td>Toplam ('+l.length+' çeşit)</td><td>'+kay.length+'</td></tr></table>'}
+function sorgu(){const s=duzelt($('sq').value);if(!s){$('sqK').innerHTML='';$('sqS').innerHTML='';return}
+ const r=anah.get(s)||(barm.get(s)||[])[0];$('sqK').innerHTML=r?kartHtml(r):'<span class="msg">Sistemde kayıt bulunamadı.</span>';
+ $('sqS').innerHTML=kayit.filter(k=>duzelt(k.sicil)===s).map(k=>'<div class="it plain">Sayımda okutuldu: <b>'+esc(k.yer)+'</b><small>'+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+'</small></div>').join('')}
+// ---------- kayıt satırları ----------
+function satir(k,d,sil){return '<div class="it '+(d.c==='ok'?'':d.c)+'">'+(sil&&k.durum!=='gitti'?'<button class="x" data-sil="'+k.kimlik+'">×</button>':'')+'<b>'+esc(k.sicil||k.malzeme)+'</b> '+esc(d.t)+' <span class="msg">'+(k.durum==='gitti'?'✓':k.durum==='hata'?'⚠ hata':'⏳')+'</span><small>'+esc(k.yer)+' · '+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+(d.r?' · '+esc(d.r[4]):'')+'</small></div>'}
+function liste(){const ds=hesaplaTum();const sr=[...kayit].sort((a,b)=>a.kimlik<b.kimlik?1:-1);
+ $('son').innerHTML=sr.slice(0,6).map(k=>satir(k,ds.get(k.kimlik),true)).join('')||'<div class="msg">Henüz kayıt yok.</div>';
+ const q=norm($('ara').value);const t=sr.filter(k=>!q||norm([k.sicil,k.malzeme,k.yer,k.not,ds.get(k.kimlik).t].join(' ')).includes(q));
+ $('kn').textContent='('+kayit.length+')';$('tum').innerHTML=t.slice(0,400).map(k=>satir(k,ds.get(k.kimlik),true)).join('');
+ const b=kayit.filter(k=>k.durum==='bekliyor'||k.durum==='hata').length;$('bek').textContent=b+' bekliyor';}
+function hepsi(){onizle();ozetCiz();liste();if($('s-oz').classList.contains('on'))ozetSayfa();if($('s-ur').classList.contains('on'))urunSayfa()}
+// ---------- ekleme ----------
+let sonS='',sonZ=0;
+async function ekle(){const yer=yerAdi(),sicil=duzelt($('sicil').value),ad=temiz($('ad').value);
+ if(!sicil&&!ad){$('sicil').focus();return}
+ if(!yer){$('mesaj').className='msg er';$('mesaj').textContent='Önce sayım yerini / kişiyi seçin.';$('yer').focus();return}
+ const t=Date.now();if(sicil&&sicil===sonS&&t-sonZ<1500){$('sicil').value='';return}sonS=sicil;sonZ=t;
+ const gor=new Set(kayit.map(k=>duzelt(k.sicil)).filter(Boolean));const d=durum(sicil,ad,yer,gor);
+ let nt=$('not').value;if(!nt){if(d.t==='FAZLA – başka yerde kayıtlı')nt='Başka odadan geldi';else if(d.t==='FAZLA – raporda yok')nt='Sistemde kaydı yok'}
+ const ek=temiz($('acik').value);const n=new Date();
+ const k={kimlik:damga(n)+'-'+temiz(LS.get('cihaz','tel')).replace(/[^\w-]/g,'')+'-'+rast(5),yer,tarih:tarihTR(n),saat:saatTR(n),sicil,malzeme:ad,not:[nt,ek].filter(Boolean).join(' – '),durum:'bekliyor',deneme:0,hata:'',medya:[]};
+ try{await dbYaz(k)}catch(e){$('mesaj').className='msg er';$('mesaj').textContent='KAYIT SAKLANAMADI: '+e.message;return}
+ kayit.push(k);LS.set('sonYer',yer);LS.set('yerGecmis',[yer,...LS.get('yerGecmis',[]).filter(x=>x!==yer)].slice(0,50));
+ $('mesaj').className='msg '+(d.c==='ok'?'ok':'er');$('mesaj').textContent=(sicil||ad)+' – '+d.t;
+ ses(d.c);$('sicil').value='';$('ad').value='';$('not').value='';$('acik').value='';
+ hepsi();$('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t);$('kart').innerHTML=kartHtml(d.r,[['Kaydedildi',k.tarih+' '+k.saat]]);
+ medyaGoster(sicil,yer);$('sicil').focus();gonder(false)}
+function ses(c){try{if(navigator.vibrate)navigator.vibrate(c==='ok'?[30]:c==='muk'?[30,60,30]:[120,60,120]);
+ const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;const x=ses.x||(ses.x=new AC());if(x.state==='suspended')x.resume();
+ const f={ok:[880],muk:[520,520],faz:[660,440],yer:[400,300]}[c];if(!f)return;let t=x.currentTime;
+ for(const h of f){const o=x.createOscillator(),g=x.createGain();o.frequency.value=h;g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+.16);o.connect(g);g.connect(x.destination);o.start(t);o.stop(t+.17);t+=.19}}catch(e){}}
+// ---------- yer önerisi ----------
+function oner(){const q=normAd($('yer').value);const kut=$('oner');if(!q){kut.classList.add('hide');return}
+ const kay=[[normAd(TUM),TUM]];const gor=new Set([TUM]);for(const a of yerler.concat(LS.get('yerGecmis',[]))){const n=norm(a);if(!gor.has(n)){gor.add(n);kay.push([normAd(a),a])}}
+ const e=kay.filter(x=>x[0].includes(q)).slice(0,8);if(!e.length||(e.length===1&&norm(e[0][1])===norm($('yer').value))){kut.classList.add('hide');return}
+ kut.innerHTML=e.map(x=>{const s=yerSet.get(norm(x[1]));return '<div data-y="'+esc(x[1])+'">'+esc(x[1])+(s?'<small>'+s.length+' kalem</small>':'')+'</div>'}).join('');kut.classList.remove('hide')}
+function yerSec(a){$('yer').value=a;$('oner').classList.add('hide');LS.set('sonYer',a);hepsi();$('sicil').focus()}
+$('oner').addEventListener('pointerdown',e=>{const d=e.target.closest('div[data-y]');if(d){e.preventDefault();yerSec(d.dataset.y)}});
+$('yer').addEventListener('input',()=>{oner();hepsi()});$('yer').addEventListener('focus',oner);$('yer').addEventListener('blur',()=>setTimeout(()=>$('oner').classList.add('hide'),200));
+$('yer').addEventListener('change',()=>{LS.set('sonYer',yerAdi());hepsi()});
+// ---------- medya (OneDrive: resim/video bul, ekle, değiştir) ----------
+const RES_UZ=['jpg','jpeg','png','gif','bmp','webp','heic','tif','tiff','pdf'],VID_UZ=['mp4','mov','avi','wmv','mkv','m4v','3gp','mpg','mpeg','webm'],RES_YER=['jpg','jpeg','png','gif','bmp'],GOS=['jpg','jpeg','png','gif','bmp','webp'];
+const resimK=()=>(LS.get('resimK','Sayım İşlemleri/Sayım Fotografları')||'').replace(/^\/+|\/+$/g,''),videoK=()=>(LS.get('videoK','Sayım İşlemleri/Sayım Videoları')||'').replace(/^\/+|\/+$/g,'');
+const uz=a=>{const i=a.lastIndexOf('.');return i<0?'':a.slice(i+1).toLowerCase()},gsz=a=>{const i=a.lastIndexOf('.');return i<0?a:a.slice(0,i)};
+const sayiBasi=a=>{const m=/^\d+/.exec(a);return m?m[0]:''};
+const gUrl=y=>'https://graph.microsoft.com/v1.0/me/drive/root:/'+y.split('/').map(encodeURIComponent).join('/');
+let md={h:'sicil',sicil:'',yer:'',bul:{r:null,v:null},sira:0};
+async function tara(kl,uzlar,es,jt,d){let url=gUrl(kl)+':/children?$top=999&$select=id,name,folder,file,@microsoft.graph.downloadUrl';const ad=[];
+ while(url){const r=await fetch(url,{headers:{Authorization:'Bearer '+jt}});if(r.status===404)return null;if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();
+  for(const o of j.value){if(o.folder){if(d<3){const a=await tara(kl+'/'+o.name,uzlar,es,jt,d+1);if(a)ad.push(a)}continue}
+   if(!uzlar.includes(uz(o.name)))continue;const p=es(o.name);if(p>0)ad.push({ad:o.name,url:o['@microsoft.graph.downloadUrl'],id:o.id,puan:p,klasor:kl})}
+  url=j['@odata.nextLink']||null}ad.sort((a,b)=>b.puan-a.puan);return ad[0]||null}
+function medyaGoster(s,y){md.sicil=duzelt(s).replace(/[^0-9]/g,'');md.yer=normAd(y);
+ if(!md.sicil&&!md.yer){$('medK').classList.add('hide');return}$('medK').classList.remove('hide');if(!md.sicil)md.h='yer';$('hSicil').disabled=!md.sicil;medyaHedef(md.h)}
+function medyaHedef(h){md.h=h;$('hSicil').className='b '+(h==='sicil'?'':'g');$('hYer').className='b '+(h==='yer'?'':'g');medyaAra()}
+async function medyaAra(){const sr=++md.sira;$('medI').innerHTML='';$('medM').textContent='';md.bul={r:null,v:null};
+ $('medS').textContent='Resim / Video — '+(md.h==='sicil'?'Malzeme '+md.sicil:'Yer: '+yerAdi());
+ if(!hesap||!navigator.onLine){$('medM').textContent='Giriş yapılınca mevcut resim/video aranır. Yine de yeni ekleyebilirsiniz.';return}
+ try{const jt=await belirtec();const s=md.h==='sicil';
+  const es=s?(a=>sayiBasi(a)===md.sicil?2:0):(a=>{const x=normAd(gsz(a));return !md.yer||!x?0:(x===md.yer?2:x.includes(md.yer)?1:0)});
+  const[r,v]=await Promise.all([tara(resimK(),s?RES_UZ:RES_YER,es,jt,0),tara(videoK(),VID_UZ,es,jt,0)]);if(sr!==md.sira)return;md.bul={r,v};let h='';
+  if(r)h+=(r.url&&GOS.includes(uz(r.ad)))?'<img src="'+esc(r.url)+'">':'<div class="msg">Resim var: '+esc(r.ad)+'</div>';
+  if(v)h+=v.url?'<video controls playsinline preload="metadata" src="'+esc(v.url)+'"></video>':'<div class="msg">Video var: '+esc(v.ad)+'</div>';
+  $('medI').innerHTML=h;$('rBtn').textContent=r?'📷 Resmi değiştir':'📷 Fotoğraf ekle';$('vBtn').textContent=v?'🎥 Videoyu değiştir':'🎥 Video ekle';
+  $('medM').textContent=(!r&&!v)?'Resim ve video yok; aşağıdan ekleyebilirsiniz.':''}catch(e){$('medM').textContent='Aranamadı: '+e.message}}
+async function buluta(kl,ad,f,jt){if(f.size<=4*1024*1024){const r=await fetch(gUrl(kl+'/'+ad)+':/content?@microsoft.graph.conflictBehavior=rename',{method:'PUT',headers:{Authorization:'Bearer '+jt,'Content-Type':f.type||'application/octet-stream'},body:f});if(!r.ok)throw new Error('HTTP '+r.status);return}
+ const o=await fetch(gUrl(kl+'/'+ad)+':/createUploadSession',{method:'POST',headers:{Authorization:'Bearer '+jt,'Content-Type':'application/json'},body:JSON.stringify({item:{'@microsoft.graph.conflictBehavior':'rename'}})});if(!o.ok)throw new Error('HTTP '+o.status);
+ const up=(await o.json()).uploadUrl,P=5*320*1024;for(let b=0;b<f.size;b+=P){const s=Math.min(b+P,f.size);const r=await fetch(up,{method:'PUT',headers:{'Content-Range':'bytes '+b+'-'+(s-1)+'/'+f.size},body:f.slice(b,s)});if(!r.ok&&r.status!==202)throw new Error('HTTP '+r.status);$('medM').textContent='Yükleniyor %'+Math.round(s/f.size*100)}}
+async function eskiyiTasi(e,jt){const kl=await fetch(gUrl(e.klasor)+':/children',{method:'POST',headers:{Authorization:'Bearer '+jt,'Content-Type':'application/json'},body:JSON.stringify({name:'Eski',folder:{},'@microsoft.graph.conflictBehavior':'replace'})}).catch(()=>null);
+ let id=null;try{id=kl&&kl.ok?(await kl.json()).id:null}catch(_){}if(!id){const g=await fetch(gUrl(e.klasor+'/Eski'),{headers:{Authorization:'Bearer '+jt}});if(g.ok)id=(await g.json()).id}
+ const b={name:'x_'+e.ad};if(id)b.parentReference={id};await fetch('https://graph.microsoft.com/v1.0/me/drive/items/'+e.id,{method:'PATCH',headers:{Authorization:'Bearer '+jt,'Content-Type':'application/json'},body:JSON.stringify(b)})}
+async function medyaSec(inp,tur){const f=inp.files&&inp.files[0];inp.value='';if(!f)return;const s=md.h==='sicil';
+ if(s&&!md.sicil||!s&&!md.yer){$('medM').textContent='Önce sicil okutun / yer seçin.';return}
+ if(!hesap||!navigator.onLine){$('medM').textContent='Yükleme için internet ve Microsoft girişi gerekli.';return}
+ let u=uz(f.name)||(tur===1?'jpg':'mp4');const izin=tur===1?(s?RES_UZ:RES_YER):VID_UZ;if(!izin.includes(u))u=tur===1?'jpg':'mp4';
+ const n=new Date();const ad=(s?md.sicil:yerAdi().replace(/[^A-Za-z0-9_-]/g,'').slice(0,20)||'yer')+'_'+damga(n).replace('-','_')+'.'+u;
+ const kl=tur===1?resimK():videoK(),eski=tur===1?md.bul.r:md.bul.v;$('medM').textContent='Yükleniyor: '+ad+'…';
+ try{const jt=await belirtec();await buluta(kl,ad,f,jt);if(eski)await eskiyiTasi(eski,jt);$('medM').textContent=(eski?'Değiştirildi: ':'Yüklendi: ')+ad+'. Excel\'de Rapor Güncelle / Medya Bağla ile satıra bağlanır.';setTimeout(medyaAra,1500)}catch(e){$('medM').textContent='Yüklenemedi: '+e.message}}
+$('hSicil').onclick=()=>medyaHedef('sicil');$('hYer').onclick=()=>medyaHedef('yer');
+$('rBtn').onclick=()=>$('rGir').click();$('vBtn').onclick=()=>$('vGir').click();$('rGir').onchange=e=>medyaSec(e.target,1);$('vGir').onchange=e=>medyaSec(e.target,2);
+// ---------- Microsoft / Graph ----------
+const AUTH='https://login.microsoftonline.com/organizations',SC=['Files.ReadWrite','User.Read'];let msalApp=null,hesap=null;
+const cid=()=>(LS.get('cid','')||'').trim();
+function msalHazir(){if(!cid()||!window.msal||!window.msal.PublicClientApplication)return false;
+ if(!msalApp)msalApp=new window.msal.PublicClientApplication({auth:{clientId:cid(),authority:AUTH,redirectUri:location.origin+location.pathname.replace(/index\.html$/,'')},cache:{cacheLocation:'localStorage'}});return true}
+async function oturum(){if(!msalHazir()){bagGoster();return}try{if(msalApp.initialize)await msalApp.initialize();const r=await msalApp.handleRedirectPromise();hesap=(r&&r.account)||msalApp.getAllAccounts()[0]||null}catch(e){$('am').textContent='Giriş hatası: '+e.message}bagGoster()}
+function bagGoster(){$('bag').textContent=hesap?'bağlı':(cid()?'giriş yok':'girişsiz');$('am').textContent=hesap?'Giriş yapıldı: '+hesap.username:(cid()?'Giriş yapılmadı.':'Client kimliği girilmedi: girişsiz mod (paylaş/dosya yolu).')}
+async function belirtec(){if(!msalHazir()||!hesap)throw new Error('Giriş yapılmamış');try{return(await msalApp.acquireTokenSilent({scopes:SC,account:hesap})).accessToken}catch(e){await msalApp.acquireTokenRedirect({scopes:SC,account:hesap});throw new Error('Yeniden giriş gerekiyor')}}
+const mobYol=a=>(LS.get('kok','Sayım İşlemleri/Mobil')||'Sayım İşlemleri/Mobil').replace(/^\/+|\/+$/g,'')+'/'+a;
+function kvIcerik(k){return ['yer='+temiz(k.yer),'tarih='+k.tarih,'saat='+k.saat,'sicil='+temiz(k.sicil),'malzeme='+temiz(k.malzeme),'not='+temiz(k.not),'kimlik='+k.kimlik].join('\n')+'\n'}
+async function yukle(k,jt){const r=await fetch(gUrl(mobYol('Gelen/'+k.kimlik+'.txt'))+':/content?@microsoft.graph.conflictBehavior=fail',{method:'PUT',headers:{Authorization:'Bearer '+jt,'Content-Type':'text/plain; charset=utf-8'},body:new Blob([kvIcerik(k)],{type:'text/plain;charset=utf-8'})});
+ if(r.status===409)return;if(!r.ok){let m='';try{m=(await r.json()).error.message}catch(e){}throw new Error('HTTP '+r.status+' '+m)}}
+let gon=false;
+async function gonder(elle){if(gon)return;if(!navigator.onLine){if(elle)$('gm').textContent='İnternet yok; kayıtlar saklı.';return}
+ const b=kayit.filter(k=>k.durum==='bekliyor').sort((a,b)=>a.kimlik<b.kimlik?-1:1);if(!b.length){if(elle)$('gm').textContent='Gönderilecek kayıt yok.';return}
+ if(!hesap){if(elle)$('gm').textContent='Giriş yok: "Dosya olarak paylaş" yolunu kullanın veya Ayarlar\'dan giriş yapın.';return}
+ gon=true;let ok=0,h=0,jt;try{jt=await belirtec()}catch(e){gon=false;if(elle)$('gm').textContent='Gönderilemedi: '+e.message;return}
+ for(const k of b){try{await yukle(k,jt);k.durum='gitti';k.hata='';await dbYaz(k);ok++}catch(e){k.deneme=(k.deneme||0)+1;k.hata=e.message;k.durum=k.deneme>=5?'hata':'bekliyor';await dbYaz(k);h++;if(/HTTP 40[13]/.test(e.message))break}}
+ gon=false;liste();if(elle||h)$('gm').textContent=ok+' kayıt gönderildi'+(h?', '+h+' gönderilemedi (kuyrukta).':'. Excel açıkken 2 dk içinde alır.')}
+$('gonder').onclick=()=>gonder(true);
+$('tekrar').onclick=async()=>{for(const k of kayit)if(k.durum==='hata'){k.durum='bekliyor';k.deneme=0;await dbYaz(k)}gonder(true)};
+function tsv(b){return '#SAYIM1\n'+b.map(k=>[k.yer,k.sicil,k.malzeme,k.not,isoTar(k),k.saat].map(temiz).join('\t')).join('\n')+'\n'}
+$('paylas').onclick=async()=>{const b=kayit.filter(k=>k.durum!=='gitti');if(!b.length){$('gm').textContent='Gönderilecek kayıt yok.';return}
+ const ad=temiz(LS.get('cihaz','tel')).replace(/[^\w-]/g,'')+'_'+damga(new Date())+'.txt';const f=new File([tsv(b)],ad,{type:'text/plain'});
+ try{if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:'Sayım kayıtları'});else{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=ad;a.click()}
+  if(confirm('Dosyayı kaydettiniz / gönderdiniz mi? Evet derseniz bu kayıtlar "gönderildi" işaretlenir.')){for(const k of b){k.durum='gitti';await dbYaz(k)}liste()}
+  $('gm').textContent='Dosyayı OneDrive\\Sayım İşlemleri\\Mobil\\Gelen klasörüne koyun; Excel alır (Ayarlar > Mobil Kayıtları Al).'}catch(e){$('gm').textContent='İptal edildi.'}};
+$('cek').onclick=async()=>{try{const jt=await belirtec();let y,n,b;for(const[a,s]of[['yerler.txt',v=>y=v],['notlar.txt',v=>n=v],['beklenen.txt',v=>b=v]]){const r=await fetch(gUrl(mobYol(a))+':/content',{headers:{Authorization:'Bearer '+jt}});if(r.ok)s(await r.text())}
+ await kvS('yerler',y);await kvS('notlar',n);await kvS('beklenen',b);listeKur(y!=null?y:null,n!=null?n:null,b!=null?b:null);hepsi();$('am').textContent='Listeler OneDrive\'dan alındı.'}catch(e){$('am').textContent='Alınamadı: '+e.message+' (Excel\'de Mobil Listeleri Yaz çalıştı mı?)'}};
+$('dosya').onchange=async e=>{let y=null,n=null,b=null;for(const f of e.target.files){const t=await f.text(),a=f.name.toLowerCase();if(a.includes('bekle'))b=t;else if(a.includes('yer'))y=t;else if(a.includes('not'))n=t}
+ if(y!=null)await kvS('yerler',y);if(n!=null)await kvS('notlar',n);if(b!=null)await kvS('beklenen',b);listeKur(y,n,b);hepsi();$('am').textContent='Listeler yüklendi.'};
+$('test').onclick=async()=>{try{const jt=await belirtec();const r=await fetch(gUrl(mobYol('TEST-'+damga(new Date())+'.tmp'))+':/content',{method:'PUT',headers:{Authorization:'Bearer '+jt,'Content-Type':'text/plain'},body:'test'});if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();await fetch('https://graph.microsoft.com/v1.0/me/drive/items/'+j.id,{method:'DELETE',headers:{Authorization:'Bearer '+jt}});$('am').textContent='Bağlantı çalışıyor (test dosyası yazıldı ve silindi).'}catch(e){$('am').textContent='Bağlantı kurulamadı: '+e.message}};
+$('kaydet').onclick=()=>{LS.set('cihaz',$('cihaz').value.trim()||'tel');LS.set('cid',$('cid').value.trim());LS.set('kok',$('kok').value.trim()||'Sayım İşlemleri/Mobil');LS.set('resimK',$('rk').value.trim()||'Sayım İşlemleri/Sayım Fotografları');LS.set('videoK',$('vk').value.trim()||'Sayım İşlemleri/Sayım Videoları');msalApp=null;bagGoster();$('am').textContent+=' Kaydedildi.'};
+$('giris').onclick=async()=>{if(!msalHazir()){$('am').textContent='Önce Client kimliğini girip Kaydet\'e basın.';return}try{if(msalApp.initialize)await msalApp.initialize();await msalApp.loginRedirect({scopes:SC})}catch(e){$('am').textContent='Giriş başlatılamadı: '+e.message}};
+$('cikis').onclick=async()=>{if(msalApp&&hesap){try{await msalApp.logoutRedirect({account:hesap})}catch(e){}}hesap=null;bagGoster()};
+$('sil').onclick=async()=>{if(!confirm('Gönderilmiş kayıtlar telefondan silinsin mi? (Okutma geçmişi / mükerrer kontrolü de bu kayıtlar için kalkar)'))return;for(const k of kayit.filter(k=>k.durum==='gitti'))await dbSil(k.kimlik);kayit=kayit.filter(k=>k.durum!=='gitti');hepsi()};
+$('sifir').onclick=async()=>{const y=yerAdi();if(!y)return;if(!confirm(y+' için telefondaki TÜM kayıtlar silinsin mi? (OneDrive\'a gönderilmiş olanlar Excel\'de kalır)'))return;const n=norm(y);for(const k of kayit.filter(k=>norm(k.yer)===n))await dbSil(k.kimlik);kayit=kayit.filter(k=>norm(k.yer)!==n);hepsi()};
+document.addEventListener('click',async e=>{const s=e.target.dataset&&e.target.dataset.sil;if(s&&confirm('Bu kayıt silinsin mi?')){await dbSil(s);kayit=kayit.filter(k=>k.kimlik!==s);hepsi()}});
+// ---------- genel ----------
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,main>section').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.s).classList.add('on');
+ $('altbas').textContent={'s-say':'Fiziki Saha Sayım','s-oz':'Sayım Özeti / Kalan Ürün','s-ur':'Ürün Özeti','s-sor':'Malzeme Sorgu','s-kay':'Kayıtlar','s-ay':'Ayarlar'}[b.dataset.s];
+ if(b.dataset.s==='s-oz')ozetSayfa();if(b.dataset.s==='s-ur')urunSayfa();if(b.dataset.s==='s-say')$('sicil').focus();if(b.dataset.s==='s-sor')$('sq').focus();liste()});
+$('ekle').onclick=ekle;$('temizle').onclick=()=>{for(const i of['sicil','ad','acik'])$(i).value='';$('not').value='';onizle();$('sicil').focus()};
 $('sicil').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();ekle()}});
-$('sicil').addEventListener('input',onizle);$('ad').addEventListener('input',onizle);
-$('yer').addEventListener('change',()=>{lsSet('yer',$('yer').value);yenile();$('sicil').focus()});
-$('temizle').onclick=()=>{$('sicil').value='';$('ad').value='';$('not').value='';$('not2').value='';onizle();$('sicil').focus()};
-$('ara').oninput=liste;
-document.addEventListener('click',async e=>{const s=e.target.dataset&&e.target.dataset.sil;
-  if(s&&confirm('Bu kayıt silinsin mi?')){const k=kayit.find(x=>x.id===s);if(k&&k.g)alert('Bu kayıt Excel\'e gönderilmişti; Excel\'den ayrıca silmeniz gerekir.');kayit=kayit.filter(x=>x.id!==s);lsSet('kayit',kayit);liste()}});
-document.addEventListener('toggle',async e=>{const id=e.target.dataset&&e.target.dataset.m;if(id&&e.target.open)medyaGoster(id)},true);
-// ---------- medya (resim/video: ön izleme, yükleme, değiştirme, kaldırma) ----------
-async function medyaGoster(id){const k=kayit.find(x=>x.id===id);const kap=document.getElementById('m'+id);if(!k||!kap)return;kap.innerHTML='';
-  for(let i=0;i<(k.medya||[]).length;i++){const m=k.medya[i];const b=await kvGet('m:'+id+':'+i);if(!b)continue;const u=URL.createObjectURL(b);
-    const el=document.createElement(m.tur==='video'?'video':'img');el.src=u;el.className='th';if(m.tur==='video')el.controls=true;kap.appendChild(el);
-    const bt=document.createElement('button');bt.className='b g';bt.textContent='Kaldır: '+m.ad;bt.onclick=async()=>{k.medya.splice(i,1);await kvDel('m:'+id+':'+i);lsSet('kayit',kayit);medyaGoster(id)};kap.appendChild(bt)}}
-document.addEventListener('change',async e=>{const id=e.target.dataset&&e.target.dataset.ekle;if(!id)return;const f=e.target.files[0];if(!f)return;
-  const k=kayit.find(x=>x.id===id);if(!k)return;const tur=f.type.startsWith('video')?'video':'resim';const ek=(f.name.split('.').pop()||(tur==='video'?'mp4':'jpg')).toLowerCase();
-  const kok=(k.sicil&&/^\d+$/.test(k.sicil))?k.sicil:(k.sicil||'sicilsiz').replace(/[^\w.-]/g,'_');
-  const n=(k.medya||[]).length;k.medya=k.medya||[];k.medya.push({ad:kok+(n?'_'+(n+1):'')+'.'+ek,tur});await kvSet('m:'+id+':'+(k.medya.length-1),f);lsSet('kayit',kayit);e.target.value='';k.g=0;lsSet('kayit',kayit);medyaGoster(id)});
-// ---------- listeler ----------
-function listeleriYukle(y,n,b){if(y!=null)yerler=ayr(y);if(n!=null)notlar=ayr(n);
-  if(b!=null){bek=ayr(b).map(l=>l.split('\t')).filter(r=>r.length>=3&&r[0]!=='Anahtar');indeksle()}
-  listeBilgi();yenile()}
-async function kaydetListe(y,n,b){if(y!=null)await kvSet('yerler',y);if(n!=null)await kvSet('notlar',n);if(b!=null)await kvSet('beklenen',b)}
-$('dosya').onchange=async e=>{let y=null,n=null,b=null;for(const f of e.target.files){const t=await f.text();const a=f.name.toLowerCase();if(a.includes('yer'))y=t;else if(a.includes('not'))n=t;else if(a.includes('bekle'))b=t}
-  await kaydetListe(y,n,b);listeleriYukle(y,n,b);$('gmsg').textContent='Listeler yüklendi.'};
-// ---------- Microsoft Graph (isteğe bağlı) ----------
-let msal=null,acc=null;
-const yol=a=>('/me/drive/root:/'+ayar.kok.split('/').concat(a.split('/')).map(encodeURIComponent).join('/')+':');
-async function msalHazir(){if(msal)return true;if(!ayar.cid)return false;
-  if(!window.msal){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
-  msal=new window.msal.PublicClientApplication({auth:{clientId:ayar.cid,authority:'https://login.microsoftonline.com/organizations',redirectUri:location.origin+location.pathname},cache:{cacheLocation:'localStorage'}});
-  await msal.initialize();const r=await msal.handleRedirectPromise();acc=(r&&r.account)||msal.getAllAccounts()[0]||null;return true}
-async function token(){if(!await msalHazir())throw new Error('Client ID girilmedi (girişsiz mod).');
-  if(!acc){await msal.loginRedirect({scopes:['Files.ReadWrite','User.Read']});return null}
-  try{return (await msal.acquireTokenSilent({scopes:['Files.ReadWrite','User.Read'],account:acc})).accessToken}
-  catch(e){await msal.acquireTokenRedirect({scopes:['Files.ReadWrite','User.Read']});return null}}
-async function graph(m,u,body,tip){const t=await token();if(!t)return null;const r=await fetch('https://graph.microsoft.com/v1.0'+u,{method:m,headers:Object.assign({Authorization:'Bearer '+t},tip?{'Content-Type':tip}:{}),body});
-  if(!r.ok)throw new Error('Graph '+r.status);return r}
-function dosyaMetni(liste){return '#SAYIM1\n'+liste.map(k=>[k.yer,k.sicil,k.ad,k.not,k.t.slice(0,10),k.t.slice(11)].map(s=>String(s||'').replace(/[\t\r\n]+/g,' ')).join('\t')).join('\n')+'\n'}
-async function gonder(sess){const b=kayit.filter(k=>!k.g);if(!b.length){if(!sess)$('gmsg').textContent='Gönderilecek kayıt yok.';return}
-  try{const ad=(ayar.cihaz||'telefon').replace(/[^\w-]/g,'_')+'_'+zaman().replace(/[- :]/g,'')+'.txt';
-    const r=await graph('PUT',yol('Gelen/'+ad)+'/content',new Blob([dosyaMetni(b)],{type:'text/plain;charset=utf-8'}),'text/plain');if(!r)return;
-    for(const k of b){for(let i=0;i<(k.medya||[]).length;i++){const f=await kvGet('m:'+k.id+':'+i);if(f)await graph('PUT',yol('Medya/'+k.medya[i].ad)+'/content',f,f.type||'application/octet-stream')}k.g=1}
-    lsSet('kayit',kayit);liste();$('gmsg').textContent=b.length+' kayıt OneDrive\'a gönderildi ('+ad+'). Excel kitabı açıkken 2 dk içinde alır.'}
-  catch(e){if(!sess)$('gmsg').textContent='Gönderilemedi: '+e.message+' – kayıtlar telefonda duruyor.'}}
-function otoGonder(){if(ayar.cid&&navigator.onLine&&acc)gonder(true)}
-$('gonder').onclick=()=>gonder(false);
-$('paylas').onclick=async()=>{const b=kayit.filter(k=>!k.g);if(!b.length){$('gmsg').textContent='Gönderilecek kayıt yok.';return}
-  const ad=(ayar.cihaz||'telefon').replace(/[^\w-]/g,'_')+'_'+zaman().replace(/[- :]/g,'')+'.txt';
-  const f=new File([dosyaMetni(b)],ad,{type:'text/plain'});
-  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Sayım kayıtları'})}else{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=ad;a.click()}
-    if(confirm('Dosyayı kaydettiniz/gönderdiniz mi? Evet derseniz bu kayıtlar "gönderildi" işaretlenir.')){b.forEach(k=>k.g=1);lsSet('kayit',kayit);liste()}
-    $('gmsg').textContent='Dosyayı OneDrive\\Sayım İşlemleri\\Mobil\\Gelen klasörüne koyun (Excel\'de Ayarlar > Mobil Kayıtları Al).'}catch(e){$('gmsg').textContent='İptal edildi.'}};
-$('cek').onclick=async()=>{try{let y,n,b;for(const [a,s] of [['yerler.txt',v=>y=v],['notlar.txt',v=>n=v],['beklenen.txt',v=>b=v]]){const r=await graph('GET',yol(a)+'/content');if(!r)return;s(await r.text())}
-  await kaydetListe(y,n,b);listeleriYukle(y,n,b);$('gmsg').textContent='Listeler OneDrive\'dan alındı.'}catch(e){$('gmsg').textContent='Alınamadı: '+e.message+' (Excel\'de Ayarlar > Mobil Listeleri Yaz çalıştırıldı mı?)'}};
-// ---------- ayarlar ----------
-$('ru').textContent=location.origin+location.pathname;
-$('kaydet').onclick=()=>{ayar={cihaz:$('cihaz').value.trim()||'telefon',cid:$('cid').value.trim(),kok:$('kok').value.trim().replace(/^\/|\/$/g,'')||'Sayım İşlemleri/Mobil'};lsSet('ayar',ayar);msal=null;$('amsg').textContent='Kaydedildi.'};
-$('giris').onclick=async()=>{try{if(!ayar.cid){$('amsg').textContent='Önce Client ID girip kaydedin.';return}await token();$('amsg').textContent=acc?'Giriş yapıldı: '+acc.username:''}catch(e){$('amsg').textContent='Hata: '+e.message}};
-$('sil').onclick=()=>{if(confirm('Gönderilmiş kayıtlar telefondan silinsin mi? (Gönderilmemişler kalır)')){kayit=kayit.filter(k=>!k.g);lsSet('kayit',kayit);liste()}};
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,section').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.s).classList.add('on');if(b.dataset.s==='s-say')$('sicil').focus()});
-window.addEventListener('online',otoGonder);
-// ---------- başlangıç ----------
-(async()=>{$('cihaz').value=ayar.cihaz;$('cid').value=ayar.cid;$('kok').value=ayar.kok;$('yer').value=ls('yer','');
-  const y=await kvGet('yerler'),n=await kvGet('notlar'),b=await kvGet('beklenen');listeleriYukle(y!=null?y:null,n!=null?n:null,b!=null?b:null);
-  try{if(ayar.cid&&await msalHazir())$('amsg').textContent=acc?'Giriş: '+acc.username:'Giriş yapılmadı'}catch(e){}
-  $('durum').textContent=ayar.cid?'OneDrive':'girişsiz';
-  if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-  $('sicil').focus()})();
+let oz=null;$('sicil').addEventListener('input',()=>{clearTimeout(oz);oz=setTimeout(onizle,200)});$('ad').addEventListener('input',onizle);
+$('sq').addEventListener('input',sorgu);$('ara').addEventListener('input',liste);
+window.addEventListener('online',()=>gonder(false));setInterval(()=>gonder(false),60000);
+(async()=>{$('ru').textContent=location.origin+location.pathname.replace(/index\.html$/,'');
+ $('cihaz').value=LS.get('cihaz','');$('cid').value=LS.get('cid','');$('kok').value=LS.get('kok','Sayım İşlemleri/Mobil');$('rk').value=LS.get('resimK','Sayım İşlemleri/Sayım Fotografları');$('vk').value=LS.get('videoK','Sayım İşlemleri/Sayım Videoları');
+ try{await dbAc()}catch(e){$('mesaj').className='msg er';$('mesaj').textContent='Yerel depolama açılamadı: '+e.message;return}
+ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
+ kayit=(await dbHepsi()).sort((a,b)=>a.kimlik<b.kimlik?-1:1);
+ listeKur(await kvG('yerler')??null,await kvG('notlar')??null,await kvG('beklenen')??null);
+ $('yer').value=LS.get('sonYer','');await oturum();hepsi();
+ if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+ if(!LS.get('cihaz','')){document.querySelector('nav button[data-s=s-ay]').click();$('am').textContent='Önce cihaz adını yazıp Kaydet\'e basın.'}else $('sicil').focus();gonder(false)})();
 </script></body></html>

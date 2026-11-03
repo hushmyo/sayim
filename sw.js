@@ -1,9 +1,9 @@
-const AD="sayim-v4";
-const DOSYALAR=["./","index.html","manifest.json"];
-self.addEventListener("install",e=>{e.waitUntil(caches.open(AD).then(c=>c.addAll(DOSYALAR)).then(()=>self.skipWaiting()));});
-self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==AD).map(x=>caches.delete(x)))).then(()=>self.clients.claim()));});
-self.addEventListener("fetch",e=>{
+const V='sayim-v5';
+const DOSYA=['./','index.html','manifest.json','icon-192.png','icon-512.png'];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(DOSYA)).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',e=>{
   const u=new URL(e.request.url);
-  if(e.request.method!=="GET"||u.origin!==location.origin) return;   // Microsoft/Graph istekleri aga gider
-  e.respondWith(fetch(e.request).then(r=>{const k=r.clone();caches.open(AD).then(c=>c.put(e.request,k));return r;}).catch(()=>caches.match(e.request)));
+  if(e.request.method!=='GET'||u.origin!==location.origin)return;
+  e.respondWith(fetch(e.request).then(r=>{if(r.ok){const c=r.clone();caches.open(V).then(x=>x.put(e.request,c))}return r}).catch(()=>caches.match(e.request).then(m=>m||caches.match('index.html'))));
 });

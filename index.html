@@ -78,6 +78,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
   <label>SİCİL NO / BARKOD (okutun)</label>
   <input id="sicil" class="giris" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Okutun veya yazın, Enter">
   <div class="row"><button class="b g" id="kam">📷 Kamerayla oku</button><button class="b g" id="gd">⌨ Sicili temizle</button></div>
+  <div class="row"><button class="b g" id="yap">📋 Yapıştır (panodan sicil)</button></div>
   <label>Not / Fazla Açıklama</label><input id="not" class="giris" list="notlist" autocomplete="off" placeholder="listeden seçin veya yazın"><datalist id="notlist"></datalist>
   <label>Malzeme Adı (elle – sicilsiz)</label><input id="ad" class="giris" list="malist" autocomplete="off" placeholder="listeden seçin veya yazın"><datalist id="malist"></datalist>
   <div id="ban" class="ban no">—</div>
@@ -111,7 +112,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ ÜRÜN ÖZETİ + MALZEME SORGU ============ -->
 <section id="s-ur">
- <div class="card"><h3>Malzeme sorgu</h3><input id="sq" class="giris" placeholder="Sicil no / barkod okutun" autocomplete="off"><div id="sqK" class="kv"></div><div id="sqS"></div></div>
+ <div class="card"><h3>Malzeme sorgu</h3><input id="sq" class="giris" placeholder="Sicil no / barkod okutun veya yapıştırın" autocomplete="off"><div class="row"><button class="b g" id="yapQ">📋 Yapıştır</button></div><div id="sqK" class="kv"></div><div id="sqS"></div></div>
  <div class="card"><h3>Ürün özeti</h3>
   <div class="row"><select id="uK"><option value="sis">Sistem kaydına göre</option><option value="fiz">Fiziki sayıma göre</option></select></div>
   <div class="msg" id="urYer"></div><div class="msg" id="urSt"></div>
@@ -129,7 +130,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v10</div>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v12</div>
   <label>Cihaz adı (dosya adında)</label><input id="cihaz" class="giris" placeholder="ör. iphone, tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -149,7 +150,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 </main>
 <div id="toast" class="hide" style="position:fixed;left:50%;bottom:88px;transform:translateX(-50%);background:#1b2430;color:#fff;padding:8px 16px;border-radius:20px;font-size:14px;z-index:30;max-width:90%"></div>
-<div class="cam hide" id="camK"><div class="hd" id="camH">Barkodu çerçeveye getirin</div><video id="camV" playsinline muted></video><div class="cb"><button class="b g" id="camS">Sürekli: AÇIK</button><button class="b r" id="camX">Kapat</button></div></div>
+<div class="cam hide" id="camK"><div class="hd" id="camH">Barkodu çerçeveye getirin</div><video id="camV" playsinline muted></video><div class="cb"><button class="b g" id="camS">Sürekli: AÇIK</button><button class="b g" id="camF">Fotoğraf</button><input type="file" id="camI" accept="image/*" capture="environment" style="display:none"><button class="b r" id="camX">Kapat</button></div></div>
 <nav>
  <button data-s="s-say" class="on"><b>▦</b>Sayım</button><button data-s="s-oz"><b>◔</b>Özet</button><button data-s="s-yer"><b>⌂</b>Yerler</button>
  <button data-s="s-ur"><b>☰</b>Ürün/Sorgu</button><button data-s="s-kay"><b>⇅</b>Kayıt</button><button data-s="s-ay"><b>⚙</b>Ayar</button>
@@ -190,7 +191,7 @@ let kayit=[];            // tüm kayıtlar (zaman sıralı)
 let yerler=[],malzemeler=[],notlar=NOT0.slice(),bek=[],anah=new Map(),barm=new Map(),yerSet=new Map();
 function indeksle(){anah=new Map();barm=new Map();yerSet=new Map();
  for(const r of bek){anah.set(r[0],r);if(r[2]){(barm.get(r[2])||barm.set(r[2],[]).get(r[2])).push(r)}
-  for(const y of [r[9],kurum(r[11])?'':r[11]]){if(!y)continue;const n=norm(y);(yerSet.get(n)||yerSet.set(n,[]).get(n)).push(r)}}}
+  const ns=new Set();for(const y of [r[9],kurum(r[11])?'':r[11]]){if(y)ns.add(norm(y))}for(const n of ns){if(!n)continue;(yerSet.get(n)||yerSet.set(n,[]).get(n)).push(r)}}}
 function ayr(l){return String(l||'').replace(/^﻿/,'').replace(/\r/g,'').split('\n').filter(x=>x.trim()!=='')}
 function listeKur(y,n,b,m){if(y!=null)yerler=ayr(y);if(m!=null)malzemeler=ayr(m);if(n!=null){const x=ayr(n).flatMap(s=>s.split(';')).map(s=>s.trim()).filter(Boolean);if(x.length)notlar=x}
  if(b!=null){bek=ayr(b).map(l=>l.split('\t')).filter(r=>r.length>=10&&r[0]!=='Anahtar');indeksle()}
@@ -426,32 +427,50 @@ let oz=null,ot=null;$('sicil').addEventListener('input',()=>{clearTimeout(oz);oz
 // ---------- kamerayla okuma ----------
 let cam={akt:false,sur:true,stream:null,zx:null,son:'',sonT:0};
 function camBulundu(v){const s=duzelt(v);if(!s)return;const t=Date.now();if(s===cam.son&&t-cam.sonT<2500)return;cam.son=s;cam.sonT=t;$('sicil').value=s;$('camH').textContent='Okundu: '+s;ekle().then(()=>{if(!cam.sur)camKapat()})}
-async function camAc(){$('camK').classList.remove('hide');cam.akt=true;$('camH').textContent='Kamera açılıyor…';
+let camZ=null,camIdle=null;
+function zxHazir(){return new Promise((res,rej)=>{if(window.ZXing)return res();const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';s.onload=res;s.onerror=()=>rej(new Error('Okuma kütüphanesi indirilemedi (internet gerekir)'));document.head.appendChild(s)})}
+function zxOkuyucu(){if(camZ)return camZ;const Z=ZXing,h=new Map();h.set(Z.DecodeHintType.TRY_HARDER,true);h.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.CODE_128,Z.BarcodeFormat.CODE_39,Z.BarcodeFormat.CODE_93,Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.ITF,Z.BarcodeFormat.CODABAR,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.QR_CODE,Z.BarcodeFormat.DATA_MATRIX]);const r=new Z.MultiFormatReader();r.setHints(h);return camZ=r}
+function cvDene(cx,w,h){const Z=ZXing,id=cx.getImageData(0,0,w,h).data,lum=new Uint8ClampedArray(w*h);for(let i=0,j=0;j<w*h;i+=4,j++)lum[j]=(id[i]*77+id[i+1]*150+id[i+2]*29)>>8;
+ try{return zxOkuyucu().decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.RGBLuminanceSource(lum,w,h)))).getText()}catch(e){return null}}
+async function camAc(){$('camK').classList.remove('hide');cam.akt=true;clearTimeout(camIdle);$('camH').textContent='Kamera açılıyor…';
  try{
-  if('BarcodeDetector'in window){const det=new BarcodeDetector();cam.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});const v=$('camV');v.srcObject=cam.stream;await v.play();$('camH').textContent='Barkodu çerçeveye getirin';
-   const tur=async()=>{if(!cam.akt)return;try{const r=await det.detect(v);if(r.length)camBulundu(r[0].rawValue)}catch(e){}setTimeout(tur,250)};tur()}
-  else{await new Promise((res,rej)=>{if(window.ZXing)return res();const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';s.onload=res;s.onerror=()=>rej(new Error('Okuma kütüphanesi indirilemedi (internet gerekir)'));document.head.appendChild(s)});
-   const Z=ZXing,hints=new Map();hints.set(Z.DecodeHintType.TRY_HARDER,true);hints.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.CODE_128,Z.BarcodeFormat.CODE_39,Z.BarcodeFormat.CODE_93,Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.ITF,Z.BarcodeFormat.CODABAR,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.QR_CODE,Z.BarcodeFormat.DATA_MATRIX]);
-   const rd=new Z.MultiFormatReader();rd.setHints(hints);
-   cam.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false});
-   const v=$('camV');v.srcObject=cam.stream;await v.play();
-   try{const tr=cam.stream.getVideoTracks()[0],cp=tr.getCapabilities?tr.getCapabilities():{};if(cp.focusMode&&cp.focusMode.includes('continuous'))await tr.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
-   $('camH').textContent='Barkodu çerçeveye getirin (düz tutun, 15-25 cm)';
-   const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
-   const dene=(w,h)=>{const id=cx.getImageData(0,0,w,h).data,lum=new Uint8ClampedArray(w*h);for(let i=0,j=0;j<w*h;i+=4,j++)lum[j]=(id[i]*77+id[i+1]*150+id[i+2]*29)>>8;
-    const bm=new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.RGBLuminanceSource(lum,w,h)));try{return rd.decode(bm).getText()}catch(e){return null}};
-   const ac=[0,-4,4,-8,8,-12,12];let n=0;
+  const bd='BarcodeDetector'in window;
+  if(!bd)await zxHazir();
+  // izin bir kez istenir: akım açık kalır, kapatınca sadece gizlenir
+  if(!(cam.stream&&cam.stream.getVideoTracks().some(t=>t.readyState==='live')))cam.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false});
+  const v=$('camV');v.srcObject=cam.stream;await v.play();
+  try{const tr=cam.stream.getVideoTracks()[0],cp=tr.getCapabilities?tr.getCapabilities():{};if(cp.focusMode&&cp.focusMode.includes('continuous'))await tr.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
+  $('camH').textContent='Barkodu çerçeveye getirin (düz tutun, 15-25 cm). Okumazsa "Fotoğraf"a basın.';
+  if(bd){const det=new BarcodeDetector();const tur=async()=>{if(!cam.akt)return;try{const r=await det.detect(v);if(r.length)camBulundu(r[0].rawValue)}catch(e){}setTimeout(tur,250)};tur()}
+  else{const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});const ac=[0,-4,4,-8,8,-12,12];let n=0;
    const tur=()=>{if(!cam.akt)return;try{const vw=v.videoWidth,vh=v.videoHeight;if(vw){
-     const sc=Math.min(1,1280/vw),W=Math.round(vw*sc),H=Math.round(vh*sc);
-     // tam kare + orta bant (barkod genelde ortada), farklı açılarla
-     const bantY=Math.round(H*.25),bantH=Math.round(H*.5);let t=null;
-     const a=ac[n++%ac.length]*Math.PI/180;
-     cv.width=W;cv.height=bantH;cx.setTransform(1,0,0,1,0,0);cx.fillStyle='#fff';cx.fillRect(0,0,W,bantH);
-     cx.translate(W/2,bantH/2);cx.rotate(a);cx.drawImage(v,0,bantY,vw,vh*.5,-W/2,-bantH/2,W,bantH);
-     t=dene(W,bantH);if(!t&&n%ac.length===1){cv.width=W;cv.height=H;cx.setTransform(1,0,0,1,0,0);cx.drawImage(v,0,0,W,H);t=dene(W,H)}
+     const sc=Math.min(1,1280/vw),W=Math.round(vw*sc),H=Math.round(vh*sc),bantY=Math.round(H*.25),bantH=Math.round(H*.5);
+     const a=ac[n++%ac.length]*Math.PI/180;cv.width=W;cv.height=bantH;cx.setTransform(1,0,0,1,0,0);cx.fillStyle='#fff';cx.fillRect(0,0,W,bantH);
+     cx.translate(W/2,bantH/2);cx.rotate(a);cx.drawImage(v,0,vh*.25,vw,vh*.5,-W/2,-bantH/2,W,bantH);
+     let t=cvDene(cx,W,bantH);if(!t&&n%ac.length===1){cv.width=W;cv.height=H;cx.setTransform(1,0,0,1,0,0);cx.drawImage(v,0,0,W,H);t=cvDene(cx,W,H)}
      if(t)camBulundu(t)}}catch(e){}setTimeout(tur,90)};tur()}
  }catch(e){$('camH').textContent='Kamera açılamadı: '+e.message;}}
-function camKapat(){cam.akt=false;try{if(cam.zx)cam.zx.reset()}catch(e){}cam.zx=null;if(cam.stream){cam.stream.getTracks().forEach(t=>t.stop());cam.stream=null}$('camV').srcObject=null;$('camK').classList.add('hide');$('sicil').focus()}
+function camKapat(){cam.akt=false;try{$('camV').pause()}catch(e){}$('camV').srcObject=null;$('camK').classList.add('hide');$('sicil').focus();
+ // akım 10 dk boşta kalırsa bırakılır (pil); o zamana kadar izin tekrar sorulmaz
+ clearTimeout(camIdle);camIdle=setTimeout(()=>{if(!cam.akt&&cam.stream){cam.stream.getTracks().forEach(t=>t.stop());cam.stream=null}},600000)}
+// fotoğraftan okuma: telefonun kendi kamerası (net odak, yüksek çözünürlük), izin sorulmaz
+async function fotoOku(file){$('camH').textContent='Fotoğraf okunuyor…';
+ try{await zxHazir();const bmp=await createImageBitmap(file);const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});let t=null;
+  for(const mw of [1600,1000,2400]){const sc=Math.min(1,mw/Math.max(bmp.width,bmp.height)),W=Math.round(bmp.width*sc),H=Math.round(bmp.height*sc);
+   for(const ang of [0,-3,3,-6,6,-10,10,-15,15,90,-90]){const r=ang*Math.PI/180,q=Math.abs(ang)===90,cw=q?H:W,ch=q?W:H;cv.width=cw;cv.height=ch;cx.setTransform(1,0,0,1,0,0);cx.fillStyle='#fff';cx.fillRect(0,0,cw,ch);cx.translate(cw/2,ch/2);cx.rotate(r);cx.drawImage(bmp,-W/2,-H/2,W,H);
+    t=cvDene(cx,cw,ch);if(t)break;await new Promise(r=>setTimeout(r,0))}
+   if(t)break}
+  if(t){camBulundu(t)}else $('camH').textContent='Fotoğrafta barkod okunamadı. Barkodu daha yakın/net çekin veya sicili elle yazın.'
+ }catch(e){$('camH').textContent='Okunamadı: '+e.message}}
+$('camF').onclick=()=>$('camI').click();$('camI').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)fotoOku(f)};
+
+// ---------- yapıştırma: pano -> Excel gibi temiz sicil (nokta, / ve boşluk gider) ----------
+function panoTemiz(t){const l=String(t||'').split(/\r?\n/).map(x=>x.trim()).find(x=>x)||'';return duzelt(l.split('\t')[0])}
+function yapistir(id,sonra){const el=$(id);const ver=t=>{const v=panoTemiz(t);if(!v){$('mesaj').className='msg er';$('mesaj').textContent='Panoda sicil bulunamadı.';return}el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}));if(sonra)sonra();Application_toast('Yapıştırıldı: '+v)};
+ if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(ver).catch(()=>{el.focus();el.select();$('mesaj').className='msg';$('mesaj').textContent='Kutuya uzun basıp "Yapıştır" deyin.'});
+ else{el.focus();$('mesaj').textContent='Kutuya uzun basıp "Yapıştır" deyin.'}}
+for(const id of ['sicil','sq'])$(id).addEventListener('paste',e=>{const t=(e.clipboardData||window.clipboardData).getData('text');e.preventDefault();const v=panoTemiz(t);const el=$(id);el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}))});
+$('yap').onclick=()=>yapistir('sicil');$('yapQ').onclick=()=>yapistir('sq');
 $('kam').onclick=()=>{if(!yerAdi()){$('mesaj').className='msg er';$('mesaj').textContent='Önce sayım yerini / kişiyi seçin.';$('yer').focus();return}camAc()};
 $('camX').onclick=camKapat;$('camS').onclick=()=>{cam.sur=!cam.sur;$('camS').textContent='Sürekli: '+(cam.sur?'AÇIK':'KAPALI')};
 $('sq').addEventListener('input',sorgu);$('ara').addEventListener('input',liste);

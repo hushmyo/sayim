@@ -77,14 +77,13 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
  <div class="card">
   <label>SİCİL NO / BARKOD (okutun)</label>
   <input id="sicil" class="giris" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Okutun veya yazın, Enter">
-  <div class="row"><button class="b g" id="kam">📷 Kamerayla oku</button><button class="b g" id="gd">⌨ Sicili temizle</button></div>
-  <div class="row"><button class="b g" id="yap">📋 Yapıştır (panodan sicil)</button></div>
-  <label>Not / Fazla Açıklama</label><input id="not" class="giris" list="notlist" autocomplete="off" placeholder="listeden seçin veya yazın"><datalist id="notlist"></datalist>
+  <div class="row"><button class="b g" id="yap">📋 Yapıştır</button><button class="b g" id="gd">✖ Sicili temizle</button></div>
+  <div class="row"><button class="b g" id="kam">📷 Kamerayla oku (yedek yöntem)</button></div>
+  <label>Not / Fazla Açıklama</label><input id="not" class="giris" list="notlist" autocomplete="off" placeholder="listeden seçin veya yazın"><datalist id="notlist"></datalist><datalist id="yerlist"></datalist>
   <label>Malzeme Adı (elle – sicilsiz)</label><input id="ad" class="giris" list="malist" autocomplete="off" placeholder="listeden seçin veya yazın"><datalist id="malist"></datalist>
+  <div class="row"><button class="b y" id="ekle">Kaydet (Enter)</button><button class="b g" id="temizle">Hepsini temizle</button></div>
   <div id="ban" class="ban no">—</div>
   <div id="kart" class="kv"></div>
-  
-  <div class="row"><button class="b y" id="ekle">Kaydet (Enter)</button><button class="b g" id="temizle">Hepsini temizle</button></div>
   <div class="msg" id="mesaj"></div>
  </div>
  <div class="card med hide" id="medK"><details id="medD"><summary id="medS">Resim / Video</summary>
@@ -98,7 +97,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 <!-- ============ ÖZET / KALAN ÜRÜN ============ -->
 <section id="s-oz">
  <div class="card"><h3>Sayım özeti · Kalan ürün</h3><div class="msg" id="ozYer"></div><div class="cnt" id="oz2"></div><div class="bar"><i id="cub2"></i></div></div>
- <div class="card" id="cNok"><h3>Noksan (kayıtlı, okutulmadı) <span class="msg" id="nokN"></span></h3><button class="b g" id="nokKop">Noksan sicilleri kopyala</button><div class="msg">Bir satıra dokunursanız yalnız o sicil kopyalanır.</div><div id="noksan"></div></div>
+ <div class="card" id="cNok"><h3>Noksan (kayıtlı, okutulmadı) <span class="msg" id="nokN"></span></h3><div class="msg">Bir satıra dokunursanız yalnız o sicil kopyalanır.</div><div id="noksan"></div><button class="b g" id="nokKop" style="margin-top:8px">Noksan sicilleri kopyala</button></div>
  <div class="card" id="cFaz"><h3>Fazla (okutuldu, burada kayıtlı değil) <span class="msg" id="fazN"></span></h3><div id="fazla"></div></div>
  <div class="card" id="cMuk"><h3>Mükerrer <span class="msg" id="mukN"></span></h3><div id="mukl"></div></div>
  <div class="card" id="cSay"><details><summary>Okutulanlar (yerinde) <span class="msg" id="sayN"></span></summary><div id="sayl"></div></details></div>
@@ -107,17 +106,19 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 <section id="s-yer">
  <div class="card"><h3>Yerler / Kişiler</h3><input id="yara" placeholder="Ara…"><div id="yT"></div></div>
  <div class="card" id="yDK"><h3 id="yDB">Kişi / Yer listesi (her sicil ayrı satır)</h3>
+  <label>Kişi / Yer (boşsa Sayım sekmesindeki seçim)</label><div class="yw"><input id="kyY" class="giris" list="yerlist" autocomplete="off" placeholder="değiştirmek için yazın / seçin"><button class="xb hide" id="kyYT" title="Temizle">×</button></div>
   <div class="row"><select id="kyK"><option value="sis">Sistem kaydına göre</option><option value="fiz">Fiziki sayıma göre</option></select><select id="kyD"></select></div>
   <div class="msg" id="kyS"></div><div id="yD"></div></div>
 </section>
 <!-- ============ ÜRÜN ÖZETİ + MALZEME SORGU ============ -->
 <section id="s-ur">
- <div class="card"><h3>Malzeme sorgu</h3><input id="sq" class="giris" placeholder="Sicil no / barkod okutun veya yapıştırın" autocomplete="off"><div class="row"><button class="b g" id="yapQ">📋 Yapıştır</button></div><div id="sqK" class="kv"></div><div id="sqS"></div></div>
- <div class="card"><h3>Ürün özeti</h3>
+ <div class="card"><h3>Ürün özeti</h3><div class="msg"><a href="#cSorgu" id="sqLink">▼ Malzeme sorguya git</a></div>
+  <label>Kişi / Yer (boşsa Sayım sekmesindeki seçim)</label><div class="yw"><input id="uY" class="giris" list="yerlist" autocomplete="off" placeholder="değiştirmek için yazın / seçin"><button class="xb hide" id="uYT" title="Temizle">×</button></div>
   <div class="row"><select id="uK"><option value="sis">Sistem kaydına göre</option><option value="fiz">Fiziki sayıma göre</option></select></div>
   <div class="msg" id="urYer"></div><div class="msg" id="urSt"></div>
   <h3 style="margin-top:10px">Tür (Bar_Kod) bazında</h3><div id="urT" style="overflow-x:auto"></div>
   <details><summary>Açıklama (toplam)</summary><div id="urA"></div></details></div>
+ <div class="card" id="cSorgu"><h3>Malzeme sorgu</h3><input id="sq" class="giris" placeholder="Sicil no / barkod okutun veya yapıştırın" autocomplete="off"><div class="row"><button class="b g" id="yapQ">📋 Yapıştır</button></div><div id="sqK" class="kv"></div><div id="sqS"></div></div>
 </section>
 <!-- ============ KAYITLAR / GÖNDER ============ -->
 <section id="s-kay">
@@ -130,7 +131,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v12</div>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v13</div>
   <label>Cihaz adı (dosya adında)</label><input id="cihaz" class="giris" placeholder="ör. iphone, tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -150,7 +151,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 </main>
 <div id="toast" class="hide" style="position:fixed;left:50%;bottom:88px;transform:translateX(-50%);background:#1b2430;color:#fff;padding:8px 16px;border-radius:20px;font-size:14px;z-index:30;max-width:90%"></div>
-<div class="cam hide" id="camK"><div class="hd" id="camH">Barkodu çerçeveye getirin</div><video id="camV" playsinline muted></video><div class="cb"><button class="b g" id="camS">Sürekli: AÇIK</button><button class="b g" id="camF">Fotoğraf</button><input type="file" id="camI" accept="image/*" capture="environment" style="display:none"><button class="b r" id="camX">Kapat</button></div></div>
+<div class="cam hide" id="camK"><div class="hd" id="camH">Barkodu çerçeveye getirin</div><video id="camV" playsinline muted></video><div class="cb"><button class="b g" id="camS">Sürekli: AÇIK</button><button class="b g" id="camF">📸 Fotoğraf çek ve oku</button><input type="file" id="camI" accept="image/*" capture="environment" style="display:none"><button class="b r" id="camX">Kapat</button></div></div>
 <nav>
  <button data-s="s-say" class="on"><b>▦</b>Sayım</button><button data-s="s-oz"><b>◔</b>Özet</button><button data-s="s-yer"><b>⌂</b>Yerler</button>
  <button data-s="s-ur"><b>☰</b>Ürün/Sorgu</button><button data-s="s-kay"><b>⇅</b>Kayıt</button><button data-s="s-ay"><b>⚙</b>Ayar</button>
@@ -195,7 +196,7 @@ function indeksle(){anah=new Map();barm=new Map();yerSet=new Map();
 function ayr(l){return String(l||'').replace(/^﻿/,'').replace(/\r/g,'').split('\n').filter(x=>x.trim()!=='')}
 function listeKur(y,n,b,m){if(y!=null)yerler=ayr(y);if(m!=null)malzemeler=ayr(m);if(n!=null){const x=ayr(n).flatMap(s=>s.split(';')).map(s=>s.trim()).filter(Boolean);if(x.length)notlar=x}
  if(b!=null){bek=ayr(b).map(l=>l.split('\t')).filter(r=>r.length>=10&&r[0]!=='Anahtar');indeksle()}
- $('notlist').innerHTML=notlar.map(x=>'<option value="'+esc(x)+'">').join('');
+ $('yerlist').innerHTML=yerler.map(x=>'<option value="'+esc(x)+'">').join('');$('notlist').innerHTML=notlar.map(x=>'<option value="'+esc(x)+'">').join('');
  $('malist').innerHTML=malzemeler.map(x=>'<option value="'+esc(x)+'">').join('');$('lb').textContent='Yer: '+yerler.length+' · Not: '+notlar.length+' · Malzeme adı: '+malzemeler.length+' · Sistem kaydı: '+bek.length+(bek.length?'':'  (liste yok: Excel\'de Ayarlar > Mobil Listeleri Yaz, sonra buradan alın)')}
 // ---------- durum (Excel Durum formülüyle aynı sıra) ----------
 function durum(sicil,ad,yer,gor){
@@ -218,6 +219,8 @@ function kartHtml(r,extra){if(!r)return'';
  const a=[['Açıklama',r[3]],['Ek Özellik',r[5]],['Kayıtlı Yer / Kişi',r[9]],['Kime verildi / kimde',r[11]],['Zimmet Tarihi',r[13]],['Fiş No',r[12]],['Fiş Son Durum',r[8]],['Sicil No',r[1]],['Bar_Kod',r[2]]].concat(extra||[]);
  return '<div class="bas">'+esc((r[4]||'')+' '+(r[6]||'')+' '+(r[7]||'')).trim()+'</div>'+a.filter(x=>x[1]&&String(x[1]).trim()).map(x=>'<b>'+x[0]+'</b><span'+((x[0]==='Sicil No'||x[0]==='Bar_Kod')?' data-cp="'+esc(x[1])+'" style="cursor:pointer;text-decoration:underline dotted"':'')+'>'+esc(x[1])+'</span>').join('')}
 function yerAdi(){return $('yer').value.trim()}
+function yerU(){return $('uY').value.trim()||yerAdi()}
+function yerK(){return $('kyY').value.trim()||yerAdi()}
 function onizle(){const gor=new Set(kayit.map(k=>duzelt(k.sicil)).filter(Boolean));
  const d=durum($('sicil').value,$('ad').value,yerAdi(),gor);const n=new Date();
  $('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t)+(d.n?'<small>'+d.n+' kayıtta aynı barkod</small>':'');
@@ -256,7 +259,7 @@ function yerlerSayfa(){const ds=hesaplaTum();const ad=new Map();for(const a of y
   return '<tr data-yy="'+esc(x[1])+'"><td>'+esc(x[1])+'</td><td>'+k+'</td><td>'+s.o+'</td><td>'+s.y+'</td><td>'+Math.max(0,k-s.y)+'</td><td>'+s.f+'</td><td>'+s.m+'</td><td><span class="st" style="background:var(--'+(sy?'k-say':'k-faz')+');color:var(--'+(sy?'k-sayt':'k-fazt')+')">'+(sy?'SAYILDI':'SAYILMADI')+'</span></td></tr>'}).join('')+'</table>'}
 const KYD={sis:['TÜMÜ','SAYILDI','SAYILMADI','BAŞKA YERDE'],fiz:['TÜMÜ','YERİNDE','FAZLA (hepsi)','FAZLA – sicilsiz (elle)','FAZLA – raporda yok','FAZLA – başka yerde kayıtlı','MÜKERRER','BARKOD (sicil değil)','YER SEÇİN']};
 function kyDoldur(){const k=$('kyK').value,s=$('kyD').value;$('kyD').innerHTML=KYD[k].map(x=>'<option>'+x+'</option>').join('');if(KYD[k].includes(s))$('kyD').value=s}
-function kyListe(){const y=yerAdi(),n=norm(y),tum=!y||n===TUMN,fiz=$('kyK').value==='fiz',df=$('kyD').value;const ds=hesaplaTum();let h='',say=0;
+function kyListe(){$('kyYT').classList.toggle('hide',!$('kyY').value);const y=yerK(),n=norm(y),tum=!y||n===TUMN,fiz=$('kyK').value==='fiz',df=$('kyD').value;const ds=hesaplaTum();let h='',say=0;
  $('yDB').textContent='Kişi / Yer listesi'+(y&&!tum?': '+y:' (tüm yerler)');
  const satir=(r,d,cls,x)=>{say++;return say>500?'':'<div class="it '+cls+'" data-cp="'+esc(r?r[1]:x.sicil)+'"><b>'+say+'. '+esc(r?r[1]:(x.sicil||x.malzeme))+'</b> '+esc(r?r[4]:'')+' <span class="st">'+esc(d)+'</span><small>'+(r?esc('Bar_Kod: '+r[2]+' · '+r[3]+(r[5]?' · '+r[5]:'')+' · '+(r[6]||'')+' '+(r[7]||'')+' · Zimmet: '+(r[11]||'')+' · Yer: '+(r[9]||'')):esc(x.yer+' · '+x.tarih))+'</small></div>'};
  if(!fiz){const kay=tum?bek:(yerKume(y)||[]);const tar=new Set(),gor=new Map();for(const k of kayit){const s=duzelt(k.sicil);if(!s)continue;tar.add(norm(k.yer)+'|'+s);if(!gor.has(s))gor.set(s,k.yer)}
@@ -265,10 +268,10 @@ function kyListe(){const y=yerAdi(),n=norm(y),tum=!y||n===TUMN,fiz=$('kyK').valu
  else{for(const k of kayit){if(!tum&&norm(k.yer)!==n)continue;const d=ds.get(k.kimlik);if(!d.t||d.t==='—')continue;if(df!=='TÜMÜ'&&!(df==='FAZLA (hepsi)'?d.t.startsWith('FAZLA'):d.t===df))continue;
    h+=satir(d.r,d.t,d.t==='YERİNDE'?'say':d.t==='MÜKERRER'?'kmuk':d.t.startsWith('FAZLA')?'kfaz':'yer',k)}}
  $('kyS').textContent='Kayıt: '+say+(say>500?' (ilk 500 gösteriliyor)':'');$('yD').innerHTML=h||'<div class="msg">Kayıt yok.</div>'}
-function yerDetay(y){kyListe();$('yDK').scrollIntoView({behavior:'smooth'})}
+function yerDetay(y){if(y)$('kyY').value=y;kyListe();$('yDK').scrollIntoView({behavior:'smooth'})}
 $('kyK').onchange=()=>{kyDoldur();kyListe()};$('kyD').onchange=kyListe;kyDoldur();
 $('yara').addEventListener('input',yerlerSayfa);
-$('yT').addEventListener('click',e=>{const r=e.target.closest('tr[data-yy]');if(!r)return;const y=r.dataset.yy;$('yer').value=y;LS.set('sonYer',y);ozetCiz();yerDetay(y)});
+$('yT').addEventListener('click',e=>{const r=e.target.closest('tr[data-yy]');if(!r)return;const y=r.dataset.yy;$('kyY').value=y;yerDetay(y)});
 
 // ---- Sayaç linkleri
 let kfil={yer:'',durum:''};
@@ -277,7 +280,7 @@ function git(g){const y=yerAdi();if(!y)return;const sek=s=>document.querySelecto
  else if(g==='kayitli'){sek('s-yer');yerDetay(y)}
  else{kfil={yer:y,durum:g==='yerinde'?'YERİNDE':g==='mukerrer'?'MÜKERRER':''};sek('s-kay')}}
 document.addEventListener('click',e=>{const d=e.target.closest&&e.target.closest('.cnt div[data-g]');if(d)git(d.dataset.g)});
-function urunSayfa(){const y=yerAdi(),fiz=$('uK').value==='fiz',n=norm(y),tum=!y||n===TUMN;let kay=[];
+function urunSayfa(){$('uYT').classList.toggle('hide',!$('uY').value);const y=yerU(),fiz=$('uK').value==='fiz',n=norm(y),tum=!y||n===TUMN;let kay=[];
  $('urYer').textContent=y&&!tum?('Yer / kişi: '+y):'Yer seçilmedi: tümü';
  if(!fiz){const l=tum?bek:(yerKume(y)||[]);kay=l.map(r=>({b:r[2],a:r[3],c:r[4],e:r[5],m:r[6],o:r[7]}))}
  else{const ds=hesaplaTum();for(const k of kayit){if(!tum&&norm(k.yer)!==n)continue;const d=ds.get(k.kimlik);if(!d.t||d.t==='—'||d.t==='MÜKERRER'||d.t==='YER SEÇİN')continue;const r=d.r;kay.push(r?{b:r[2],a:r[3],c:r[4],e:r[5],m:r[6],o:r[7]}:{b:'',a:k.malzeme,c:'',e:'',m:'',o:''})}}
@@ -286,7 +289,7 @@ function urunSayfa(){const y=yerAdi(),fiz=$('uK').value==='fiz',n=norm(y),tum=!y
  $('urSt').textContent='İSTATİSTİK ►  Toplam: '+kay.length+' adet | Çeşit: '+gb.size+' | Tür: '+ga.size+(la.length?' | En çok: '+la[0][0]+' ('+la[0][1]+')':'');
  $('urT').innerHTML='<table class="t"><tr><th>Bar_Kod</th><th>Açıklama</th><th>Cinsi</th><th>Ek Özellik</th><th>Marka</th><th>Model</th><th>Adet</th></tr>'+[...gb.values()].sort((a,b)=>b.n-a.n).slice(0,500).map(g=>'<tr><td data-cp="'+esc(g.x.b)+'" style="cursor:pointer">'+esc(g.x.b)+'</td><td>'+esc(g.x.a)+'</td><td>'+esc(g.x.c)+'</td><td>'+esc(g.x.e)+'</td><td>'+esc(g.x.m)+'</td><td>'+esc(g.x.o)+'</td><td>'+g.n+'</td></tr>').join('')+'</table>';
  $('urA').innerHTML='<table class="t"><tr><th>Açıklama (toplam)</th><th>Adet</th></tr>'+la.map(x=>'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td></tr>').join('')+'</table>'}
-$('uK').onchange=urunSayfa;
+$('uK').onchange=urunSayfa;$('uY').addEventListener('input',urunSayfa);$('uYT').onclick=()=>{$('uY').value='';urunSayfa()};$('kyY').addEventListener('input',kyListe);$('kyYT').onclick=()=>{$('kyY').value='';kyListe()};$('sqLink').onclick=e=>{e.preventDefault();$('cSorgu').scrollIntoView({behavior:'smooth'})};
 function sorgu(){const s=duzelt($('sq').value);if(!s){$('sqK').innerHTML='';$('sqS').innerHTML='';return}
  const r=anah.get(s)||(barm.get(s)||[])[0];$('sqK').innerHTML=r?kartHtml(r):'<span class="msg">Sistemde kayıt bulunamadı.</span>';
  $('sqS').innerHTML=kayit.filter(k=>duzelt(k.sicil)===s).map(k=>'<div class="it plain" data-cp="'+esc(k.sicil)+'">Sayımda okutuldu: <b>'+esc(k.yer)+'</b><small>'+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+'</small></div>').join('')}
@@ -432,15 +435,15 @@ function zxHazir(){return new Promise((res,rej)=>{if(window.ZXing)return res();c
 function zxOkuyucu(){if(camZ)return camZ;const Z=ZXing,h=new Map();h.set(Z.DecodeHintType.TRY_HARDER,true);h.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.CODE_128,Z.BarcodeFormat.CODE_39,Z.BarcodeFormat.CODE_93,Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.ITF,Z.BarcodeFormat.CODABAR,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.QR_CODE,Z.BarcodeFormat.DATA_MATRIX]);const r=new Z.MultiFormatReader();r.setHints(h);return camZ=r}
 function cvDene(cx,w,h){const Z=ZXing,id=cx.getImageData(0,0,w,h).data,lum=new Uint8ClampedArray(w*h);for(let i=0,j=0;j<w*h;i+=4,j++)lum[j]=(id[i]*77+id[i+1]*150+id[i+2]*29)>>8;
  try{return zxOkuyucu().decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.RGBLuminanceSource(lum,w,h)))).getText()}catch(e){return null}}
-async function camAc(){$('camK').classList.remove('hide');cam.akt=true;clearTimeout(camIdle);$('camH').textContent='Kamera açılıyor…';
+async function camAc(){$('camK').classList.remove('hide');cam.akt=true;clearTimeout(camIdle);$('camH').textContent=cam.stream?'Kamera hazırlanıyor…':'Kamera açılıyor… (ilk seferde birkaç saniye sürebilir)';
  try{
   const bd='BarcodeDetector'in window;
   if(!bd)await zxHazir();
   // izin bir kez istenir: akım açık kalır, kapatınca sadece gizlenir
-  if(!(cam.stream&&cam.stream.getVideoTracks().some(t=>t.readyState==='live')))cam.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false});
+  if(!(cam.stream&&cam.stream.getVideoTracks().some(t=>t.readyState==='live')))cam.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}},audio:false});
   const v=$('camV');v.srcObject=cam.stream;await v.play();
   try{const tr=cam.stream.getVideoTracks()[0],cp=tr.getCapabilities?tr.getCapabilities():{};if(cp.focusMode&&cp.focusMode.includes('continuous'))await tr.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
-  $('camH').textContent='Barkodu çerçeveye getirin (düz tutun, 15-25 cm). Okumazsa "Fotoğraf"a basın.';
+  $('camH').textContent='Barkodu çerçeveye getirin (düz tutun, 15-25 cm). Okumazsa "Fotoğraf çek ve oku"ya basın.';
   if(bd){const det=new BarcodeDetector();const tur=async()=>{if(!cam.akt)return;try{const r=await det.detect(v);if(r.length)camBulundu(r[0].rawValue)}catch(e){}setTimeout(tur,250)};tur()}
   else{const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});const ac=[0,-4,4,-8,8,-12,12];let n=0;
    const tur=()=>{if(!cam.akt)return;try{const vw=v.videoWidth,vh=v.videoHeight;if(vw){
@@ -471,6 +474,7 @@ function yapistir(id,sonra){const el=$(id);const ver=t=>{const v=panoTemiz(t);if
  else{el.focus();$('mesaj').textContent='Kutuya uzun basıp "Yapıştır" deyin.'}}
 for(const id of ['sicil','sq'])$(id).addEventListener('paste',e=>{const t=(e.clipboardData||window.clipboardData).getData('text');e.preventDefault();const v=panoTemiz(t);const el=$(id);el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}))});
 $('yap').onclick=()=>yapistir('sicil');$('yapQ').onclick=()=>yapistir('sq');
+if(!('BarcodeDetector'in window))setTimeout(()=>{zxHazir().catch(()=>{})},1500);
 $('kam').onclick=()=>{if(!yerAdi()){$('mesaj').className='msg er';$('mesaj').textContent='Önce sayım yerini / kişiyi seçin.';$('yer').focus();return}camAc()};
 $('camX').onclick=camKapat;$('camS').onclick=()=>{cam.sur=!cam.sur;$('camS').textContent='Sürekli: '+(cam.sur?'AÇIK':'KAPALI')};
 $('sq').addEventListener('input',sorgu);$('ara').addEventListener('input',liste);

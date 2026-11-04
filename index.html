@@ -129,7 +129,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v9</div>
   <label>Cihaz adı (dosya adında)</label><input id="cihaz" class="giris" placeholder="ör. iphone, tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -162,7 +162,8 @@ const NOT0=["Etiket yok","Etiket silik","Hasarlı","Başka odadan geldi","Sistem
 const TUM='TÜM YERLER';
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const p2=n=>String(n).padStart(2,'0');
-const norm=s=>String(s||'').trim().toLocaleUpperCase('tr').replace(/İ/g,'I').replace(/\s+/g,' '); // İ ve I aynı sayılır (kaynakta BELGİN/BELGIN gibi çift yazımlar var)
+const norm=s=>String(s||'').replace(/[\u200b-\u200d\ufeff]/g,'').replace(/\u00a0/g,' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLocaleUpperCase('tr').replace(/İ/g,'I').replace(/\s+/g,' '); // aksan ve İ/I farkları yok sayılır (kaynakta BELGİN/BELGIN gibi çift yazımlar var)
+const TUMN='TUM YERLER';
 const kurum=s=>norm(s).startsWith('YÜKSEKOKUL SEKRETERLİĞİ');
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const tarihTR=d=>p2(d.getDate())+'.'+p2(d.getMonth()+1)+'.'+d.getFullYear();
@@ -205,7 +206,7 @@ function durum(sicil,ad,yer,gor){
  const r=anah.get(s);
  if(!r){if(barm.has(s))return{t:'BARKOD (sicil değil)',c:'yer',r:barm.get(s)[0],n:barm.get(s).length};
   return bek.length?{t:'FAZLA – raporda yok',c:'faz',r:null}:{t:'(sistem listesi yok)',c:'no',r:null}}
- if(norm(yer)===TUM)return{t:'YERİNDE',c:'ok',r};
+ if(norm(yer)===TUMN)return{t:'YERİNDE',c:'ok',r};
  const y=norm(yer);
  if(norm(r[9])===y||(!kurum(r[11])&&norm(r[11])===y))return{t:'YERİNDE',c:'ok',r};
  return{t:'FAZLA – başka yerde kayıtlı',c:'faz',r};
@@ -221,8 +222,8 @@ function onizle(){const gor=new Set(kayit.map(k=>duzelt(k.sicil)).filter(Boolean
  $('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t)+(d.n?'<small>'+d.n+' kayıtta aynı barkod</small>':'');
  $('kart').innerHTML=kartHtml(d.r,d.r?[['Tarih / Saat',tarihTR(n)+' '+saatTR(n)]]:[]);return d}
 // ---------- özetler ----------
-function yerKume(y){const n=norm(y);if(!n)return null;if(n===TUM)return bek;return yerSet.get(n)||[]}
-function yerOzet(y){const ds=hesaplaTum(),n=norm(y),tum=n===TUM;
+function yerKume(y){const n=norm(y);if(!n)return null;if(n===TUMN)return bek;return yerSet.get(n)||[]}
+function yerOzet(y){const ds=hesaplaTum(),n=norm(y),tum=n===TUMN;
  const kay=yerKume(y)||[];const ok=new Set();let okut=0,faz=0,muk=0;const fz=[];
  for(const k of kayit){if(!tum&&norm(k.yer)!==n)continue;okut++;const d=ds.get(k.kimlik);
   if(d.t==='YERİNDE')ok.add(duzelt(k.sicil));else if(d.t==='MÜKERRER')muk++;else if(d.c==='faz'||d.c==='yer'){faz++;fz.push([k,d])}}
@@ -234,7 +235,7 @@ function ozetCiz(){const y=yerAdi();
  const o=yerOzet(y);$('oz').innerHTML=cntHtml(o);$('cub').style.width=(o.kay?Math.round(100*o.yerinde/o.kay):0)+'%';return o}
 function ozetSayfa(){const y=yerAdi();$('ozYer').textContent=y?('Yer / kişi: '+y):'Önce Sayım sekmesinden yer / kişi seçin (veya TÜM YERLER yazın).';
  if(!y){for(const i of['oz2','noksan','fazla','mukl','sayl'])$(i).innerHTML='';return}
- const o=yerOzet(y);const tum=norm(y)===TUM,n=norm(y);$('oz2').innerHTML=cntHtml(o);$('cub2').style.width=(o.kay?Math.round(100*o.yerinde/o.kay):0)+'%';
+ const o=yerOzet(y);const tum=norm(y)===TUMN,n=norm(y);$('oz2').innerHTML=cntHtml(o);$('cub2').style.width=(o.kay?Math.round(100*o.yerinde/o.kay):0)+'%';
  $('nokN').textContent='('+o.nok.length+')';$('fazN').textContent='('+o.faz+')';
  $('noksan').innerHTML=o.nok.slice(0,500).map(r=>'<div class="it nok" data-cp="'+esc(r[1])+'"><b>'+esc(r[1])+'</b> '+esc(r[4])+'<small>'+esc((r[6]||'')+' '+(r[7]||''))+' · '+esc(r[9])+(r[11]?' · '+esc(r[11]):'')+'</small></div>').join('')||'<div class="msg">Noksan yok.</div>';
  $('fazla').innerHTML=o.fz.slice(0,500).map(x=>'<div class="it kfaz" data-cp="'+esc(x[0].sicil)+'"><b>'+esc(x[0].sicil||x[0].malzeme)+'</b> '+esc(x[1].t)+'<small>'+esc(x[1].r?(x[1].r[4]+' · kayıtlı: '+x[1].r[9]):'')+(x[0].not?' · '+esc(x[0].not):'')+'</small></div>').join('')||'<div class="msg">Fazla yok.</div>';
@@ -254,7 +255,7 @@ function yerlerSayfa(){const ds=hesaplaTum();const ad=new Map();for(const a of y
   return '<tr data-yy="'+esc(x[1])+'"><td>'+esc(x[1])+'</td><td>'+k+'</td><td>'+s.o+'</td><td>'+s.y+'</td><td>'+Math.max(0,k-s.y)+'</td><td>'+s.f+'</td><td>'+s.m+'</td><td><span class="st" style="background:var(--'+(sy?'k-say':'k-faz')+');color:var(--'+(sy?'k-sayt':'k-fazt')+')">'+(sy?'SAYILDI':'SAYILMADI')+'</span></td></tr>'}).join('')+'</table>'}
 const KYD={sis:['TÜMÜ','SAYILDI','SAYILMADI','BAŞKA YERDE'],fiz:['TÜMÜ','YERİNDE','FAZLA (hepsi)','FAZLA – sicilsiz (elle)','FAZLA – raporda yok','FAZLA – başka yerde kayıtlı','MÜKERRER','BARKOD (sicil değil)','YER SEÇİN']};
 function kyDoldur(){const k=$('kyK').value,s=$('kyD').value;$('kyD').innerHTML=KYD[k].map(x=>'<option>'+x+'</option>').join('');if(KYD[k].includes(s))$('kyD').value=s}
-function kyListe(){const y=yerAdi(),n=norm(y),tum=!y||n===TUM,fiz=$('kyK').value==='fiz',df=$('kyD').value;const ds=hesaplaTum();let h='',say=0;
+function kyListe(){const y=yerAdi(),n=norm(y),tum=!y||n===TUMN,fiz=$('kyK').value==='fiz',df=$('kyD').value;const ds=hesaplaTum();let h='',say=0;
  $('yDB').textContent='Kişi / Yer listesi'+(y&&!tum?': '+y:' (tüm yerler)');
  const satir=(r,d,cls,x)=>{say++;return say>500?'':'<div class="it '+cls+'" data-cp="'+esc(r?r[1]:x.sicil)+'"><b>'+say+'. '+esc(r?r[1]:(x.sicil||x.malzeme))+'</b> '+esc(r?r[4]:'')+' <span class="st">'+esc(d)+'</span><small>'+(r?esc('Bar_Kod: '+r[2]+' · '+r[3]+(r[5]?' · '+r[5]:'')+' · '+(r[6]||'')+' '+(r[7]||'')+' · Zimmet: '+(r[11]||'')+' · Yer: '+(r[9]||'')):esc(x.yer+' · '+x.tarih))+'</small></div>'};
  if(!fiz){const kay=tum?bek:(yerKume(y)||[]);const tar=new Set(),gor=new Map();for(const k of kayit){const s=duzelt(k.sicil);if(!s)continue;tar.add(norm(k.yer)+'|'+s);if(!gor.has(s))gor.set(s,k.yer)}
@@ -275,7 +276,7 @@ function git(g){const y=yerAdi();if(!y)return;const sek=s=>document.querySelecto
  else if(g==='kayitli'){sek('s-yer');yerDetay(y)}
  else{kfil={yer:y,durum:g==='yerinde'?'YERİNDE':g==='mukerrer'?'MÜKERRER':''};sek('s-kay')}}
 document.addEventListener('click',e=>{const d=e.target.closest&&e.target.closest('.cnt div[data-g]');if(d)git(d.dataset.g)});
-function urunSayfa(){const y=yerAdi(),fiz=$('uK').value==='fiz',n=norm(y),tum=!y||n===TUM;let kay=[];
+function urunSayfa(){const y=yerAdi(),fiz=$('uK').value==='fiz',n=norm(y),tum=!y||n===TUMN;let kay=[];
  $('urYer').textContent=y&&!tum?('Yer / kişi: '+y):'Yer seçilmedi: tümü';
  if(!fiz){const l=tum?bek:(yerKume(y)||[]);kay=l.map(r=>({b:r[2],a:r[3],c:r[4],e:r[5],m:r[6],o:r[7]}))}
  else{const ds=hesaplaTum();for(const k of kayit){if(!tum&&norm(k.yer)!==n)continue;const d=ds.get(k.kimlik);if(!d.t||d.t==='—'||d.t==='MÜKERRER'||d.t==='YER SEÇİN')continue;const r=d.r;kay.push(r?{b:r[2],a:r[3],c:r[4],e:r[5],m:r[6],o:r[7]}:{b:'',a:k.malzeme,c:'',e:'',m:'',o:''})}}
@@ -292,7 +293,7 @@ function sorgu(){const s=duzelt($('sq').value);if(!s){$('sqK').innerHTML='';$('s
 function satir(k,d,sil){return '<div class="it '+(d.c==='ok'?'':d.c)+'"'+(k.sicil?' data-cp="'+esc(k.sicil)+'"':'')+'>'+(sil&&k.durum!=='gitti'?'<button class="x" data-sil="'+k.kimlik+'">×</button>':'')+'<b>'+esc(k.sicil||k.malzeme)+'</b> '+esc(d.t)+' <span class="msg">'+(k.durum==='gitti'?'✓':k.durum==='hata'?'⚠ hata':'⏳')+'</span><small>'+esc(k.yer)+' · '+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+(d.r?' · '+esc(d.r[4]):'')+'</small></div>'}
 function liste(){const ds=hesaplaTum();const sr=[...kayit].sort((a,b)=>a.kimlik<b.kimlik?1:-1);
  $('son').innerHTML=sr.slice(0,6).map(k=>satir(k,ds.get(k.kimlik),true)).join('')||'<div class="msg">Henüz kayıt yok.</div>';
- const q=norm($('ara').value);const fy=norm(kfil.yer),fd=kfil.durum;const t=sr.filter(k=>(!fy||fy===TUM||norm(k.yer)===fy)&&(!fd||ds.get(k.kimlik).t===fd)&&(!q||norm([k.sicil,k.malzeme,k.yer,k.not,ds.get(k.kimlik).t].join(' ')).includes(q)));
+ const q=norm($('ara').value);const fy=norm(kfil.yer),fd=kfil.durum;const t=sr.filter(k=>(!fy||fy===TUMN||norm(k.yer)===fy)&&(!fd||ds.get(k.kimlik).t===fd)&&(!q||norm([k.sicil,k.malzeme,k.yer,k.not,ds.get(k.kimlik).t].join(' ')).includes(q)));
  $('kf').innerHTML=(kfil.yer||kfil.durum)?('Süzgeç: '+esc(kfil.yer)+' '+esc(kfil.durum)+' <a href="#" id="kfT">temizle</a>'):'';
  $('kn').textContent='('+kayit.length+')';$('tum').innerHTML=t.slice(0,400).map(k=>satir(k,ds.get(k.kimlik),true)).join('');
  const b=kayit.filter(k=>k.durum==='bekliyor'||k.durum==='hata').length;$('bek').textContent=b+' bekliyor';}
@@ -320,7 +321,7 @@ function ses(c){try{if(navigator.vibrate)navigator.vibrate(c==='ok'?[30]:c==='mu
  for(const h of f){const o=x.createOscillator(),g=x.createGain();o.frequency.value=h;g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+.16);o.connect(g);g.connect(x.destination);o.start(t);o.stop(t+.17);t+=.19}}catch(e){}}
 // ---------- yer önerisi ----------
 function oner(){const q=normAd($('yer').value);const kut=$('oner');if(!q){kut.classList.add('hide');return}
- const kay=[[normAd(TUM),TUM]];const gor=new Set([TUM]);for(const a of yerler.concat(LS.get('yerGecmis',[]))){const n=norm(a);if(!gor.has(n)){gor.add(n);kay.push([normAd(a),a])}}
+ const kay=[[normAd(TUM),TUM]];const gor=new Set([TUMN]);for(const a of yerler.concat(LS.get('yerGecmis',[]))){const n=norm(a);if(!gor.has(n)){gor.add(n);kay.push([normAd(a),a])}}
  const e=kay.filter(x=>x[0].includes(q)).slice(0,8);if(!e.length||(e.length===1&&norm(e[0][1])===norm($('yer').value))){kut.classList.add('hide');return}
  kut.innerHTML=e.map(x=>{const s=yerSet.get(norm(x[1]));return '<div data-y="'+esc(x[1])+'">'+esc(x[1])+(s?'<small>'+s.length+' kalem</small>':'')+'</div>'}).join('');kut.classList.remove('hide')}
 function yerSec(a){$('yer').value=a;$('oner').classList.add('hide');LS.set('sonYer',a);hepsi();$('sicil').focus()}

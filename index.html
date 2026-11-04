@@ -12,9 +12,9 @@
 <style>
 :root{--bg:#eef2f7;--fg:#17202c;--card:#fff;--ln:#d5dde8;--ac:#1f4e79;--ac2:#2f7fc1;--mu:#5d6b7e;
 --ok:#1b7f3b;--wr:#a15c00;--er:#b42318;
---r-ok:#FFF2CC;--r-muk:#FFC7CE;--r-faz:#FCE4D6;--r-yer:#E8D5FF;--r-ac:#BDD7EE;--giris:#FDE9F2}
+--r-ok:#FFF2CC;--r-muk:#FFC7CE;--r-faz:#FCE4D6;--r-yer:#E8D5FF;--r-ac:#BDD7EE;--giris:#FDE9F2;--k-nok:#A9D08E;--k-nokt:#1E4620;--k-faz:#F4B183;--k-fazt:#7F3F00;--k-muk:#FFC7CE;--k-mukt:#9C0006;--k-say:#FFEB84;--k-sayt:#3a3000}
 @media(prefers-color-scheme:dark){:root{--bg:#0f141b;--fg:#e8edf4;--card:#19212c;--ln:#2b3646;--ac:#6aa7e0;--ac2:#4a8fd0;--mu:#93a0b3;--ok:#4cc27a;--wr:#f0a04b;--er:#ff7b72;
---r-ok:#4a4020;--r-muk:#5a2a30;--r-faz:#573a28;--r-yer:#43305c;--r-ac:#26415c;--giris:#4a2a3a}}
+--r-ok:#4a4020;--r-muk:#5a2a30;--r-faz:#573a28;--r-yer:#43305c;--r-ac:#26415c;--giris:#4a2a3a;--k-nok:#3d5a2c;--k-nokt:#d5f0c2;--k-faz:#6b4126;--k-fazt:#ffd9bd;--k-muk:#5a2a30;--k-mukt:#ffc4c9;--k-say:#6b5d12;--k-sayt:#fff3b0}}
 *{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:78px}
 header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,#1f4e79,#2f7fc1);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;gap:10px;align-items:center}
@@ -47,6 +47,7 @@ button.b.g{background:var(--bg);color:var(--fg);border:1px solid var(--ln)}butto
 .cnt .c1 b{color:var(--ac)}.cnt .c2 b{color:var(--ok)}.cnt .c3 b{color:var(--er)}.cnt .c4 b{color:var(--wr)}.cnt .c5 b{color:#d9482b}
 .bar{height:10px;background:var(--ln);border-radius:6px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2e9e57,#7bd18f);transition:width .25s}
 .it{border-radius:10px;padding:8px 10px;margin:5px 0;font-size:14px;background:var(--r-ok)}
+.it.nok{background:var(--k-nok);color:var(--k-nokt)}.it.kfaz{background:var(--k-faz);color:var(--k-fazt)}.it.kmuk{background:var(--k-muk);color:var(--k-mukt)}.it.say{background:var(--k-say);color:var(--k-sayt)}.it small{opacity:.85}.it[data-cp]{cursor:pointer}
 .it.muk{background:var(--r-muk)}.it.faz{background:var(--r-faz)}.it.yer{background:var(--r-yer)}.it.plain{background:var(--bg)}
 .it small{color:var(--mu);display:block}.it .x{float:right;border:0;background:none;color:var(--er);font-size:20px;line-height:1}
 .msg{font-size:13px;color:var(--mu);margin:6px 0}.msg.er{color:var(--er)}.msg.ok{color:var(--ok)}
@@ -54,6 +55,11 @@ details>summary{cursor:pointer;color:var(--ac);padding:6px 0;font-weight:600}
 .med img,.med video{max-width:100%;max-height:230px;border-radius:10px;margin:6px 0;background:#000}
 table.t{width:100%;border-collapse:collapse;font-size:14px}table.t td,table.t th{padding:6px 4px;border-bottom:1px solid var(--ln);text-align:left}table.t td:last-child,table.t th:last-child{text-align:right}
 table.t tr.tp td{font-weight:700;background:var(--r-ac)}
+.yw{position:relative}.xb{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:17px;background:var(--ln);color:var(--fg);font-size:18px;padding:0}
+.cnt div[data-g]{cursor:pointer}.cnt div[data-g]:active{filter:brightness(.9)}
+.st{display:inline-block;padding:1px 8px;border-radius:9px;font-size:12px;font-weight:700}
+table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
+.cam{position:fixed;inset:0;background:#000;z-index:20;display:flex;flex-direction:column}.cam video{flex:1;width:100%;object-fit:cover;min-height:0}.cam .cb{padding:12px;display:flex;gap:8px;background:#000}.cam .cb button{flex:1}.cam .hd{color:#fff;text-align:center;padding:8px;font-size:14px}
 .chips{display:flex;gap:6px;flex-wrap:wrap}.chips button{border:1px solid var(--ln);background:var(--bg);color:var(--fg);border-radius:16px;padding:5px 11px;font-size:13px}
 .chips button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 </style></head><body>
@@ -63,7 +69,7 @@ table.t tr.tp td{font-weight:700;background:var(--r-ac)}
 <section id="s-say" class="on">
  <div class="card">
   <label>SAYIM YERİ / KİŞİ ►</label>
-  <input id="yer" class="giris" placeholder="Yer veya kişi yazın / seçin" autocomplete="off">
+  <div class="yw"><input id="yer" class="giris" placeholder="Yer veya kişi yazın / seçin" autocomplete="off"><button class="xb hide" id="yTem" title="Temizle">×</button></div>
   <div id="oner" class="oner hide"></div>
   <div class="cnt" id="oz" style="margin-top:8px"></div>
   <div class="bar"><i id="cub"></i></div>
@@ -71,14 +77,13 @@ table.t tr.tp td{font-weight:700;background:var(--r-ac)}
  <div class="card">
   <label>SİCİL NO / BARKOD (okutun)</label>
   <input id="sicil" class="giris" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Okutun veya yazın, Enter">
+  <div class="row"><button class="b g" id="kam">📷 Kamerayla oku</button><button class="b g" id="gd">⌨ Sicili temizle</button></div>
+  <label>Not / Fazla Açıklama</label><input id="not" class="giris" list="notlist" autocomplete="off" placeholder="listeden seçin veya yazın"><datalist id="notlist"></datalist>
+  <label>Malzeme Adı (elle – sicilsiz)</label><input id="ad" class="giris" autocomplete="off">
   <div id="ban" class="ban no">—</div>
   <div id="kart" class="kv"></div>
-  <details id="ekDet"><summary>Sicilsiz malzeme / not / açıklama</summary>
-   <label>Malzeme Adı (elle – sicilsiz)</label><input id="ad" class="giris" autocomplete="off">
-   <label>Not / Fazla Açıklama</label><select id="not" class="giris"></select>
-   <label>Ek açıklama (isteğe bağlı)</label><input id="acik" class="giris" autocomplete="off">
-  </details>
-  <div class="row"><button class="b y" id="ekle">Kaydet (Enter)</button><button class="b g" id="temizle">Temizle</button></div>
+  
+  <div class="row"><button class="b y" id="ekle">Kaydet (Enter)</button><button class="b g" id="temizle">Hepsini temizle</button></div>
   <div class="msg" id="mesaj"></div>
  </div>
  <div class="card med hide" id="medK"><details id="medD"><summary id="medS">Resim / Video</summary>
@@ -92,16 +97,20 @@ table.t tr.tp td{font-weight:700;background:var(--r-ac)}
 <!-- ============ ÖZET / KALAN ÜRÜN ============ -->
 <section id="s-oz">
  <div class="card"><h3>Sayım özeti · Kalan ürün</h3><div class="msg" id="ozYer"></div><div class="cnt" id="oz2"></div><div class="bar"><i id="cub2"></i></div></div>
- <div class="card"><h3>Noksan (kayıtlı, okutulmadı)</h3><div id="noksan"></div></div>
- <div class="card"><h3>Fazla (okutuldu, burada kayıtlı değil)</h3><div id="fazla"></div></div>
+ <div class="card" id="cNok"><h3>Noksan (kayıtlı, okutulmadı) <span class="msg" id="nokN"></span></h3><button class="b g" id="nokKop">Noksan sicilleri kopyala</button><div class="msg">Bir satıra dokunursanız yalnız o sicil kopyalanır.</div><div id="noksan"></div></div>
+ <div class="card" id="cFaz"><h3>Fazla (okutuldu, burada kayıtlı değil) <span class="msg" id="fazN"></span></h3><div id="fazla"></div></div>
+ <div class="card" id="cMuk"><h3>Mükerrer <span class="msg" id="mukN"></span></h3><div id="mukl"></div></div>
+ <div class="card" id="cSay"><details><summary>Okutulanlar (yerinde) <span class="msg" id="sayN"></span></summary><div id="sayl"></div></details></div>
 </section>
-<!-- ============ ÜRÜN ÖZETİ ============ -->
+<!-- ============ YERLER / KİŞİLER + KİŞİ/YER LİSTESİ ============ -->
+<section id="s-yer">
+ <div class="card"><h3>Yerler / Kişiler</h3><input id="yara" placeholder="Ara…"><div id="yT"></div></div>
+ <div class="card hide" id="yDK"><h3 id="yDB">Kişi / Yer listesi</h3><div class="row"><button class="b y" id="yDS">Bu yerde sayıma geç</button></div><div id="yD"></div></div>
+</section>
+<!-- ============ ÜRÜN ÖZETİ + MALZEME SORGU ============ -->
 <section id="s-ur">
- <div class="card"><h3>Ürün özeti (sistem kayıtlarına göre)</h3><div class="msg" id="urYer"></div><div id="urT"></div></div>
-</section>
-<!-- ============ MALZEME SORGU ============ -->
-<section id="s-sor">
  <div class="card"><h3>Malzeme sorgu</h3><input id="sq" class="giris" placeholder="Sicil no / barkod okutun" autocomplete="off"><div id="sqK" class="kv"></div><div id="sqS"></div></div>
+ <div class="card"><h3>Ürün özeti (sistem kayıtlarına göre)</h3><div class="msg" id="urYer"></div><div id="urT"></div></div>
 </section>
 <!-- ============ KAYITLAR / GÖNDER ============ -->
 <section id="s-kay">
@@ -110,7 +119,7 @@ table.t tr.tp td{font-weight:700;background:var(--r-ac)}
   <button class="b g" id="paylas">Dosya olarak paylaş / indir (girişsiz yol)</button>
   <button class="b g" id="tekrar">Hatalıları yeniden dene</button>
   <div class="msg" id="gm"></div></div>
- <div class="card"><h3>Tüm kayıtlar <span id="kn" class="msg"></span></h3><input id="ara" placeholder="Ara…"><div id="tum"></div></div>
+ <div class="card"><h3>Tüm kayıtlar <span id="kn" class="msg"></span></h3><div class="msg" id="kf"></div><input id="ara" placeholder="Ara…"><div id="tum"></div></div>
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
@@ -120,6 +129,7 @@ table.t tr.tp td{font-weight:700;background:var(--r-ac)}
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
   <label>Fotoğraf klasörü</label><input id="rk" class="giris">
   <label>Video klasörü</label><input id="vk" class="giris">
+  <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="oto" style="width:auto"> Okuyucu Enter göndermiyorsa: okutma bitince otomatik kaydet</label>
   <button class="b" id="kaydet">Kaydet</button>
   <div class="row"><button class="b g" id="giris">Microsoft ile giriş</button><button class="b g" id="cikis">Çıkış</button></div>
   <button class="b g" id="test">Bağlantıyı dene</button>
@@ -132,9 +142,10 @@ table.t tr.tp td{font-weight:700;background:var(--r-ac)}
  <div class="card"><button class="b g" id="sil">Gönderilmiş kayıtları telefondan sil</button></div>
 </section>
 </main>
+<div class="cam hide" id="camK"><div class="hd" id="camH">Barkodu çerçeveye getirin</div><video id="camV" playsinline muted></video><div class="cb"><button class="b g" id="camS">Sürekli: AÇIK</button><button class="b r" id="camX">Kapat</button></div></div>
 <nav>
- <button data-s="s-say" class="on"><b>▦</b>Sayım</button><button data-s="s-oz"><b>◔</b>Özet</button><button data-s="s-ur"><b>☰</b>Ürün</button>
- <button data-s="s-sor"><b>⌕</b>Sorgu</button><button data-s="s-kay"><b>⇅</b>Kayıt</button><button data-s="s-ay"><b>⚙</b>Ayar</button>
+ <button data-s="s-say" class="on"><b>▦</b>Sayım</button><button data-s="s-oz"><b>◔</b>Özet</button><button data-s="s-yer"><b>⌂</b>Yerler</button>
+ <button data-s="s-ur"><b>☰</b>Ürün/Sorgu</button><button data-s="s-kay"><b>⇅</b>Kayıt</button><button data-s="s-ay"><b>⚙</b>Ayar</button>
 </nav>
 <script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" crossorigin="anonymous"></script>
 <script>
@@ -154,7 +165,8 @@ const isoTar=k=>{const a=k.tarih.split('.');return a[2]+'-'+a[1]+'-'+a[0]};
 const temiz=s=>String(s||'').replace(/[\t\r\n]+/g,' ').trim();
 function rast(n){const a='abcdefghijklmnopqrstuvwxyz0123456789';let s='';const b=new Uint8Array(n);crypto.getRandomValues(b);for(const x of b)s+=a[x%a.length];return s}
 // Excel BarkodDuzelt/Anahtar: '-' içeriyorsa Bar_Kod (olduğu gibi), yoksa yalnız rakamlar
-const duzelt=k=>{k=String(k||'').trim();if(!k)return '';return k.includes('-')?k.replace(/\s+/g,''):k.replace(/[^0-9]/g,'')};
+// Excel BarkodDuzelt ile aynı: . / boşluk atılınca yalnız rakam kalıyorsa rakam dizisi, değilse olduğu gibi (Bar_Kod: 255.2.1.1.1.1-215)
+const duzelt=k=>{const t=String(k||'').replace(/[\r\n\t\u00a0]/g,'').trim();if(!t)return '';const s=t.replace(/[.\/ ]/g,'');return /^[0-9]+$/.test(s)?s:t};
 function normAd(t){return String(t||'').replace(/İ/g,'i').replace(/I/g,'i').toLowerCase().replace(/ı/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9]/g,'')}
 // ---------- IndexedDB ----------
 let db;
@@ -174,7 +186,7 @@ function indeksle(){anah=new Map();barm=new Map();yerSet=new Map();
 function ayr(l){return String(l||'').replace(/^﻿/,'').replace(/\r/g,'').split('\n').filter(x=>x.trim()!=='')}
 function listeKur(y,n,b){if(y!=null)yerler=ayr(y);if(n!=null){const x=ayr(n);if(x.length)notlar=x}
  if(b!=null){bek=ayr(b).map(l=>l.split('\t')).filter(r=>r.length>=10&&r[0]!=='Anahtar');indeksle()}
- $('not').innerHTML='<option value=""></option>'+notlar.map(x=>'<option>'+esc(x)+'</option>').join('');
+ $('notlist').innerHTML=notlar.map(x=>'<option value="'+esc(x)+'">').join('');
  $('lb').textContent='Yer: '+yerler.length+' · Not: '+notlar.length+' · Sistem kaydı: '+bek.length+(bek.length?'':'  (liste yok: Excel\'de Ayarlar > Mobil Listeleri Yaz, sonra buradan alın)')}
 // ---------- durum (Excel Durum formülüyle aynı sıra) ----------
 function durum(sicil,ad,yer,gor){
@@ -209,15 +221,44 @@ function yerOzet(y){const ds=hesaplaTum(),n=norm(y),tum=n===TUM;
   if(d.t==='YERİNDE')ok.add(duzelt(k.sicil));else if(d.t==='MÜKERRER')muk++;else if(d.c==='faz'||d.c==='yer'){faz++;fz.push([k,d])}}
  const nok=kay.filter(r=>!ok.has(r[0]));
  return{kay:kay.length,okut,yerinde:ok.size,nok,fz,faz,muk,ds}}
-function cntHtml(o){return [['Kayıtlı',o.kay,'c1'],['Okutulan',o.okut,''],['Yerinde',o.yerinde,'c2'],['Noksan',o.nok.length,'c3'],['Fazla',o.faz,'c4'],['Mükerrer',o.muk,'c5']].map(x=>'<div class="'+x[2]+'">'+x[0]+'<b>'+x[1]+'</b></div>').join('')}
+function cntHtml(o){return [['Kayıtlı',o.kay,'c1','kayitli'],['Okutulan',o.okut,'','okutulan'],['Yerinde',o.yerinde,'c2','yerinde'],['Noksan',o.nok.length,'c3','noksan'],['Fazla',o.faz,'c4','fazla'],['Mükerrer',o.muk,'c5','mukerrer']].map(x=>'<div class="'+x[2]+'" data-g="'+x[3]+'">'+x[0]+'<b>'+x[1]+'</b></div>').join('')}
 function ozetCiz(){const y=yerAdi();
  if(!y){$('oz').innerHTML='';$('cub').style.width='0';return}
  const o=yerOzet(y);$('oz').innerHTML=cntHtml(o);$('cub').style.width=(o.kay?Math.round(100*o.yerinde/o.kay):0)+'%';return o}
 function ozetSayfa(){const y=yerAdi();$('ozYer').textContent=y?('Yer / kişi: '+y):'Önce Sayım sekmesinden yer / kişi seçin (veya TÜM YERLER yazın).';
- if(!y){$('oz2').innerHTML='';$('noksan').innerHTML='';$('fazla').innerHTML='';return}
- const o=yerOzet(y);$('oz2').innerHTML=cntHtml(o);$('cub2').style.width=(o.kay?Math.round(100*o.yerinde/o.kay):0)+'%';
- $('noksan').innerHTML=o.nok.slice(0,300).map(r=>'<div class="it faz"><b>'+esc(r[1])+'</b> '+esc(r[4])+'<small>'+esc((r[6]||'')+' '+(r[7]||''))+' · '+esc(r[9])+(r[11]?' · '+esc(r[11]):'')+'</small></div>').join('')||'<div class="msg">Noksan yok.</div>';
- $('fazla').innerHTML=o.fz.slice(0,300).map(x=>'<div class="it '+x[1].c+'"><b>'+esc(x[0].sicil||x[0].malzeme)+'</b> '+esc(x[1].t)+'<small>'+esc(x[1].r?(x[1].r[4]+' · kayıtlı: '+x[1].r[9]):'')+'</small></div>').join('')||'<div class="msg">Fazla yok.</div>'}
+ if(!y){for(const i of['oz2','noksan','fazla','mukl','sayl'])$(i).innerHTML='';return}
+ const o=yerOzet(y);const tum=norm(y)===TUM,n=norm(y);$('oz2').innerHTML=cntHtml(o);$('cub2').style.width=(o.kay?Math.round(100*o.yerinde/o.kay):0)+'%';
+ $('nokN').textContent='('+o.nok.length+')';$('fazN').textContent='('+o.faz+')';
+ $('noksan').innerHTML=o.nok.slice(0,500).map(r=>'<div class="it nok" data-cp="'+esc(r[1])+'"><b>'+esc(r[1])+'</b> '+esc(r[4])+'<small>'+esc((r[6]||'')+' '+(r[7]||''))+' · '+esc(r[9])+(r[11]?' · '+esc(r[11]):'')+'</small></div>').join('')||'<div class="msg">Noksan yok.</div>';
+ $('fazla').innerHTML=o.fz.slice(0,500).map(x=>'<div class="it kfaz" data-cp="'+esc(x[0].sicil)+'"><b>'+esc(x[0].sicil||x[0].malzeme)+'</b> '+esc(x[1].t)+'<small>'+esc(x[1].r?(x[1].r[4]+' · kayıtlı: '+x[1].r[9]):'')+(x[0].not?' · '+esc(x[0].not):'')+'</small></div>').join('')||'<div class="msg">Fazla yok.</div>';
+ const mk=[],sy=[];for(const k of kayit){if(!tum&&norm(k.yer)!==n)continue;const d=o.ds.get(k.kimlik);if(d.t==='MÜKERRER')mk.push([k,d]);else if(d.t==='YERİNDE')sy.push([k,d])}
+ $('mukN').textContent='('+mk.length+')';$('sayN').textContent='('+sy.length+')';
+ $('mukl').innerHTML=mk.map(x=>'<div class="it kmuk"><b>'+esc(x[0].sicil)+'</b> MÜKERRER<small>'+esc(x[0].yer)+' · '+x[0].tarih+' '+x[0].saat+'</small></div>').join('')||'<div class="msg">Mükerrer yok.</div>';
+ $('sayl').innerHTML=sy.map(x=>'<div class="it say"><b>'+esc(x[0].sicil)+'</b> '+esc(x[1].r?x[1].r[4]:'')+'<small>'+x[0].tarih+' '+x[0].saat+'</small></div>').join('')}
+async function kopya(s){try{await navigator.clipboard.writeText(s)}catch(e){const a=document.createElement('textarea');a.value=s;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}}
+$('nokKop').onclick=async()=>{const y=yerAdi();if(!y)return;const o=yerOzet(y);await kopya(o.nok.map(r=>r[1]).join('\n'));$('nokKop').textContent='Kopyalandı ('+o.nok.length+' sicil)';setTimeout(()=>$('nokKop').textContent='Noksan sicilleri kopyala',2000)};
+document.addEventListener('click',async e=>{const d=e.target.closest&&e.target.closest('[data-cp]');if(d){await kopya(d.dataset.cp);Application_toast('Kopyalandı: '+d.dataset.cp)}});
+function Application_toast(s){const m=$('mesaj');if(m){m.className='msg ok';m.textContent=s}const b=$('nokKop');if(b){b.textContent=s;setTimeout(()=>b.textContent='Noksan sicilleri kopyala',1500)}}
+// ---- Yerler / Kişiler (Excel: YerlerKişiler + KişiYeriSayım)
+function yerlerSayfa(){const ds=hesaplaTum();const ad=new Map();for(const a of yerler)ad.set(norm(a),a);for(const [n,l] of yerSet){if(!ad.has(n)){const r=l.find(x=>norm(x[9])===n)||l[0];ad.set(n,norm(r[9])===n?r[9]:r[11])}}
+ const st=new Map();for(const k of kayit){const n=norm(k.yer);const s=st.get(n)||st.set(n,{o:0,y:0,f:0,m:0}).get(n);s.o++;const d=ds.get(k.kimlik);if(d.t==='YERİNDE')s.y++;else if(d.t==='MÜKERRER')s.m++;else if(d.c==='faz'||d.c==='yer')s.f++}
+ const q=norm($('yara').value);const satirlar=[...ad.entries()].filter(x=>!q||x[0].includes(q)).sort((a,b)=>a[1].localeCompare(b[1],'tr'));
+ $('yT').innerHTML='<table class="t y"><tr><th>Yer / Kişi</th><th>Kay.</th><th>Oku.</th><th>Yer.</th><th>Nok.</th><th>Faz.</th><th>Mük.</th><th>Durum</th></tr>'+satirlar.map(x=>{const k=(yerSet.get(x[0])||[]).length,s=st.get(x[0])||{o:0,y:0,f:0,m:0};const sy=s.o>0;
+  return '<tr data-yy="'+esc(x[1])+'"><td>'+esc(x[1])+'</td><td>'+k+'</td><td>'+s.o+'</td><td>'+s.y+'</td><td>'+Math.max(0,k-s.y)+'</td><td>'+s.f+'</td><td>'+s.m+'</td><td><span class="st" style="background:var(--'+(sy?'k-say':'k-faz')+');color:var(--'+(sy?'k-sayt':'k-fazt')+')">'+(sy?'SAYILDI':'SAYILMADI')+'</span></td></tr>'}).join('')+'</table>'}
+function yerDetay(y){$('yDK').classList.remove('hide');$('yDB').textContent='Kişi / Yer listesi: '+y;const o=yerOzet(y);const n=norm(y);const kay=yerKume(y)||[];
+ const okuY=new Set(),diger=new Set();for(const k of kayit){const d=o.ds.get(k.kimlik);const s=duzelt(k.sicil);if(d.t==='YERİNDE'&&(norm(y)===TUM||norm(k.yer)===n))okuY.add(s);else if(s)diger.add(s)}
+ let h=kay.map(r=>{const sy=okuY.has(r[0]),bs=!sy&&diger.has(r[0]);return '<div class="it '+(sy?'say':bs?'kfaz':'plain')+'" data-cp="'+esc(r[1])+'"><b>'+esc(r[1])+'</b> '+esc(r[4])+' <span class="st">'+(sy?'SAYILDI':bs?'BAŞKA YERDE SAYILDI':'SAYILMADI')+'</span><small>'+esc((r[6]||'')+' '+(r[7]||''))+(r[11]?' · '+esc(r[11]):'')+'</small></div>'}).join('');
+ h+=o.fz.map(x=>'<div class="it kfaz"><b>'+esc(x[0].sicil||x[0].malzeme)+'</b> FAZLA<small>'+esc(x[1].t)+'</small></div>').join('');$('yD').innerHTML=h||'<div class="msg">Kayıt yok.</div>';$('yDK').scrollIntoView({behavior:'smooth'})}
+$('yara').addEventListener('input',yerlerSayfa);
+$('yT').addEventListener('click',e=>{const r=e.target.closest('tr[data-yy]');if(!r)return;const y=r.dataset.yy;$('yer').value=y;LS.set('sonYer',y);ozetCiz();yerDetay(y)});
+$('yDS').onclick=()=>{document.querySelector('nav button[data-s=s-say]').click()};
+// ---- Sayaç linkleri
+let kfil={yer:'',durum:''};
+function git(g){const y=yerAdi();if(!y)return;const sek=s=>document.querySelector('nav button[data-s='+s+']').click();
+ if(g==='noksan'||g==='fazla'){sek('s-oz');setTimeout(()=>$(g==='noksan'?'cNok':'cFaz').scrollIntoView({behavior:'smooth'}),50)}
+ else if(g==='kayitli'){sek('s-yer');yerDetay(y)}
+ else{kfil={yer:y,durum:g==='yerinde'?'YERİNDE':g==='mukerrer'?'MÜKERRER':''};sek('s-kay')}}
+document.addEventListener('click',e=>{const d=e.target.closest&&e.target.closest('.cnt div[data-g]');if(d)git(d.dataset.g)});
 function urunSayfa(){const y=yerAdi();$('urYer').textContent=y?('Yer / kişi: '+y):'Yer seçilmedi: tüm sistem kayıtları';
  const kay=y?yerKume(y):bek;const m=new Map();for(const r of kay){const c=r[4]||r[3]||'(adsız)';m.set(c,(m.get(c)||0)+1)}
  const l=[...m.entries()].sort((a,b)=>b[1]-a[1]);
@@ -229,24 +270,26 @@ function sorgu(){const s=duzelt($('sq').value);if(!s){$('sqK').innerHTML='';$('s
 function satir(k,d,sil){return '<div class="it '+(d.c==='ok'?'':d.c)+'">'+(sil&&k.durum!=='gitti'?'<button class="x" data-sil="'+k.kimlik+'">×</button>':'')+'<b>'+esc(k.sicil||k.malzeme)+'</b> '+esc(d.t)+' <span class="msg">'+(k.durum==='gitti'?'✓':k.durum==='hata'?'⚠ hata':'⏳')+'</span><small>'+esc(k.yer)+' · '+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+(d.r?' · '+esc(d.r[4]):'')+'</small></div>'}
 function liste(){const ds=hesaplaTum();const sr=[...kayit].sort((a,b)=>a.kimlik<b.kimlik?1:-1);
  $('son').innerHTML=sr.slice(0,6).map(k=>satir(k,ds.get(k.kimlik),true)).join('')||'<div class="msg">Henüz kayıt yok.</div>';
- const q=norm($('ara').value);const t=sr.filter(k=>!q||norm([k.sicil,k.malzeme,k.yer,k.not,ds.get(k.kimlik).t].join(' ')).includes(q));
+ const q=norm($('ara').value);const fy=norm(kfil.yer),fd=kfil.durum;const t=sr.filter(k=>(!fy||fy===TUM||norm(k.yer)===fy)&&(!fd||ds.get(k.kimlik).t===fd)&&(!q||norm([k.sicil,k.malzeme,k.yer,k.not,ds.get(k.kimlik).t].join(' ')).includes(q)));
+ $('kf').innerHTML=(kfil.yer||kfil.durum)?('Süzgeç: '+esc(kfil.yer)+' '+esc(kfil.durum)+' <a href="#" id="kfT">temizle</a>'):'';
  $('kn').textContent='('+kayit.length+')';$('tum').innerHTML=t.slice(0,400).map(k=>satir(k,ds.get(k.kimlik),true)).join('');
  const b=kayit.filter(k=>k.durum==='bekliyor'||k.durum==='hata').length;$('bek').textContent=b+' bekliyor';}
-function hepsi(){onizle();ozetCiz();liste();if($('s-oz').classList.contains('on'))ozetSayfa();if($('s-ur').classList.contains('on'))urunSayfa()}
+function hepsi(){$('yTem').classList.toggle('hide',!$('yer').value);onizle();ozetCiz();liste();if($('s-oz').classList.contains('on'))ozetSayfa();if($('s-ur').classList.contains('on'))urunSayfa();if($('s-yer').classList.contains('on'))yerlerSayfa()}
 // ---------- ekleme ----------
 let sonS='',sonZ=0;
-async function ekle(){const yer=yerAdi(),sicil=duzelt($('sicil').value),ad=temiz($('ad').value);
+function sicilGoster(){const v=duzelt($('sicil').value);if(v&&v!==$('sicil').value)$('sicil').value=v}
+async function ekle(){sicilGoster();const yer=yerAdi(),sicil=duzelt($('sicil').value),ad=temiz($('ad').value);
  if(!sicil&&!ad){$('sicil').focus();return}
  if(!yer){$('mesaj').className='msg er';$('mesaj').textContent='Önce sayım yerini / kişiyi seçin.';$('yer').focus();return}
  const t=Date.now();if(sicil&&sicil===sonS&&t-sonZ<1500){$('sicil').value='';return}sonS=sicil;sonZ=t;
  const gor=new Set(kayit.map(k=>duzelt(k.sicil)).filter(Boolean));const d=durum(sicil,ad,yer,gor);
  let nt=$('not').value;if(!nt){if(d.t==='FAZLA – başka yerde kayıtlı')nt='Başka odadan geldi';else if(d.t==='FAZLA – raporda yok')nt='Sistemde kaydı yok'}
- const ek=temiz($('acik').value);const n=new Date();
- const k={kimlik:damga(n)+'-'+temiz(LS.get('cihaz','tel')).replace(/[^\w-]/g,'')+'-'+rast(5),yer,tarih:tarihTR(n),saat:saatTR(n),sicil,malzeme:ad,not:[nt,ek].filter(Boolean).join(' – '),durum:'bekliyor',deneme:0,hata:'',medya:[]};
+ const n=new Date();
+ const k={kimlik:damga(n)+'-'+temiz(LS.get('cihaz','tel')).replace(/[^\w-]/g,'')+'-'+rast(5),yer,tarih:tarihTR(n),saat:saatTR(n),sicil,malzeme:ad,not:nt,durum:'bekliyor',deneme:0,hata:'',medya:[]};
  try{await dbYaz(k)}catch(e){$('mesaj').className='msg er';$('mesaj').textContent='KAYIT SAKLANAMADI: '+e.message;return}
  kayit.push(k);LS.set('sonYer',yer);LS.set('yerGecmis',[yer,...LS.get('yerGecmis',[]).filter(x=>x!==yer)].slice(0,50));
  $('mesaj').className='msg '+(d.c==='ok'?'ok':'er');$('mesaj').textContent=(sicil||ad)+' – '+d.t;
- ses(d.c);$('sicil').value='';$('ad').value='';$('not').value='';$('acik').value='';
+ ses(d.c);$('sicil').value='';$('ad').value='';$('not').value='';
  hepsi();$('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t);$('kart').innerHTML=kartHtml(d.r,[['Kaydedildi',k.tarih+' '+k.saat]]);
  medyaGoster(sicil,yer);$('sicil').focus();gonder(false)}
 function ses(c){try{if(navigator.vibrate)navigator.vibrate(c==='ok'?[30]:c==='muk'?[30,60,30]:[120,60,120]);
@@ -334,7 +377,7 @@ $('cek').onclick=async()=>{try{const jt=await belirtec();let y,n,b;for(const[a,s
 $('dosya').onchange=async e=>{let y=null,n=null,b=null;for(const f of e.target.files){const t=await f.text(),a=f.name.toLowerCase();if(a.includes('bekle'))b=t;else if(a.includes('yer'))y=t;else if(a.includes('not'))n=t}
  if(y!=null)await kvS('yerler',y);if(n!=null)await kvS('notlar',n);if(b!=null)await kvS('beklenen',b);listeKur(y,n,b);hepsi();$('am').textContent='Listeler yüklendi.'};
 $('test').onclick=async()=>{try{const jt=await belirtec();const r=await fetch(gUrl(mobYol('TEST-'+damga(new Date())+'.tmp'))+':/content',{method:'PUT',headers:{Authorization:'Bearer '+jt,'Content-Type':'text/plain'},body:'test'});if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();await fetch('https://graph.microsoft.com/v1.0/me/drive/items/'+j.id,{method:'DELETE',headers:{Authorization:'Bearer '+jt}});$('am').textContent='Bağlantı çalışıyor (test dosyası yazıldı ve silindi).'}catch(e){$('am').textContent='Bağlantı kurulamadı: '+e.message}};
-$('kaydet').onclick=()=>{LS.set('cihaz',$('cihaz').value.trim()||'tel');LS.set('cid',$('cid').value.trim());LS.set('kok',$('kok').value.trim()||'Sayım İşlemleri/Mobil');LS.set('resimK',$('rk').value.trim()||'Sayım İşlemleri/Sayım Fotografları');LS.set('videoK',$('vk').value.trim()||'Sayım İşlemleri/Sayım Videoları');msalApp=null;bagGoster();$('am').textContent+=' Kaydedildi.'};
+$('kaydet').onclick=()=>{LS.set('cihaz',$('cihaz').value.trim()||'tel');LS.set('cid',$('cid').value.trim());LS.set('oto',$('oto').checked);LS.set('kok',$('kok').value.trim()||'Sayım İşlemleri/Mobil');LS.set('resimK',$('rk').value.trim()||'Sayım İşlemleri/Sayım Fotografları');LS.set('videoK',$('vk').value.trim()||'Sayım İşlemleri/Sayım Videoları');msalApp=null;bagGoster();$('am').textContent+=' Kaydedildi.'};
 $('giris').onclick=async()=>{if(!msalHazir()){$('am').textContent='Önce Client kimliğini girip Kaydet\'e basın.';return}try{if(msalApp.initialize)await msalApp.initialize();await msalApp.loginRedirect({scopes:SC})}catch(e){$('am').textContent='Giriş başlatılamadı: '+e.message}};
 $('cikis').onclick=async()=>{if(msalApp&&hesap){try{await msalApp.logoutRedirect({account:hesap})}catch(e){}}hesap=null;bagGoster()};
 $('sil').onclick=async()=>{if(!confirm('Gönderilmiş kayıtlar telefondan silinsin mi? (Okutma geçmişi / mükerrer kontrolü de bu kayıtlar için kalkar)'))return;for(const k of kayit.filter(k=>k.durum==='gitti'))await dbSil(k.kimlik);kayit=kayit.filter(k=>k.durum!=='gitti');hepsi()};
@@ -342,15 +385,31 @@ $('sifir').onclick=async()=>{const y=yerAdi();if(!y)return;if(!confirm(y+' için
 document.addEventListener('click',async e=>{const s=e.target.dataset&&e.target.dataset.sil;if(s&&confirm('Bu kayıt silinsin mi?')){await dbSil(s);kayit=kayit.filter(k=>k.kimlik!==s);hepsi()}});
 // ---------- genel ----------
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,main>section').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.s).classList.add('on');
- $('altbas').textContent={'s-say':'Fiziki Saha Sayım','s-oz':'Sayım Özeti / Kalan Ürün','s-ur':'Ürün Özeti','s-sor':'Malzeme Sorgu','s-kay':'Kayıtlar','s-ay':'Ayarlar'}[b.dataset.s];
- if(b.dataset.s==='s-oz')ozetSayfa();if(b.dataset.s==='s-ur')urunSayfa();if(b.dataset.s==='s-say')$('sicil').focus();if(b.dataset.s==='s-sor')$('sq').focus();liste()});
-$('ekle').onclick=ekle;$('temizle').onclick=()=>{for(const i of['sicil','ad','acik'])$(i).value='';$('not').value='';onizle();$('sicil').focus()};
+ $('altbas').textContent={'s-say':'Fiziki Saha Sayım','s-oz':'Sayım Özeti / Kalan Ürün','s-yer':'Yerler / Kişiler · Kişi/Yer Listesi','s-ur':'Ürün Özeti · Malzeme Sorgu','s-kay':'Kayıtlar','s-ay':'Ayarlar'}[b.dataset.s];
+ if(b.dataset.s==='s-oz')ozetSayfa();if(b.dataset.s==='s-ur')urunSayfa();if(b.dataset.s==='s-yer')yerlerSayfa();if(b.dataset.s==='s-say')$('sicil').focus();liste();window.scrollTo(0,0)});
+$('ekle').onclick=ekle;$('temizle').onclick=()=>{for(const i of['sicil','ad','not'])$(i).value='';onizle();$('sicil').focus()};$('gd').onclick=()=>{$('sicil').value='';onizle();$('sicil').focus()};
+$('yTem').onclick=()=>{$('yer').value='';LS.set('sonYer','');hepsi();$('yer').focus()};
+document.addEventListener('click',e=>{if(e.target.id==='kfT'){e.preventDefault();kfil={yer:'',durum:''};liste()}});
 $('sicil').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();ekle()}});
-let oz=null;$('sicil').addEventListener('input',()=>{clearTimeout(oz);oz=setTimeout(onizle,200)});$('ad').addEventListener('input',onizle);
+let oz=null,ot=null;$('sicil').addEventListener('input',()=>{clearTimeout(oz);oz=setTimeout(onizle,200);clearTimeout(ot);if(LS.get('oto',false)&&$('sicil').value.replace(/\s/g,'').length>=8)ot=setTimeout(()=>ekle(),700)});$('ad').addEventListener('input',onizle);
+// ---------- kamerayla okuma ----------
+let cam={akt:false,sur:true,stream:null,zx:null,son:'',sonT:0};
+function camBulundu(v){const s=duzelt(v);if(!s)return;const t=Date.now();if(s===cam.son&&t-cam.sonT<2500)return;cam.son=s;cam.sonT=t;$('sicil').value=s;$('camH').textContent='Okundu: '+s;ekle().then(()=>{if(!cam.sur)camKapat()})}
+async function camAc(){$('camK').classList.remove('hide');cam.akt=true;$('camH').textContent='Kamera açılıyor…';
+ try{
+  if('BarcodeDetector'in window){const det=new BarcodeDetector();cam.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});const v=$('camV');v.srcObject=cam.stream;await v.play();$('camH').textContent='Barkodu çerçeveye getirin';
+   const tur=async()=>{if(!cam.akt)return;try{const r=await det.detect(v);if(r.length)camBulundu(r[0].rawValue)}catch(e){}setTimeout(tur,250)};tur()}
+  else{await new Promise((res,rej)=>{if(window.ZXing)return res();const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';s.onload=res;s.onerror=()=>rej(new Error('Okuma kütüphanesi indirilemedi (internet gerekir)'));document.head.appendChild(s)});
+   cam.zx=new ZXing.BrowserMultiFormatReader();$('camH').textContent='Barkodu çerçeveye getirin';
+   await cam.zx.decodeFromVideoDevice(null,'camV',(r,e)=>{if(r)camBulundu(r.getText())})}
+ }catch(e){$('camH').textContent='Kamera açılamadı: '+e.message;}}
+function camKapat(){cam.akt=false;try{if(cam.zx)cam.zx.reset()}catch(e){}cam.zx=null;if(cam.stream){cam.stream.getTracks().forEach(t=>t.stop());cam.stream=null}$('camV').srcObject=null;$('camK').classList.add('hide');$('sicil').focus()}
+$('kam').onclick=()=>{if(!yerAdi()){$('mesaj').className='msg er';$('mesaj').textContent='Önce sayım yerini / kişiyi seçin.';$('yer').focus();return}camAc()};
+$('camX').onclick=camKapat;$('camS').onclick=()=>{cam.sur=!cam.sur;$('camS').textContent='Sürekli: '+(cam.sur?'AÇIK':'KAPALI')};
 $('sq').addEventListener('input',sorgu);$('ara').addEventListener('input',liste);
 window.addEventListener('online',()=>gonder(false));setInterval(()=>gonder(false),60000);
 (async()=>{$('ru').textContent=location.origin+location.pathname.replace(/index\.html$/,'');
- $('cihaz').value=LS.get('cihaz','');$('cid').value=LS.get('cid','');$('kok').value=LS.get('kok','Sayım İşlemleri/Mobil');$('rk').value=LS.get('resimK','Sayım İşlemleri/Sayım Fotografları');$('vk').value=LS.get('videoK','Sayım İşlemleri/Sayım Videoları');
+ $('oto').checked=!!LS.get('oto',false);$('cihaz').value=LS.get('cihaz','');$('cid').value=LS.get('cid','');$('kok').value=LS.get('kok','Sayım İşlemleri/Mobil');$('rk').value=LS.get('resimK','Sayım İşlemleri/Sayım Fotografları');$('vk').value=LS.get('videoK','Sayım İşlemleri/Sayım Videoları');
  try{await dbAc()}catch(e){$('mesaj').className='msg er';$('mesaj').textContent='Yerel depolama açılamadı: '+e.message;return}
  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
  kayit=(await dbHepsi()).sort((a,b)=>a.kimlik<b.kimlik?-1:1);

@@ -142,12 +142,13 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
   <div class="msg" id="am"></div>
   <div class="msg">Yönlendirme adresi (Entra'da SPA): <b id="ru"></b></div></div>
  <div class="card"><h3>Listeler (Excel'den)</h3><div class="msg" id="lb"></div>
-  <button class="b" id="cek">OneDrive'dan listeleri al</button>
+  <button class="b" id="cek">OneDrive'dan listeleri şimdi al</button><div class="msg" id="lz">Giriş yapılınca listeler 10 dakikada bir ve uygulama açılınca otomatik güncellenir.</div>
   <label>veya dosyadan yükle (yerler.txt, notlar.txt, malzemeler.txt, beklenen.txt)</label><input type="file" id="dosya" accept=".txt" multiple>
   <button class="b r" id="sifir">Bu yerin okuma durumunu yeniden başlat…</button></div>
  <div class="card"><button class="b g" id="sil">Gönderilmiş kayıtları telefondan sil</button></div>
 </section>
 </main>
+<div id="toast" class="hide" style="position:fixed;left:50%;bottom:88px;transform:translateX(-50%);background:#1b2430;color:#fff;padding:8px 16px;border-radius:20px;font-size:14px;z-index:30;max-width:90%"></div>
 <div class="cam hide" id="camK"><div class="hd" id="camH">Barkodu çerçeveye getirin</div><video id="camV" playsinline muted></video><div class="cb"><button class="b g" id="camS">Sürekli: AÇIK</button><button class="b r" id="camX">Kapat</button></div></div>
 <nav>
  <button data-s="s-say" class="on"><b>▦</b>Sayım</button><button data-s="s-oz"><b>◔</b>Özet</button><button data-s="s-yer"><b>⌂</b>Yerler</button>
@@ -161,7 +162,7 @@ const NOT0=["Etiket yok","Etiket silik","Hasarlı","Başka odadan geldi","Sistem
 const TUM='TÜM YERLER';
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const p2=n=>String(n).padStart(2,'0');
-const norm=s=>String(s||'').trim().toLocaleUpperCase('tr').replace(/\s+/g,' ');
+const norm=s=>String(s||'').trim().toLocaleUpperCase('tr').replace(/İ/g,'I').replace(/\s+/g,' '); // İ ve I aynı sayılır (kaynakta BELGİN/BELGIN gibi çift yazımlar var)
 const kurum=s=>norm(s).startsWith('YÜKSEKOKUL SEKRETERLİĞİ');
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const tarihTR=d=>p2(d.getDate())+'.'+p2(d.getMonth()+1)+'.'+d.getFullYear();
@@ -213,7 +214,7 @@ function hesaplaTum(){const gor=new Set(),o=new Map();for(const k of kayit){cons
 // ---------- bilgi kartı ----------
 function kartHtml(r,extra){if(!r)return'';
  const a=[['Açıklama',r[3]],['Ek Özellik',r[5]],['Kayıtlı Yer / Kişi',r[9]],['Kime verildi / kimde',r[11]],['Zimmet Tarihi',r[13]],['Fiş No',r[12]],['Fiş Son Durum',r[8]],['Sicil No',r[1]],['Bar_Kod',r[2]]].concat(extra||[]);
- return '<div class="bas">'+esc((r[4]||'')+' '+(r[6]||'')+' '+(r[7]||'')).trim()+'</div>'+a.filter(x=>x[1]&&String(x[1]).trim()).map(x=>'<b>'+x[0]+'</b><span>'+esc(x[1])+'</span>').join('')}
+ return '<div class="bas">'+esc((r[4]||'')+' '+(r[6]||'')+' '+(r[7]||'')).trim()+'</div>'+a.filter(x=>x[1]&&String(x[1]).trim()).map(x=>'<b>'+x[0]+'</b><span'+((x[0]==='Sicil No'||x[0]==='Bar_Kod')?' data-cp="'+esc(x[1])+'" style="cursor:pointer;text-decoration:underline dotted"':'')+'>'+esc(x[1])+'</span>').join('')}
 function yerAdi(){return $('yer').value.trim()}
 function onizle(){const gor=new Set(kayit.map(k=>duzelt(k.sicil)).filter(Boolean));
  const d=durum($('sicil').value,$('ad').value,yerAdi(),gor);const n=new Date();
@@ -243,8 +244,8 @@ function ozetSayfa(){const y=yerAdi();$('ozYer').textContent=y?('Yer / kişi: '+
  $('sayl').innerHTML=sy.map(x=>'<div class="it say"><b>'+esc(x[0].sicil)+'</b> '+esc(x[1].r?x[1].r[4]:'')+'<small>'+x[0].tarih+' '+x[0].saat+'</small></div>').join('')}
 async function kopya(s){try{await navigator.clipboard.writeText(s)}catch(e){const a=document.createElement('textarea');a.value=s;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}}
 $('nokKop').onclick=async()=>{const y=yerAdi();if(!y)return;const o=yerOzet(y);await kopya(o.nok.map(r=>r[1]).join('\n'));$('nokKop').textContent='Kopyalandı ('+o.nok.length+' sicil)';setTimeout(()=>$('nokKop').textContent='Noksan sicilleri kopyala',2000)};
-document.addEventListener('click',async e=>{const d=e.target.closest&&e.target.closest('[data-cp]');if(d){await kopya(d.dataset.cp);Application_toast('Kopyalandı: '+d.dataset.cp)}});
-function Application_toast(s){const m=$('mesaj');if(m){m.className='msg ok';m.textContent=s}const b=$('nokKop');if(b){b.textContent=s;setTimeout(()=>b.textContent='Noksan sicilleri kopyala',1500)}}
+document.addEventListener('click',async e=>{if(e.target.closest&&e.target.closest('button'))return;const d=e.target.closest&&e.target.closest('[data-cp]');if(d){await kopya(d.dataset.cp);Application_toast('Kopyalandı: '+d.dataset.cp)}});
+let tt=null;function Application_toast(s){const m=$('toast');m.textContent=s;m.classList.remove('hide');clearTimeout(tt);tt=setTimeout(()=>m.classList.add('hide'),1600)}
 // ---- Yerler / Kişiler (Excel: YerlerKişiler + KişiYeriSayım)
 function yerlerSayfa(){const ds=hesaplaTum();const ad=new Map();for(const a of yerler)ad.set(norm(a),a);for(const [n,l] of yerSet){if(!ad.has(n)){const r=l.find(x=>norm(x[9])===n)||l[0];ad.set(n,norm(r[9])===n?r[9]:r[11])}}
  const st=new Map();for(const k of kayit){const n=norm(k.yer);const s=st.get(n)||st.set(n,{o:0,y:0,f:0,m:0}).get(n);s.o++;const d=ds.get(k.kimlik);if(d.t==='YERİNDE')s.y++;else if(d.t==='MÜKERRER')s.m++;else if(d.c==='faz'||d.c==='yer')s.f++}
@@ -281,14 +282,14 @@ function urunSayfa(){const y=yerAdi(),fiz=$('uK').value==='fiz',n=norm(y),tum=!y
  const gb=new Map(),ga=new Map();for(const x of kay){const g=gb.get(x.b)||gb.set(x.b,{x,n:0}).get(x.b);g.n++;ga.set(x.a,(ga.get(x.a)||0)+1)}
  const la=[...ga.entries()].sort((a,b)=>b[1]-a[1]);
  $('urSt').textContent='İSTATİSTİK ►  Toplam: '+kay.length+' adet | Çeşit: '+gb.size+' | Tür: '+ga.size+(la.length?' | En çok: '+la[0][0]+' ('+la[0][1]+')':'');
- $('urT').innerHTML='<table class="t"><tr><th>Bar_Kod</th><th>Açıklama</th><th>Cinsi</th><th>Ek Özellik</th><th>Marka</th><th>Model</th><th>Adet</th></tr>'+[...gb.values()].sort((a,b)=>b.n-a.n).slice(0,500).map(g=>'<tr><td>'+esc(g.x.b)+'</td><td>'+esc(g.x.a)+'</td><td>'+esc(g.x.c)+'</td><td>'+esc(g.x.e)+'</td><td>'+esc(g.x.m)+'</td><td>'+esc(g.x.o)+'</td><td>'+g.n+'</td></tr>').join('')+'</table>';
+ $('urT').innerHTML='<table class="t"><tr><th>Bar_Kod</th><th>Açıklama</th><th>Cinsi</th><th>Ek Özellik</th><th>Marka</th><th>Model</th><th>Adet</th></tr>'+[...gb.values()].sort((a,b)=>b.n-a.n).slice(0,500).map(g=>'<tr><td data-cp="'+esc(g.x.b)+'" style="cursor:pointer">'+esc(g.x.b)+'</td><td>'+esc(g.x.a)+'</td><td>'+esc(g.x.c)+'</td><td>'+esc(g.x.e)+'</td><td>'+esc(g.x.m)+'</td><td>'+esc(g.x.o)+'</td><td>'+g.n+'</td></tr>').join('')+'</table>';
  $('urA').innerHTML='<table class="t"><tr><th>Açıklama (toplam)</th><th>Adet</th></tr>'+la.map(x=>'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td></tr>').join('')+'</table>'}
 $('uK').onchange=urunSayfa;
 function sorgu(){const s=duzelt($('sq').value);if(!s){$('sqK').innerHTML='';$('sqS').innerHTML='';return}
  const r=anah.get(s)||(barm.get(s)||[])[0];$('sqK').innerHTML=r?kartHtml(r):'<span class="msg">Sistemde kayıt bulunamadı.</span>';
- $('sqS').innerHTML=kayit.filter(k=>duzelt(k.sicil)===s).map(k=>'<div class="it plain">Sayımda okutuldu: <b>'+esc(k.yer)+'</b><small>'+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+'</small></div>').join('')}
+ $('sqS').innerHTML=kayit.filter(k=>duzelt(k.sicil)===s).map(k=>'<div class="it plain" data-cp="'+esc(k.sicil)+'">Sayımda okutuldu: <b>'+esc(k.yer)+'</b><small>'+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+'</small></div>').join('')}
 // ---------- kayıt satırları ----------
-function satir(k,d,sil){return '<div class="it '+(d.c==='ok'?'':d.c)+'">'+(sil&&k.durum!=='gitti'?'<button class="x" data-sil="'+k.kimlik+'">×</button>':'')+'<b>'+esc(k.sicil||k.malzeme)+'</b> '+esc(d.t)+' <span class="msg">'+(k.durum==='gitti'?'✓':k.durum==='hata'?'⚠ hata':'⏳')+'</span><small>'+esc(k.yer)+' · '+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+(d.r?' · '+esc(d.r[4]):'')+'</small></div>'}
+function satir(k,d,sil){return '<div class="it '+(d.c==='ok'?'':d.c)+'"'+(k.sicil?' data-cp="'+esc(k.sicil)+'"':'')+'>'+(sil&&k.durum!=='gitti'?'<button class="x" data-sil="'+k.kimlik+'">×</button>':'')+'<b>'+esc(k.sicil||k.malzeme)+'</b> '+esc(d.t)+' <span class="msg">'+(k.durum==='gitti'?'✓':k.durum==='hata'?'⚠ hata':'⏳')+'</span><small>'+esc(k.yer)+' · '+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+(d.r?' · '+esc(d.r[4]):'')+'</small></div>'}
 function liste(){const ds=hesaplaTum();const sr=[...kayit].sort((a,b)=>a.kimlik<b.kimlik?1:-1);
  $('son').innerHTML=sr.slice(0,6).map(k=>satir(k,ds.get(k.kimlik),true)).join('')||'<div class="msg">Henüz kayıt yok.</div>';
  const q=norm($('ara').value);const fy=norm(kfil.yer),fd=kfil.durum;const t=sr.filter(k=>(!fy||fy===TUM||norm(k.yer)===fy)&&(!fd||ds.get(k.kimlik).t===fd)&&(!q||norm([k.sicil,k.malzeme,k.yer,k.not,ds.get(k.kimlik).t].join(' ')).includes(q)));
@@ -393,6 +394,14 @@ $('paylas').onclick=async()=>{const b=kayit.filter(k=>k.durum!=='gitti');if(!b.l
  try{if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:'Sayım kayıtları'});else{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=ad;a.click()}
   if(confirm('Dosyayı kaydettiniz / gönderdiniz mi? Evet derseniz bu kayıtlar "gönderildi" işaretlenir.')){for(const k of b){k.durum='gitti';await dbYaz(k)}liste()}
   $('gm').textContent='Dosyayı OneDrive\\Sayım İşlemleri\\Mobil\\Gelen klasörüne koyun; Excel alır (Ayarlar > Mobil Kayıtları Al).'}catch(e){$('gm').textContent='İptal edildi.'}};
+async function listeOto(elle){if(!hesap||!navigator.onLine)return false;try{const jt=await belirtec();const meta=LS.get('listeMeta',{});let y,n,b,m,deg=0;
+ for(const[a,s]of[['yerler.txt',v=>y=v],['notlar.txt',v=>n=v],['malzemeler.txt',v=>m=v],['beklenen.txt',v=>b=v]]){
+  const g=await fetch(gUrl(mobYol(a))+'?$select=lastModifiedDateTime,size',{headers:{Authorization:'Bearer '+jt}});if(!g.ok)continue;const j=await g.json();const imza=j.lastModifiedDateTime+'|'+j.size;
+  if(!elle&&meta[a]===imza)continue;const r=await fetch(gUrl(mobYol(a))+':/content',{headers:{Authorization:'Bearer '+jt}});if(r.ok){s(await r.text());meta[a]=imza;deg++}}
+ if(deg){if(y!==undefined)await kvS('yerler',y);if(n!==undefined)await kvS('notlar',n);if(m!==undefined)await kvS('malzemeler',m);if(b!==undefined)await kvS('beklenen',b);LS.set('listeMeta',meta);
+  listeKur(y!=null?y:null,n!=null?n:null,b!=null?b:null,m!=null?m:null);hepsi();LS.set('listeZaman',Date.now())}
+ $('lz').textContent='Son kontrol: '+new Date().toLocaleTimeString('tr-TR')+(deg?' · '+deg+' dosya yenilendi':' · değişiklik yok');return true}catch(e){$('lz').textContent='Liste güncelleme hatası: '+e.message;return false}}
+setInterval(()=>listeOto(false),10*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)listeOto(false)});
 $('cek').onclick=async()=>{try{const jt=await belirtec();let y,n,b,m;for(const[a,s]of[['yerler.txt',v=>y=v],['notlar.txt',v=>n=v],['malzemeler.txt',v=>m=v],['beklenen.txt',v=>b=v]]){const r=await fetch(gUrl(mobYol(a))+':/content',{headers:{Authorization:'Bearer '+jt}});if(r.ok)s(await r.text())}
  await kvS('yerler',y);await kvS('notlar',n);await kvS('malzemeler',m);await kvS('beklenen',b);listeKur(y!=null?y:null,n!=null?n:null,b!=null?b:null,m!=null?m:null);hepsi();$('am').textContent='Listeler OneDrive\'dan alındı.'}catch(e){$('am').textContent='Alınamadı: '+e.message+' (Excel\'de Mobil Listeleri Yaz çalıştı mı?)'}};
 $('dosya').onchange=async e=>{let y=null,n=null,b=null,m=null;for(const f of e.target.files){const t=await f.text(),a=f.name.toLowerCase();if(a.includes('bekle'))b=t;else if(a.includes('malzeme'))m=t;else if(a.includes('yer'))y=t;else if(a.includes('not'))n=t}
@@ -437,5 +446,6 @@ window.addEventListener('online',()=>gonder(false));setInterval(()=>gonder(false
  listeKur(await kvG('yerler')??null,await kvG('notlar')??null,await kvG('beklenen')??null,await kvG('malzemeler')??null);
  $('yer').value=LS.get('sonYer','');await oturum();hepsi();
  if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+ listeOto(false);
  if(!LS.get('cihaz','')){document.querySelector('nav button[data-s=s-ay]').click();$('am').textContent='Önce cihaz adını yazıp Kaydet\'e basın.'}else $('sicil').focus();gonder(false)})();
 </script></body></html>

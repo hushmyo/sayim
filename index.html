@@ -35,7 +35,7 @@ button.b{width:100%;font:inherit;font-weight:600;padding:12px;border:0;border-ra
 button.b.g{background:var(--bg);color:var(--fg);border:1px solid var(--ln)}button.b.r{background:var(--er)}button.b.y{background:var(--ok)}
 .row{display:flex;gap:8px}.row>*{flex:1}
 .oner{border:1px solid var(--ln);border-radius:9px;background:var(--card);max-height:230px;overflow:auto;margin-top:3px}
-.oner div{padding:10px 12px;border-bottom:1px solid var(--ln)}.oner div small{color:var(--mu);float:right}
+.oner div{padding:10px 12px;border-bottom:1px solid var(--ln)}.oner div small{color:var(--mu);float:right}.oner div.on{background:var(--ln)}.xl{position:absolute;right:46px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:17px;background:var(--ln);color:var(--fg);font-size:13px;padding:0}.lnk{float:right;color:var(--ac);font-weight:700;text-decoration:none;font-size:13px;cursor:pointer}.yw .giris{padding-right:84px}
 .hide{display:none!important}
 .ban{border-radius:12px;padding:12px;margin:8px 0;font-weight:700;font-size:18px;text-align:center}
 .ban small{display:block;font-weight:500;font-size:13px;margin-top:2px;opacity:.85}
@@ -69,19 +69,19 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 <section id="s-say" class="on">
  <div class="card">
   <label>SAYIM YERİ / KİŞİ ►</label>
-  <div class="yw"><input id="yer" class="giris" placeholder="Yer veya kişi yazın / seçin" autocomplete="off"><button class="xb hide" id="yTem" title="Temizle">×</button></div>
+  <div class="yw"><input id="yer" class="giris" placeholder="Yer veya kişi yazın / seçin" autocomplete="off"><button class="xl" id="yAc" title="Tüm listeyi göster" type="button">▼</button><button class="xb hide" id="yTem" title="Temizle">×</button></div>
   <div id="oner" class="oner hide"></div>
   <div class="cnt" id="oz" style="margin-top:8px"></div>
   <div class="bar"><i id="cub"></i></div>
  </div>
  <div class="card">
-  <label>SİCİL NO / BARKOD (okutun)</label>
+  <label>SİCİL NO / BARKOD (okutun) <a class="lnk" id="kalanGit">Kalan ürünler ►</a></label>
   <input id="sicil" class="giris" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Okutun veya yazın, Enter">
-  <div class="row"><button class="b g" id="yap">📋 Yapıştır</button><button class="b g" id="gd">✖ Sicili temizle</button></div>
+  <div class="row"><button class="b g" id="gd">✖ Sicili temizle</button><button class="b g" id="yap">📋 Yapıştır</button></div>
   <div class="row"><button class="b g" id="kam">📷 Kamerayla oku (yedek yöntem)</button></div>
   <label>Not / Fazla Açıklama</label><input id="not" class="giris" list="notlist" autocomplete="off" placeholder="listeden seçin veya yazın"><datalist id="notlist"></datalist><datalist id="yerlist"></datalist>
   <label>Malzeme Adı (elle – sicilsiz)</label><input id="ad" class="giris" list="malist" autocomplete="off" placeholder="listeden seçin veya yazın"><datalist id="malist"></datalist>
-  <div class="row"><button class="b y" id="ekle">Kaydet (Enter)</button><button class="b g" id="temizle">Hepsini temizle</button></div>
+  <div class="row"><button class="b g" id="temizle">Hepsini temizle</button><button class="b y" id="ekle">Kaydet (Enter)</button></div>
   <div id="ban" class="ban no">—</div>
   <div id="kart" class="kv"></div>
   <div class="msg" id="mesaj"></div>
@@ -97,23 +97,23 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 <!-- ============ ÖZET / KALAN ÜRÜN ============ -->
 <section id="s-oz">
  <div class="card"><h3>Sayım özeti · Kalan ürün</h3><div class="msg" id="ozYer"></div><div class="cnt" id="oz2"></div><div class="bar"><i id="cub2"></i></div></div>
- <div class="card" id="cNok"><h3>Noksan (kayıtlı, okutulmadı) <span class="msg" id="nokN"></span></h3><div class="msg">Bir satıra dokunursanız yalnız o sicil kopyalanır.</div><div id="noksan"></div><button class="b g" id="nokKop" style="margin-top:8px">Noksan sicilleri kopyala</button></div>
+ <div class="card" id="cNok"><h3>Noksan (kayıtlı, okutulmadı) <span class="msg" id="nokN"></span> <a class="lnk" id="nokOkut">▶ Yeni barkod okut</a></h3><div class="msg">Bir satıra dokunursanız yalnız o sicil kopyalanır.</div><div id="noksan"></div><button class="b g" id="nokKop" style="margin-top:8px">Noksan sicilleri kopyala</button></div>
  <div class="card" id="cFaz"><h3>Fazla (okutuldu, burada kayıtlı değil) <span class="msg" id="fazN"></span></h3><div id="fazla"></div></div>
  <div class="card" id="cMuk"><h3>Mükerrer <span class="msg" id="mukN"></span></h3><div id="mukl"></div></div>
  <div class="card" id="cSay"><details><summary>Okutulanlar (yerinde) <span class="msg" id="sayN"></span></summary><div id="sayl"></div></details></div>
 </section>
 <!-- ============ YERLER / KİŞİLER + KİŞİ/YER LİSTESİ ============ -->
 <section id="s-yer">
- <div class="card"><h3>Yerler / Kişiler</h3><input id="yara" placeholder="Ara…"><div id="yT"></div></div>
  <div class="card" id="yDK"><h3 id="yDB">Kişi / Yer listesi (her sicil ayrı satır)</h3>
-  <label>Kişi / Yer (boşsa Sayım sekmesindeki seçim)</label><div class="yw"><input id="kyY" class="giris" list="yerlist" autocomplete="off" placeholder="değiştirmek için yazın / seçin"><button class="xb hide" id="kyYT" title="Temizle">×</button></div>
+  <label>Kişi / Yer (Sayım sekmesindeki seçimle gelir, değiştirebilirsiniz)</label><div class="yw"><input id="kyY" class="giris" autocomplete="off" placeholder="yazın / seçin"><button class="xl" id="kyYA" type="button" title="Tüm liste">▼</button><button class="xb hide" id="kyYT" title="Sayım sekmesindeki seçime dön">×</button></div><div id="kyOner" class="oner hide"></div>
   <div class="row"><select id="kyK"><option value="sis">Sistem kaydına göre</option><option value="fiz">Fiziki sayıma göre</option></select><select id="kyD"></select></div>
   <div class="msg" id="kyS"></div><div id="yD"></div></div>
+ <div class="card"><h3>Yerler / Kişiler</h3><input id="yara" placeholder="Ara…"><div id="yT"></div></div>
+
 </section>
 <!-- ============ ÜRÜN ÖZETİ + MALZEME SORGU ============ -->
 <section id="s-ur">
- <div class="card"><h3>Ürün özeti</h3><div class="msg"><a href="#cSorgu" id="sqLink">▼ Malzeme sorguya git</a></div>
-  <label>Kişi / Yer (boşsa Sayım sekmesindeki seçim)</label><div class="yw"><input id="uY" class="giris" list="yerlist" autocomplete="off" placeholder="değiştirmek için yazın / seçin"><button class="xb hide" id="uYT" title="Temizle">×</button></div>
+ <div class="card"><h3>Ürün özeti</h3>  <label>Kişi / Yer (Sayım sekmesindeki seçimle gelir, değiştirebilirsiniz)</label><div class="yw"><input id="uY" class="giris" autocomplete="off" placeholder="yazın / seçin"><button class="xl" id="uYA" type="button" title="Tüm liste">▼</button><button class="xb hide" id="uYT" title="Sayım sekmesindeki seçime dön">×</button></div><div id="uOner" class="oner hide"></div>
   <div class="row"><select id="uK"><option value="sis">Sistem kaydına göre</option><option value="fiz">Fiziki sayıma göre</option></select></div>
   <div class="msg" id="urYer"></div><div class="msg" id="urSt"></div>
   <h3 style="margin-top:10px">Tür (Bar_Kod) bazında</h3><div id="urT" style="overflow-x:auto"></div>
@@ -131,7 +131,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v13</div>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v14</div>
   <label>Cihaz adı (dosya adında)</label><input id="cihaz" class="giris" placeholder="ör. iphone, tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -289,7 +289,7 @@ function urunSayfa(){$('uYT').classList.toggle('hide',!$('uY').value);const y=ye
  $('urSt').textContent='İSTATİSTİK ►  Toplam: '+kay.length+' adet | Çeşit: '+gb.size+' | Tür: '+ga.size+(la.length?' | En çok: '+la[0][0]+' ('+la[0][1]+')':'');
  $('urT').innerHTML='<table class="t"><tr><th>Bar_Kod</th><th>Açıklama</th><th>Cinsi</th><th>Ek Özellik</th><th>Marka</th><th>Model</th><th>Adet</th></tr>'+[...gb.values()].sort((a,b)=>b.n-a.n).slice(0,500).map(g=>'<tr><td data-cp="'+esc(g.x.b)+'" style="cursor:pointer">'+esc(g.x.b)+'</td><td>'+esc(g.x.a)+'</td><td>'+esc(g.x.c)+'</td><td>'+esc(g.x.e)+'</td><td>'+esc(g.x.m)+'</td><td>'+esc(g.x.o)+'</td><td>'+g.n+'</td></tr>').join('')+'</table>';
  $('urA').innerHTML='<table class="t"><tr><th>Açıklama (toplam)</th><th>Adet</th></tr>'+la.map(x=>'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td></tr>').join('')+'</table>'}
-$('uK').onchange=urunSayfa;$('uY').addEventListener('input',urunSayfa);$('uYT').onclick=()=>{$('uY').value='';urunSayfa()};$('kyY').addEventListener('input',kyListe);$('kyYT').onclick=()=>{$('kyY').value='';kyListe()};$('sqLink').onclick=e=>{e.preventDefault();$('cSorgu').scrollIntoView({behavior:'smooth'})};
+$('uK').onchange=urunSayfa;$('kalanGit').onclick=()=>document.querySelector('nav button[data-s=s-oz]').click();$('nokOkut').onclick=()=>{document.querySelector('nav button[data-s=s-say]').click();$('sicil').value='';$('sicil').focus()};$('uY').addEventListener('input',urunSayfa);$('uYT').onclick=()=>{$('uY').value=yerAdi();urunSayfa()};$('kyY').addEventListener('input',kyListe);$('kyYT').onclick=()=>{$('kyY').value=yerAdi();kyListe()};
 function sorgu(){const s=duzelt($('sq').value);if(!s){$('sqK').innerHTML='';$('sqS').innerHTML='';return}
  const r=anah.get(s)||(barm.get(s)||[])[0];$('sqK').innerHTML=r?kartHtml(r):'<span class="msg">Sistemde kayıt bulunamadı.</span>';
  $('sqS').innerHTML=kayit.filter(k=>duzelt(k.sicil)===s).map(k=>'<div class="it plain" data-cp="'+esc(k.sicil)+'">Sayımda okutuldu: <b>'+esc(k.yer)+'</b><small>'+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+'</small></div>').join('')}
@@ -301,7 +301,8 @@ function liste(){const ds=hesaplaTum();const sr=[...kayit].sort((a,b)=>a.kimlik<
  $('kf').innerHTML=(kfil.yer||kfil.durum)?('Süzgeç: '+esc(kfil.yer)+' '+esc(kfil.durum)+' <a href="#" id="kfT">temizle</a>'):'';
  $('kn').textContent='('+kayit.length+')';$('tum').innerHTML=t.slice(0,400).map(k=>satir(k,ds.get(k.kimlik),true)).join('');
  const b=kayit.filter(k=>k.durum==='bekliyor'||k.durum==='hata').length;$('bek').textContent=b+' bekliyor';}
-function hepsi(){$('yTem').classList.toggle('hide',!$('yer').value);onizle();ozetCiz();liste();if($('s-oz').classList.contains('on'))ozetSayfa();if($('s-ur').classList.contains('on'))urunSayfa();if($('s-yer').classList.contains('on')){yerlerSayfa();kyListe()}}
+let sonYerS='';
+function hepsi(){if(yerAdi()!==sonYerS){sonYerS=yerAdi();$('uY').value=sonYerS;$('kyY').value=sonYerS}$('yTem').classList.toggle('hide',!$('yer').value);onizle();ozetCiz();liste();if($('s-oz').classList.contains('on'))ozetSayfa();if($('s-ur').classList.contains('on'))urunSayfa();if($('s-yer').classList.contains('on')){yerlerSayfa();kyListe()}}
 // ---------- ekleme ----------
 let sonS='',sonZ=0;
 function sicilGoster(){const v=duzelt($('sicil').value);if(v&&v!==$('sicil').value)$('sicil').value=v}
@@ -324,13 +325,29 @@ function ses(c){try{if(navigator.vibrate)navigator.vibrate(c==='ok'?[30]:c==='mu
  const f={ok:[880],muk:[520,520],faz:[660,440],yer:[400,300]}[c];if(!f)return;let t=x.currentTime;
  for(const h of f){const o=x.createOscillator(),g=x.createGain();o.frequency.value=h;g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+.16);o.connect(g);g.connect(x.destination);o.start(t);o.stop(t+.17);t+=.19}}catch(e){}}
 // ---------- yer önerisi ----------
-function oner(){const q=normAd($('yer').value);const kut=$('oner');if(!q){kut.classList.add('hide');return}
- const kay=[[normAd(TUM),TUM]];const gor=new Set([TUMN]);for(const a of yerler.concat(LS.get('yerGecmis',[]))){const n=norm(a);if(!gor.has(n)){gor.add(n);kay.push([normAd(a),a])}}
- const e=kay.filter(x=>x[0].includes(q)).slice(0,8);if(!e.length||(e.length===1&&norm(e[0][1])===norm($('yer').value))){kut.classList.add('hide');return}
- kut.innerHTML=e.map(x=>{const s=yerSet.get(norm(x[1]));return '<div data-y="'+esc(x[1])+'">'+esc(x[1])+(s?'<small>'+s.length+' kalem</small>':'')+'</div>'}).join('');kut.classList.remove('hide')}
-function yerSec(a){$('yer').value=a;$('oner').classList.add('hide');LS.set('sonYer',a);hepsi();$('sicil').focus()}
-$('oner').addEventListener('pointerdown',e=>{const d=e.target.closest('div[data-y]');if(d){e.preventDefault();yerSec(d.dataset.y)}});
-$('yer').addEventListener('input',()=>{oner();hepsi()});$('yer').addEventListener('focus',oner);$('yer').addEventListener('blur',()=>setTimeout(()=>$('oner').classList.add('hide'),200));
+function oneriKur(inp,box,ac,pick){let akt=-1,lst=[];
+ const tum=()=>{const kay=[[normAd(TUM),TUM]];const gor=new Set([TUMN]);for(const a of yerler.concat(LS.get('yerGecmis',[]))){const n=norm(a);if(!gor.has(n)){gor.add(n);kay.push([normAd(a),a])}}return kay};
+ const kapat=()=>{box.classList.add('hide');akt=-1;lst=[]};
+ const ciz=()=>{box.innerHTML=lst.map((a,i)=>{const s=yerSet.get(norm(a));return '<div data-i="'+i+'"'+(i===akt?' class="on"':'')+'>'+esc(a)+(s?'<small>'+s.length+' kalem</small>':'')+'</div>'}).join('');box.classList.remove('hide');const o=box.querySelector('.on');if(o)o.scrollIntoView({block:'nearest'})};
+ const goster=hepsi=>{const q=hepsi?'':normAd(inp.value);let e=tum().filter(x=>!q||x[0].includes(q)).map(x=>x[1]);if(!hepsi)e=e.slice(0,30);
+  if(!e.length||(!hepsi&&q&&e.length===1&&norm(e[0])===norm(inp.value))){kapat();return}lst=e;akt=q?0:-1;ciz()};
+ inp.addEventListener('input',()=>goster(false));
+ inp.addEventListener('focus',()=>{if(!inp.value)goster(true)});
+ inp.addEventListener('dblclick',()=>goster(true));
+ ac.addEventListener('pointerdown',e=>{e.preventDefault();if(box.classList.contains('hide')){inp.focus();goster(true)}else kapat()});
+ inp.addEventListener('blur',()=>setTimeout(kapat,200));
+ inp.addEventListener('keydown',e=>{const acik=!box.classList.contains('hide');
+  if(e.key==='ArrowDown'){e.preventDefault();if(!acik){goster(true);akt=0;ciz()}else{akt=Math.min(lst.length-1,akt+1);ciz()}}
+  else if(e.key==='ArrowUp'&&acik){e.preventDefault();akt=Math.max(0,akt-1);ciz()}
+  else if((e.key==='Enter'||e.key==='Tab')&&acik&&akt>=0){e.preventDefault();const a=lst[akt];kapat();pick(a)}
+  else if(e.key==='Escape'&&acik){e.preventDefault();kapat()}});
+ box.addEventListener('pointerdown',e=>{const d=e.target.closest('div[data-i]');if(d){e.preventDefault();const a=lst[+d.dataset.i];kapat();pick(a)}})}
+function yerSec(a){$('yer').value=a;LS.set('sonYer',a);hepsi();$('sicil').focus()}
+oneriKur($('yer'),$('oner'),$('yAc'),yerSec);
+$('yer').addEventListener('input',hepsi);
+const yanSec=id=>a=>{$(id).value=a;$(id).dispatchEvent(new Event('input',{bubbles:true}))};
+oneriKur($('uY'),$('uOner'),$('uYA'),a=>{$('uY').value=a;urunSayfa();$('uY').blur()});
+oneriKur($('kyY'),$('kyOner'),$('kyYA'),a=>{$('kyY').value=a;kyListe();$('kyY').blur()});
 $('yer').addEventListener('change',()=>{LS.set('sonYer',yerAdi());hepsi()});
 // ---------- medya (OneDrive: resim/video bul, ekle, değiştir) ----------
 const RES_UZ=['jpg','jpeg','png','gif','bmp','webp','heic','tif','tiff','pdf'],VID_UZ=['mp4','mov','avi','wmv','mkv','m4v','3gp','mpg','mpeg','webm'],RES_YER=['jpg','jpeg','png','gif','bmp'],GOS=['jpg','jpeg','png','gif','bmp','webp'];

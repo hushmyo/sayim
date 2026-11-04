@@ -129,7 +129,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v9</div>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v10</div>
   <label>Cihaz adı (dosya adında)</label><input id="cihaz" class="giris" placeholder="ör. iphone, tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -431,8 +431,25 @@ async function camAc(){$('camK').classList.remove('hide');cam.akt=true;$('camH')
   if('BarcodeDetector'in window){const det=new BarcodeDetector();cam.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});const v=$('camV');v.srcObject=cam.stream;await v.play();$('camH').textContent='Barkodu çerçeveye getirin';
    const tur=async()=>{if(!cam.akt)return;try{const r=await det.detect(v);if(r.length)camBulundu(r[0].rawValue)}catch(e){}setTimeout(tur,250)};tur()}
   else{await new Promise((res,rej)=>{if(window.ZXing)return res();const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';s.onload=res;s.onerror=()=>rej(new Error('Okuma kütüphanesi indirilemedi (internet gerekir)'));document.head.appendChild(s)});
-   cam.zx=new ZXing.BrowserMultiFormatReader();$('camH').textContent='Barkodu çerçeveye getirin';
-   await cam.zx.decodeFromVideoDevice(null,'camV',(r,e)=>{if(r)camBulundu(r.getText())})}
+   const Z=ZXing,hints=new Map();hints.set(Z.DecodeHintType.TRY_HARDER,true);hints.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.CODE_128,Z.BarcodeFormat.CODE_39,Z.BarcodeFormat.CODE_93,Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.ITF,Z.BarcodeFormat.CODABAR,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.QR_CODE,Z.BarcodeFormat.DATA_MATRIX]);
+   const rd=new Z.MultiFormatReader();rd.setHints(hints);
+   cam.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false});
+   const v=$('camV');v.srcObject=cam.stream;await v.play();
+   try{const tr=cam.stream.getVideoTracks()[0],cp=tr.getCapabilities?tr.getCapabilities():{};if(cp.focusMode&&cp.focusMode.includes('continuous'))await tr.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
+   $('camH').textContent='Barkodu çerçeveye getirin (düz tutun, 15-25 cm)';
+   const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
+   const dene=(w,h)=>{const id=cx.getImageData(0,0,w,h).data,lum=new Uint8ClampedArray(w*h);for(let i=0,j=0;j<w*h;i+=4,j++)lum[j]=(id[i]*77+id[i+1]*150+id[i+2]*29)>>8;
+    const bm=new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.RGBLuminanceSource(lum,w,h)));try{return rd.decode(bm).getText()}catch(e){return null}};
+   const ac=[0,-4,4,-8,8,-12,12];let n=0;
+   const tur=()=>{if(!cam.akt)return;try{const vw=v.videoWidth,vh=v.videoHeight;if(vw){
+     const sc=Math.min(1,1280/vw),W=Math.round(vw*sc),H=Math.round(vh*sc);
+     // tam kare + orta bant (barkod genelde ortada), farklı açılarla
+     const bantY=Math.round(H*.25),bantH=Math.round(H*.5);let t=null;
+     const a=ac[n++%ac.length]*Math.PI/180;
+     cv.width=W;cv.height=bantH;cx.setTransform(1,0,0,1,0,0);cx.fillStyle='#fff';cx.fillRect(0,0,W,bantH);
+     cx.translate(W/2,bantH/2);cx.rotate(a);cx.drawImage(v,0,bantY,vw,vh*.5,-W/2,-bantH/2,W,bantH);
+     t=dene(W,bantH);if(!t&&n%ac.length===1){cv.width=W;cv.height=H;cx.setTransform(1,0,0,1,0,0);cx.drawImage(v,0,0,W,H);t=dene(W,H)}
+     if(t)camBulundu(t)}}catch(e){}setTimeout(tur,90)};tur()}
  }catch(e){$('camH').textContent='Kamera açılamadı: '+e.message;}}
 function camKapat(){cam.akt=false;try{if(cam.zx)cam.zx.reset()}catch(e){}cam.zx=null;if(cam.stream){cam.stream.getTracks().forEach(t=>t.stop());cam.stream=null}$('camV').srcObject=null;$('camK').classList.add('hide');$('sicil').focus()}
 $('kam').onclick=()=>{if(!yerAdi()){$('mesaj').className='msg er';$('mesaj').textContent='Önce sayım yerini / kişiyi seçin.';$('yer').focus();return}camAc()};

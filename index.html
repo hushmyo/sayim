@@ -131,7 +131,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v14</div>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v15</div>
   <label>Cihaz adı (dosya adında)</label><input id="cihaz" class="giris" placeholder="ör. iphone, tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -390,12 +390,12 @@ async function medyaSec(inp,tur){const f=inp.files&&inp.files[0];inp.value='';if
 $('hSicil').onclick=()=>medyaHedef('sicil');$('hYer').onclick=()=>medyaHedef('yer');
 $('rBtn').onclick=()=>$('rGir').click();$('vBtn').onclick=()=>$('vGir').click();$('rGir').onchange=e=>medyaSec(e.target,1);$('vGir').onchange=e=>medyaSec(e.target,2);
 // ---------- Microsoft / Graph ----------
-const AUTH='https://login.microsoftonline.com/organizations',SC=['Files.ReadWrite','User.Read'];let msalApp=null,hesap=null;
+const AUTH='https://login.microsoftonline.com/organizations',SC=['Files.ReadWrite','User.Read'];let msalApp=null,hesap=null,girisHata=LS.get('girisHata','');
 const cid=()=>(LS.get('cid','')||'').trim();
 function msalHazir(){if(!cid()||!window.msal||!window.msal.PublicClientApplication)return false;
  if(!msalApp)msalApp=new window.msal.PublicClientApplication({auth:{clientId:cid(),authority:AUTH,redirectUri:location.origin+location.pathname.replace(/index\.html$/,'')},cache:{cacheLocation:'localStorage'}});return true}
-async function oturum(){if(!msalHazir()){bagGoster();return}try{if(msalApp.initialize)await msalApp.initialize();const r=await msalApp.handleRedirectPromise();hesap=(r&&r.account)||msalApp.getAllAccounts()[0]||null}catch(e){$('am').textContent='Giriş hatası: '+e.message}bagGoster()}
-function bagGoster(){$('bag').textContent=hesap?'bağlı':(cid()?'giriş yok':'girişsiz');$('am').textContent=hesap?'Giriş yapıldı: '+hesap.username:(cid()?'Giriş yapılmadı.':'Client kimliği girilmedi: girişsiz mod (paylaş/dosya yolu).')}
+async function oturum(){if(!msalHazir()){bagGoster();return}try{if(msalApp.initialize)await msalApp.initialize();const r=await msalApp.handleRedirectPromise();hesap=(r&&r.account)||msalApp.getAllAccounts()[0]||null}catch(e){girisHata=((e.errorCode||e.name||'')+': '+(e.errorMessage||e.message||'')).slice(0,600);LS.set('girisHata',girisHata)}if(hesap){girisHata='';LS.set('girisHata','')}bagGoster()}
+function bagGoster(){$('bag').textContent=hesap?'bağlı':(cid()?'giriş yok':'girişsiz');$('am').textContent=hesap?'Giriş yapıldı: '+hesap.username:(cid()?'Giriş yapılmadı.'+(girisHata?' SON HATA → '+girisHata:''):'Client kimliği girilmedi: girişsiz mod (paylaş/dosya yolu).')}
 async function belirtec(){if(!msalHazir()||!hesap)throw new Error('Giriş yapılmamış');try{return(await msalApp.acquireTokenSilent({scopes:SC,account:hesap})).accessToken}catch(e){await msalApp.acquireTokenRedirect({scopes:SC,account:hesap});throw new Error('Yeniden giriş gerekiyor')}}
 const mobYol=a=>(LS.get('kok','Sayım İşlemleri/Mobil')||'Sayım İşlemleri/Mobil').replace(/^\/+|\/+$/g,'')+'/'+a;
 function kvIcerik(k){return ['yer='+temiz(k.yer),'tarih='+k.tarih,'saat='+k.saat,'sicil='+temiz(k.sicil),'malzeme='+temiz(k.malzeme),'not='+temiz(k.not),'kimlik='+k.kimlik].join('\n')+'\n'}
@@ -430,7 +430,7 @@ $('dosya').onchange=async e=>{let y=null,n=null,b=null,m=null;for(const f of e.t
  if(y!=null)await kvS('yerler',y);if(n!=null)await kvS('notlar',n);if(m!=null)await kvS('malzemeler',m);if(b!=null)await kvS('beklenen',b);listeKur(y,n,b,m);hepsi();$('am').textContent='Listeler yüklendi.'};
 $('test').onclick=async()=>{try{const jt=await belirtec();const r=await fetch(gUrl(mobYol('TEST-'+damga(new Date())+'.tmp'))+':/content',{method:'PUT',headers:{Authorization:'Bearer '+jt,'Content-Type':'text/plain'},body:'test'});if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();await fetch('https://graph.microsoft.com/v1.0/me/drive/items/'+j.id,{method:'DELETE',headers:{Authorization:'Bearer '+jt}});$('am').textContent='Bağlantı çalışıyor (test dosyası yazıldı ve silindi).'}catch(e){$('am').textContent='Bağlantı kurulamadı: '+e.message}};
 $('kaydet').onclick=()=>{LS.set('cihaz',$('cihaz').value.trim()||'tel');LS.set('cid',$('cid').value.trim());LS.set('oto',$('oto').checked);LS.set('kok',$('kok').value.trim()||'Sayım İşlemleri/Mobil');LS.set('resimK',$('rk').value.trim()||'Sayım İşlemleri/Sayım Fotografları');LS.set('videoK',$('vk').value.trim()||'Sayım İşlemleri/Sayım Videoları');msalApp=null;bagGoster();$('am').textContent+=' Kaydedildi.'};
-$('giris').onclick=async()=>{if(!msalHazir()){$('am').textContent='Önce Client kimliğini girip Kaydet\'e basın.';return}try{if(msalApp.initialize)await msalApp.initialize();await msalApp.loginRedirect({scopes:SC})}catch(e){$('am').textContent='Giriş başlatılamadı: '+e.message}};
+$('giris').onclick=async()=>{if(!cid()){$('am').textContent='Önce Client kimliğini girip Kaydet\'e basın.';return}if(!window.msal){$('am').textContent='Microsoft giriş kütüphanesi yüklenemedi (internet / engelleme). Sayfayı yenileyip tekrar deneyin.';return}if(!msalHazir()){$('am').textContent='Giriş hazırlanamadı.';return}girisHata='';LS.set('girisHata','');$('am').textContent='Microsoft giriş sayfasına yönlendiriliyor…';try{if(msalApp.initialize)await msalApp.initialize();await msalApp.loginRedirect({scopes:SC,prompt:'select_account'})}catch(e){girisHata=((e.errorCode||'')+': '+(e.errorMessage||e.message)).slice(0,600);LS.set('girisHata',girisHata);$('am').textContent='Giriş başlatılamadı → '+girisHata}};
 $('cikis').onclick=async()=>{if(msalApp&&hesap){try{await msalApp.logoutRedirect({account:hesap})}catch(e){}}hesap=null;bagGoster()};
 $('sil').onclick=async()=>{if(!confirm('Gönderilmiş kayıtlar telefondan silinsin mi? (Okutma geçmişi / mükerrer kontrolü de bu kayıtlar için kalkar)'))return;for(const k of kayit.filter(k=>k.durum==='gitti'))await dbSil(k.kimlik);kayit=kayit.filter(k=>k.durum!=='gitti');hepsi()};
 $('sifir').onclick=async()=>{const y=yerAdi();if(!y)return;if(!confirm(y+' için telefondaki TÜM kayıtlar silinsin mi? (OneDrive\'a gönderilmiş olanlar Excel\'de kalır)'))return;const n=norm(y);for(const k of kayit.filter(k=>norm(k.yer)===n))await dbSil(k.kimlik);kayit=kayit.filter(k=>norm(k.yer)!==n);hepsi()};

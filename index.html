@@ -141,7 +141,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v2</div>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v3</div>
   <label>Cihaz adı (dosya adında)</label><input id="cihaz" class="giris" placeholder="ör. iphone, tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -203,7 +203,7 @@ function indeksle(){anah=new Map();barm=new Map();yerSet=new Map();
  for(const r of bek){anah.set(r[0],r);if(r[2]){(barm.get(r[2])||barm.set(r[2],[]).get(r[2])).push(r)}
   const ns=new Set();for(const y of [r[9],kurum(r[11])?'':r[11]]){if(y)ns.add(norm(y))}for(const n of ns){if(!n)continue;(yerSet.get(n)||yerSet.set(n,[]).get(n)).push(r)}}}
 function ayr(l){return String(l||'').replace(/^﻿/,'').replace(/\r/g,'').split('\n').filter(x=>x.trim()!=='')}
-function listeKur(y,n,b,m){if(y!=null)yerler=ayr(y);if(m!=null)malzemeler=ayr(m);if(n!=null){const x=ayr(n).flatMap(s=>s.split(';')).map(s=>s.trim()).filter(Boolean);if(x.length)notlar=x}
+function listeKur(y,n,b,m){if(y!=null){yerler=ayr(y);if(yerler.length){const g=new Set(yerler.map(norm));LS.set('yerGecmis',LS.get('yerGecmis',[]).filter(x=>g.has(norm(x))))}}if(m!=null)malzemeler=ayr(m);if(n!=null){const x=ayr(n).flatMap(s=>s.split(';')).map(s=>s.trim()).filter(Boolean);if(x.length)notlar=x}
  if(b!=null){bek=ayr(b).map(l=>l.split('\t')).filter(r=>r.length>=10&&r[0]!=='Anahtar');indeksle()}
  
  $('lb').textContent='Yer: '+yerler.length+' · Not: '+notlar.length+' · Malzeme adı: '+malzemeler.length+' · Sistem kaydı: '+bek.length+(bek.length?'':'  (liste yok: Excel\'de Ayarlar > Mobil Listeleri Yaz, sonra buradan alın)')}
@@ -358,7 +358,7 @@ function ses(c){try{if(navigator.vibrate)navigator.vibrate(c==='ok'?[30]:c==='mu
  for(const h of f){const o=x.createOscillator(),g=x.createGain();o.frequency.value=h;g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+.16);o.connect(g);g.connect(x.destination);o.start(t);o.stop(t+.17);t+=.19}}catch(e){}}
 // ---------- yer önerisi ----------
 function oneriKur(inp,box,ac,pick,kaynak){let akt=-1,lst=[];
- const tum=kaynak?(()=>kaynak().map(a=>[normAd(a),a])):(()=>{const kay=[[normAd(TUM),TUM]];const gor=new Set([TUMN]);for(const a of yerler.concat(LS.get('yerGecmis',[]))){const n=norm(a);if(!gor.has(n)){gor.add(n);kay.push([normAd(a),a])}}return kay});
+ const tum=kaynak?(()=>kaynak().map(a=>[normAd(a),a])):(()=>{const kay=[[normAd(TUM),TUM]];const gor=new Set([TUMN]);for(const a of (yerler.length?yerler:LS.get('yerGecmis',[]))){const n=norm(a);if(!gor.has(n)){gor.add(n);kay.push([normAd(a),a])}}return kay});
  const kapat=()=>{box.classList.add('hide');akt=-1;lst=[]};
  const ciz=()=>{box.innerHTML=lst.map((a,i)=>{const s=kaynak?null:yerSet.get(norm(a));return '<div data-i="'+i+'"'+(i===akt?' class="on"':'')+'>'+esc(a)+(s?'<small>'+s.length+' kalem</small>':'')+'</div>'}).join('');box.classList.remove('hide');const o=box.querySelector('.on');if(o)o.scrollIntoView({block:'nearest'})};
  const goster=hepsi=>{const q=hepsi?'':normAd(inp.value);let e=tum().filter(x=>!q||x[0].includes(q)).map(x=>x[1]);if(!hepsi)e=e.slice(0,30);
@@ -572,7 +572,7 @@ window.addEventListener('online',()=>gonder(false));setInterval(()=>gonder(false
  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
  kayit=(await dbHepsi()).sort((a,b)=>a.kimlik<b.kimlik?-1:1);
  listeKur(await kvG('yerler')??null,await kvG('notlar')??null,await kvG('beklenen')??null,await kvG('malzemeler')??null);
- $('yer').value=LS.get('sonYer','');await oturum();hepsi();
+ $('yer').value='';LS.set('sonYer','');await oturum();hepsi();
  if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
  listeOto(false);
  if(!LS.get('cihaz','')){document.querySelector('nav button[data-s=s-ay]').click();$('am').textContent='Önce cihaz adını yazıp Kaydet\'e basın.'}else $('sicil').focus();gonder(false)})();

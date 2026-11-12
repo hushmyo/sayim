@@ -82,19 +82,17 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
  <div class="card">
   <label>SİCİL NO / BARKOD (okutun) <a class="lnk" id="kalanGit">Kalan ürünler ►</a></label>
   <input id="sicil" class="giris" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Okutun veya yazın, Enter">
-  <div class="row"><button class="b g" id="gd">✖ Sicili temizle</button><button class="b g" id="yap">📋 Yapıştır</button></div>
-  <div id="kamAcW" class="hide" style="margin:6px 0"><a class="lnk" style="float:none;display:inline-block;padding:6px 0" id="kamAc">📷 Kamerayla okuma ▾</a></div>
-  <div class="row hide" id="kamBlok"><button class="b g" id="kam">📷 Kamerayla oku (yedek yöntem)</button></div>
+  <div class="row"><button class="b g hide" id="kam" style="font-size:13px">📷 Kamerayla oku</button><button class="b g" id="gd">✖ Sicili temizle</button><button class="b g" id="yap">📋 Yapıştır</button></div>
   <div id="dzBan" class="ban faz hide" style="font-size:14px;text-align:left"></div>
+  <div id="ban" class="ban no">—</div>
+  <div id="dzKutu"></div>
+  <div id="kart" class="kv"></div>
   <div id="notAcW" class="hide" style="margin:8px 0"><a class="lnk" style="float:none;display:inline-block;padding:6px 0" id="notAc">✎ Not / Malzeme adı ekle ▾</a></div>
   <div id="notBlok">
   <label>Not / Fazla Açıklama</label><div class="yw"><input id="not" class="giris" autocomplete="off" placeholder="yazın veya ▼ ile listeden seçin"><button class="xl" id="notA" type="button" title="Liste">▼</button></div><div id="notO" class="oner hide"></div>
   <label>Malzeme Adı (elle – sicilsiz)</label><div class="yw"><input id="ad" class="giris" autocomplete="off" placeholder="yazın veya ▼ ile listeden seçin"><button class="xl" id="adA" type="button" title="Liste">▼</button></div><div id="adO" class="oner hide"></div>
   </div>
   <div class="row"><button class="b g" id="temizle">Hepsini temizle</button><button class="b y" id="ekle">Kaydet (Enter)</button></div>
-  <div id="ban" class="ban no">—</div>
-  <div id="dzKutu"></div>
-  <div id="kart" class="kv"></div>
   <div class="msg" id="mesaj"></div>
  </div>
  <div class="card med hide" id="medK"><details id="medD"><summary id="medS">Resim / Video</summary>
@@ -142,7 +140,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v5</div>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v6</div>
   <label>Cihaz adı (dosya adında)</label><input id="cihaz" class="giris" placeholder="ör. iphone, tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -353,10 +351,11 @@ async function ekle(){sicilGoster();const yer=yerAdi(),sicil=duzelt($('sicil').v
  ses(d.c);$('sicil').value='';$('ad').value='';$('not').value='';notZorla=false;sonMS='';
  hepsi();$('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t);$('kart').innerHTML=kartHtml(d.r,[['Kaydedildi',k.tarih+' '+k.saat]]);
  medyaGoster(sicil,yer);$('sicil').focus();gonder(false);if(gecSn()>0)setTimeout(()=>gonder(false),(gecSn()+2)*1000)}
-function ses(c){try{if(navigator.vibrate)navigator.vibrate(c==='ok'?[30]:c==='muk'?[30,60,30]:[120,60,120]);
+function ses(c){try{if(navigator.vibrate)navigator.vibrate(c==='ok'?[30]:c==='muk'?[40,40,40,40,40]:[120,60,120]);
  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;const x=ses.x||(ses.x=new AC());if(x.state==='suspended')x.resume();
- const f={ok:[880],muk:[520,520],faz:[660,440],yer:[400,300]}[c];if(!f)return;let t=x.currentTime;
- for(const h of f){const o=x.createOscillator(),g=x.createGain();o.frequency.value=h;g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+.16);o.connect(g);g.connect(x.destination);o.start(t);o.stop(t+.17);t+=.19}}catch(e){}}
+ const P={ok:{f:[880]},muk:{f:[988,740,988,740,988],w:'square',d:.09,s:.115,g:.26},faz:{f:[660,440]},yer:{f:[400,300]}}[c];if(!P)return;
+ let t=x.currentTime;const d=P.d||.16,s=P.s||.19,g0=P.g||.18;
+ for(const h of P.f){const o=x.createOscillator(),g=x.createGain();o.type=P.w||'sine';o.frequency.value=h;g.gain.setValueAtTime(g0,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(x.destination);o.start(t);o.stop(t+d+.01);t+=s}}catch(e){}}
 // ---------- yer önerisi ----------
 function oneriKur(inp,box,ac,pick,kaynak){let akt=-1,lst=[];
  const tum=kaynak?(()=>kaynak().map(a=>[normAd(a),a])):(()=>{const kay=[[normAd(TUM),TUM]];const gor=new Set([TUMN]);for(const a of (yerler.length?yerler:LS.get('yerGecmis',[]))){const n=norm(a);if(!gor.has(n)){gor.add(n);kay.push([normAd(a),a])}}return kay});
@@ -536,8 +535,7 @@ let cam={akt:false,sur:true,stream:null,zx:null,son:'',sonT:0};
 function camBulundu(v){const s=duzelt(v);if(!s)return;const t=Date.now();if(s===cam.son&&t-cam.sonT<2500)return;cam.son=s;cam.sonT=t;$('sicil').value=s;$('camH').textContent='Okundu: '+s;ekle().then(()=>{if(!cam.sur)camKapat()})}
 let camZ=null,camIdle=null;
 function zxHazir(){return new Promise((res,rej)=>{if(window.ZXing)return res();const e=document.createElement('script');e.src='zxing.min.js';e.onload=()=>window.ZXing?res():rej(new Error('Okuma kütüphanesi bozuk'));e.onerror=()=>rej(new Error('zxing.min.js bulunamadı'));document.head.appendChild(e)})}
-function kamHazirla(){const goster=()=>$('kamAcW').classList.remove('hide');if('BarcodeDetector'in window){goster();return}zxHazir().then(goster).catch(()=>{})}
-$('kamAc').onclick=()=>$('kamBlok').classList.toggle('hide');
+function kamHazirla(){const goster=()=>$('kam').classList.remove('hide');if('BarcodeDetector'in window){goster();return}zxHazir().then(goster).catch(()=>{})}
 function zxOkuyucu(){if(camZ)return camZ;const Z=ZXing,h=new Map();h.set(Z.DecodeHintType.TRY_HARDER,true);h.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.CODE_128,Z.BarcodeFormat.CODE_39,Z.BarcodeFormat.CODE_93,Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.ITF,Z.BarcodeFormat.CODABAR,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.QR_CODE,Z.BarcodeFormat.DATA_MATRIX]);const r=new Z.MultiFormatReader();r.setHints(h);return camZ=r}
 function cvDene(cx,w,h){const Z=ZXing,id=cx.getImageData(0,0,w,h).data,lum=new Uint8ClampedArray(w*h);for(let i=0,j=0;j<w*h;i+=4,j++)lum[j]=(id[i]*77+id[i+1]*150+id[i+2]*29)>>8;
  try{return zxOkuyucu().decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.RGBLuminanceSource(lum,w,h)))).getText()}catch(e){return null}}

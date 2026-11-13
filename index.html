@@ -22,7 +22,7 @@ header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,#1f4e79
 header h1{font-size:17px;margin:0;flex:1;line-height:1.15}header h1 small{display:block;font-weight:400;font-size:11px;opacity:.85}
 .pill{font-size:12px;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.2)}
 nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--ln);z-index:6;padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;border:0;background:none;color:var(--mu);padding:8px 2px 7px;font-size:11px;position:relative}
+nav button{flex:1;min-width:0;border:0;background:none;color:var(--mu);padding:8px 1px 7px;font-size:10px;position:relative}
 nav button b{display:block;font-size:19px;line-height:1.1}nav button.on{color:var(--ac);font-weight:700}
 nav button.on::before{content:"";position:absolute;top:0;left:20%;right:20%;height:3px;border-radius:0 0 3px 3px;background:var(--ac2)}
 main{padding:10px;max-width:820px;margin:auto}section{display:none}section.on{display:block}
@@ -38,6 +38,10 @@ button.b.g{background:var(--bg);color:var(--fg);border:1px solid var(--ln)}butto
 .oner{border:1px solid var(--ln);border-radius:9px;background:var(--card);max-height:230px;overflow:auto;margin-top:3px}
 .oner div{padding:10px 12px;border-bottom:1px solid var(--ln)}.oner div small{color:var(--mu);float:right}.oner div.on{background:var(--ln)}.xl{position:absolute;right:46px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:17px;background:var(--ln);color:var(--fg);font-size:13px;padding:0}.lnk{float:right;color:var(--ac);font-weight:700;text-decoration:none;font-size:13px;cursor:pointer}.yw .giris{padding-right:84px}
 .hide{display:none!important}
+.zp{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.pl{font-style:normal;font-weight:800;font-size:13px;padding:3px 12px;border-radius:12px;letter-spacing:.02em}
+.pl.ok{background:var(--r-ok);color:var(--ok)}.pl.muk{background:var(--r-muk);color:var(--er)}.pl.faz{background:var(--r-faz);color:var(--wr)}.pl.yer{background:var(--r-yer);color:#6a35b0}.pl.no{background:var(--bg);color:var(--mu)}
+.pb{height:8px;background:var(--ln);border-radius:5px;overflow:hidden;min-width:60px}.pb i{display:block;height:100%;background:#2e9e57}.pb.z i{background:#e0a800}
+table.pn td{vertical-align:middle;font-size:13px}table.pn td:nth-child(2){width:34%}table.pn td:last-child{text-align:right;white-space:nowrap}
 .ban{border-radius:12px;padding:12px;margin:8px 0;font-weight:700;font-size:18px;text-align:center}
 .ban small{display:block;font-weight:500;font-size:13px;margin-top:2px;opacity:.85}
 .ban.ok{background:var(--r-ok);color:var(--ok)}.ban.muk{background:var(--r-muk);color:var(--er)}.ban.faz{background:var(--r-faz);color:var(--wr)}.ban.yer{background:var(--r-yer);color:#6a35b0}.ban.no{background:var(--bg);color:var(--mu)}
@@ -90,17 +94,19 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
   <div id="notAcW" class="hide" style="margin:8px 0"><a class="lnk" style="float:none;display:inline-block;padding:6px 0" id="notAc">✎ Not / Malzeme adı ekle ▾</a></div>
   <div id="notBlok">
   <label>Not / Fazla Açıklama</label><div class="yw"><input id="not" class="giris" autocomplete="off" placeholder="yazın veya ▼ ile listeden seçin"><button class="xl" id="notA" type="button" title="Liste">▼</button></div><div id="notO" class="oner hide"></div>
-  <label>Malzeme Adı (elle – sicilsiz)</label><div class="yw"><input id="ad" class="giris" autocomplete="off" placeholder="yazın veya ▼ ile listeden seçin"><button class="xl" id="adA" type="button" title="Liste">▼</button></div><div id="adO" class="oner hide"></div>
   </div>
-  <div class="row"><button class="b g" id="temizle">Hepsini temizle</button><button class="b y" id="ekle">Kaydet (Enter)</button></div>
-  <div class="msg" id="mesaj"></div>
- </div>
- <div class="card med hide" id="medK"><details id="medD"><summary id="medS">Resim / Video</summary>
+<div class="med hide" id="medK" style="margin:10px 0;border:1px solid var(--ln);border-radius:12px;padding:4px 10px"><details id="medD"><summary id="medS">Resim / Video</summary>
    <div class="row"><button class="b g" id="hSicil">Malzeme</button><button class="b g" id="hYer">Yer / Kişi</button></div>
    <div id="medI"></div>
    <div class="row"><button class="b g" id="rBtn">📷 Fotoğraf</button><button class="b g" id="vBtn">🎥 Video</button></div>
    <input type="file" id="rGir" accept="image/*" capture="environment" class="hide"><input type="file" id="vGir" accept="video/*" capture="environment" class="hide">
    <div class="msg" id="medM"></div><div class="msg" id="medQ"></div><button class="b g hide" id="medQb" type="button">⏳ Bekleyenleri şimdi gönder</button></details></div>
+  <div id="adBlok">
+  <label>Malzeme Adı (elle – sicilsiz)</label><div class="yw"><input id="ad" class="giris" autocomplete="off" placeholder="yazın veya ▼ ile listeden seçin"><button class="xl" id="adA" type="button" title="Liste">▼</button></div><div id="adO" class="oner hide"></div>
+  </div>
+  <div class="row"><button class="b g" id="temizle">Hepsini temizle</button><button class="b y" id="ekle">Kaydet (Enter)</button></div>
+  <div class="msg" id="mesaj"></div>
+ </div>
  <div class="card"><h3>Son kayıtlar</h3><div id="son"></div></div>
 </section>
 <!-- ============ ÖZET / KALAN ÜRÜN ============ -->
@@ -138,10 +144,17 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
   <div class="msg" id="gm"></div></div>
  <div class="card"><h3>Tüm kayıtlar <span id="kn" class="msg"></span></h3><div class="msg" id="kf"></div><input id="ara" placeholder="Ara: sicil, isim, cins, marka, malzeme, not, yer…"><div id="tum"></div></div>
 </section>
+<!-- ============ ASİSTAN + PANO ============ -->
+<section id="s-pano">
+ <div class="card"><h3>Asistan · yapılacaklar</h3><div class="msg">Bu sayfa yalnız okur ve önerir; kayıtları değiştirmez.</div><div id="asL"></div></div>
+ <div class="card"><h3>Pano · tüm sayım tek bakışta</h3><div class="cnt" id="pnK"></div><div class="bar"><i id="pnB"></i></div><div class="msg" id="pnM"></div></div>
+ <div class="card"><h3>Yer / kişi bazında</h3><div class="msg">Çubuk: yerinde okutulan / sistemde kayıtlı. Bir satıra dokunun, o yere geçin.</div><div id="pnY" style="overflow-x:auto"></div></div>
+ <div class="card"><h3>Bu cihaz</h3><div id="pnC"></div></div>
+</section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v6</div>
-  <label>Cihaz adı (dosya adında)</label><input id="cihaz" class="giris" placeholder="ör. iphone, tablet">
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v9</div>
+  <label>Kullanıcı / cihaz adı (kayıtlarda Kaynak olarak görünür; her kişi kendi adını yazsın)</label><input id="cihaz" class="giris" placeholder="ör. ahmet-iphone, ayse-tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
   <label>Fotoğraf klasörü</label><input id="rk" class="giris">
@@ -160,10 +173,10 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 </main>
 <div id="toast" class="hide" style="position:fixed;left:50%;bottom:88px;transform:translateX(-50%);background:#1b2430;color:#fff;padding:8px 16px;border-radius:20px;font-size:14px;z-index:30;max-width:90%"></div>
-<div class="cam hide" id="camK"><div class="hd" id="camH">Barkodu çerçeveye getirin</div><video id="camV" playsinline muted></video><div class="cb"><button class="b g" id="camS">Sürekli: AÇIK</button><button class="b g" id="camF">📸 Fotoğraf çek ve oku</button><input type="file" id="camI" accept="image/*" capture="environment" style="display:none"><button class="b r" id="camX">Kapat</button></div></div>
+<div class="cam hide" id="camK"><div class="hd" id="camH">Barkodu çerçeveye getirin</div><video id="camV" playsinline muted></video><div class="cb"><button class="b g" id="camS">Sürekli: AÇIK</button><button class="b g" id="camT">🔦 Fener</button><button class="b g" id="camZ">🔍 Yakın: 1x</button><button class="b g" id="camF">📸 Fotoğraf çek ve oku</button><input type="file" id="camI" accept="image/*" capture="environment" style="display:none"><button class="b r" id="camX">Kapat</button></div></div>
 <nav>
  <button data-s="s-say" class="on"><b>▦</b>Sayım</button><button data-s="s-oz"><b>◔</b>Özet</button><button data-s="s-yer"><b>⌂</b>Yerler</button>
- <button data-s="s-ur"><b>☰</b>Ürün/Sorgu</button><button data-s="s-kay"><b>⇅</b>Kayıt</button><button data-s="s-ay"><b>⚙</b>Ayar</button>
+ <button data-s="s-ur"><b>☰</b>Ürün/Sorgu</button><button data-s="s-kay"><b>⇅</b>Kayıt</button><button data-s="s-pano"><b>▤</b>Pano</button><button data-s="s-ay"><b>⚙</b>Ayar</button>
 </nav>
 <script>
 'use strict';
@@ -225,7 +238,8 @@ function hesaplaTum(){const gor=new Set(),o=new Map();for(const k of kayit){cons
 // ---------- bilgi kartı ----------
 function kartHtml(r,extra){if(!r)return'';
  const a=[['Açıklama',r[3]],['Ek Özellik',r[5]],['Kayıtlı Yer / Kişi',r[9]],['Kime verildi / kimde',r[11]],['Zimmet Tarihi',r[13]],['Fiş No',r[12]],['Fiş Son Durum',r[8]],['Sicil No',r[1]],['Bar_Kod',r[2]]].concat(extra||[]);
- return '<div class="bas">'+esc((r[4]||'')+' '+(r[6]||'')+' '+(r[7]||'')).trim()+'</div>'+a.filter(x=>x[1]&&String(x[1]).trim()).map(x=>'<b>'+x[0]+'</b><span'+((x[0]==='Sicil No'||x[0]==='Bar_Kod')?' data-cp="'+esc(x[1])+'" style="cursor:pointer;text-decoration:underline dotted"':'')+'>'+esc(x[1])+'</span>').join('')}
+ return '<div class="bas">'+esc((r[4]||'')+' '+(r[6]||'')+' '+(r[7]||'')).trim()+'</div>'+a.filter(x=>x[1]&&String(x[1]).trim()).map(x=>'<b>'+x[0]+'</b><span'+((x[0]==='Sicil No'||x[0]==='Bar_Kod')?' data-cp="'+esc(x[1])+'" style="cursor:pointer;text-decoration:underline dotted"':'')+'>'+(x[2]?x[1]:esc(x[1]))+'</span>').join('')}
+function zamanPil(z,d){return '<span class="zp"><span>'+esc(z)+'</span><em class="pl '+d.c+'">'+esc(d.t)+(d.n?' ('+d.n+'×)':'')+'</em></span>'}
 function yerAdi(){return $('yer').value.trim()}
 function yerU(){return $('uY').value.trim()||yerAdi()}
 function yerK(){return $('kyY').value.trim()||yerAdi()}
@@ -233,11 +247,11 @@ let dzId=null,notZorla=false,sonMS='',mt=null;
 function medyaTetik(){const s=duzelt($('sicil').value).replace(/[^0-9]/g,'');if(!s||s===sonMS)return;sonMS=s;clearTimeout(mt);mt=setTimeout(()=>{if(duzelt($('sicil').value).replace(/[^0-9]/g,'')===s)medyaGoster(s,yerAdi())},500)}
 function onizle(){const s0=duzelt($('sicil').value);const gor=new Set(kayit.filter(k=>k.kimlik!==dzId).map(k=>duzelt(k.sicil)).filter(Boolean));
  const d=durum($('sicil').value,$('ad').value,yerAdi(),gor);const n=new Date();
- $('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t)+(d.n?'<small>'+d.n+' kayıtta aynı barkod</small>':'');
+ $('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t)+(d.n?'<small>'+d.n+' kayıtta aynı barkod</small>':'');$('ban').classList.toggle('hide',!!d.r);
  const gizle=!notZorla&&!$('not').value&&!$('ad').value;
- $('notBlok').classList.toggle('hide',gizle);$('notAcW').classList.toggle('hide',!gizle);
+ $('notBlok').classList.toggle('hide',gizle);$('adBlok').classList.toggle('hide',gizle);$('notAcW').classList.toggle('hide',!gizle);
  $('dzKutu').innerHTML='';$('ekle').textContent='Kaydet (Enter)';
- $('kart').innerHTML=kartHtml(d.r,d.r?[['Tarih / Saat',tarihTR(n)+' '+saatTR(n)]]:[]);medyaTetik();return d}
+ $('kart').innerHTML=kartHtml(d.r,d.r?[['Tarih / Saat',zamanPil(tarihTR(n)+' '+saatTR(n),d),1]]:[]);medyaTetik();return d}
 function duzeltBaslat(id){const k=kayit.find(x=>x.kimlik===id);if(!k)return;if(k.durum==='gitti'){alert('Bu kayıt Excel\'e gönderilmiş. Düzeltmeyi Excel\'de yapın.');return}
  dzId=id;$('yer').value=k.yer;LS.set('sonYer',k.yer);$('sicil').value=k.sicil;$('not').value=k.not||'';$('ad').value=k.malzeme||'';notZorla=true;
  $('dzBan').classList.remove('hide');$('dzBan').innerHTML='✎ <b>Düzeltme modu:</b> '+esc(k.sicil||k.malzeme)+' kaydı güncellenecek. Değiştirip Kaydet\'e basın. <a id="dzVaz" class="lnk" style="float:none;display:inline-block;margin-left:8px">Vazgeç</a>';hepsi();$('sicil').focus();window.scrollTo(0,0)}
@@ -329,7 +343,7 @@ function liste(){const ds=hesaplaTum();const sr=[...kayit].sort((a,b)=>a.kimlik<
  $('kn').textContent='('+kayit.length+')';$('tum').innerHTML=t.slice(0,400).map(k=>satir(k,ds.get(k.kimlik),true)).join('');
  const b=kayit.filter(k=>k.durum==='bekliyor'||k.durum==='hata').length;$('bek').textContent=b+' bekliyor';}
 let sonYerS='';
-function hepsi(){yPosGuncelle();if(yerAdi()!==sonYerS){sonYerS=yerAdi();$('sicil').value='';$('not').value='';$('ad').value='';notZorla=false;sonMS='';sonS='';$('uY').value=sonYerS;$('kyY').value=sonYerS;if(sonYerS){md.h='yer';medyaGoster('',sonYerS)}else $('medK').classList.add('hide')}$('yTem').classList.toggle('hide',!$('yer').value);onizle();ozetCiz();liste();if($('s-oz').classList.contains('on'))ozetSayfa();if($('s-ur').classList.contains('on'))urunSayfa();if($('s-yer').classList.contains('on')){yerlerSayfa();kyListe()}}
+function hepsi(){yPosGuncelle();if(yerAdi()!==sonYerS){sonYerS=yerAdi();$('sicil').value='';$('not').value='';$('ad').value='';notZorla=false;sonMS='';sonS='';$('uY').value=sonYerS;$('kyY').value=sonYerS;if(sonYerS){md.h='yer';medyaGoster('',sonYerS)}else $('medK').classList.add('hide')}$('yTem').classList.toggle('hide',!$('yer').value);onizle();ozetCiz();liste();if($('s-pano').classList.contains('on'))panoCiz();if($('s-oz').classList.contains('on'))ozetSayfa();if($('s-ur').classList.contains('on'))urunSayfa();if($('s-yer').classList.contains('on')){yerlerSayfa();kyListe()}}
 // ---------- ekleme ----------
 let sonS='',sonZ=0;
 function sicilGoster(){const v=duzelt($('sicil').value);if(v&&v!==$('sicil').value)$('sicil').value=v}
@@ -349,7 +363,7 @@ async function ekle(){sicilGoster();const yer=yerAdi(),sicil=duzelt($('sicil').v
  kayit.push(k);LS.set('sonYer',yer);LS.set('yerGecmis',[yer,...LS.get('yerGecmis',[]).filter(x=>x!==yer)].slice(0,50));
  $('mesaj').className='msg '+(d.c==='ok'?'ok':'er');$('mesaj').textContent=(sicil||ad)+' – '+d.t;
  ses(d.c);$('sicil').value='';$('ad').value='';$('not').value='';notZorla=false;sonMS='';
- hepsi();$('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t);$('kart').innerHTML=kartHtml(d.r,[['Kaydedildi',k.tarih+' '+k.saat]]);
+ hepsi();$('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t);$('ban').classList.toggle('hide',!!d.r);$('kart').innerHTML=kartHtml(d.r,[['Kaydedildi',zamanPil(k.tarih+' '+k.saat,d),1]]);
  medyaGoster(sicil,yer);$('sicil').focus();gonder(false);if(gecSn()>0)setTimeout(()=>gonder(false),(gecSn()+2)*1000)}
 function ses(c){try{if(navigator.vibrate)navigator.vibrate(c==='ok'?[30]:c==='muk'?[40,40,40,40,40]:[120,60,120]);
  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;const x=ses.x||(ses.x=new AC());if(x.state==='suspended')x.resume();
@@ -523,8 +537,8 @@ $('sifir').onclick=async()=>{const y=yerAdi();if(!y)return;if(!confirm(y+' için
 document.addEventListener('click',async e=>{const s=e.target.dataset&&e.target.dataset.sil;if(s&&confirm('Bu kayıt silinsin mi?')){await dbSil(s);kayit=kayit.filter(k=>k.kimlik!==s);hepsi()}});
 // ---------- genel ----------
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,main>section').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.s).classList.add('on');
- $('altbas').textContent={'s-say':'Fiziki Saha Sayım','s-oz':'Sayım Özeti / Kalan Ürün','s-yer':'Yerler / Kişiler · Kişi/Yer Listesi','s-ur':'Ürün Özeti · Malzeme Sorgu','s-kay':'Kayıtlar','s-ay':'Ayarlar'}[b.dataset.s];
- if(b.dataset.s==='s-oz')ozetSayfa();if(b.dataset.s==='s-ur')urunSayfa();if(b.dataset.s==='s-yer'){yerlerSayfa();kyListe()}if(b.dataset.s==='s-say')$('sicil').focus();liste();window.scrollTo(0,0)});
+ $('altbas').textContent={'s-say':'Fiziki Saha Sayım','s-oz':'Sayım Özeti / Kalan Ürün','s-yer':'Yerler / Kişiler · Kişi/Yer Listesi','s-ur':'Ürün Özeti · Malzeme Sorgu','s-kay':'Kayıtlar','s-pano':'Asistan · Pano','s-ay':'Ayarlar'}[b.dataset.s];
+ if(b.dataset.s==='s-pano')panoCiz();if(b.dataset.s==='s-oz')ozetSayfa();if(b.dataset.s==='s-ur')urunSayfa();if(b.dataset.s==='s-yer'){yerlerSayfa();kyListe()}if(b.dataset.s==='s-say')$('sicil').focus();liste();window.scrollTo(0,0)});
 $('ekle').onclick=ekle;$('temizle').onclick=()=>{for(const i of['sicil','ad','not'])$(i).value='';onizle();$('sicil').focus()};$('gd').onclick=()=>{$('sicil').value='';onizle();$('sicil').focus()};
 $('yTem').onclick=()=>{$('yer').value='';LS.set('sonYer','');hepsi();$('yer').focus()};
 document.addEventListener('click',e=>{if(e.target.id==='kfT'){e.preventDefault();kfil={yer:'',durum:''};liste()}});
@@ -544,7 +558,7 @@ async function camAc(){$('camK').classList.remove('hide');cam.akt=true;clearTime
   const bd='BarcodeDetector'in window;
   if(!bd)await zxHazir();
   // izin bir kez istenir: akım açık kalır, kapatınca sadece gizlenir
-  if(!(cam.stream&&cam.stream.getVideoTracks().some(t=>t.readyState==='live')))cam.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}},audio:false});
+  if(!(cam.stream&&cam.stream.getVideoTracks().some(t=>t.readyState==='live')))cam.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},audio:false});
   const v=$('camV');v.srcObject=cam.stream;await v.play();
   try{const tr=cam.stream.getVideoTracks()[0],cp=tr.getCapabilities?tr.getCapabilities():{};if(cp.focusMode&&cp.focusMode.includes('continuous'))await tr.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
   $('camH').textContent='Barkodu çerçeveye getirin (düz tutun, 15-25 cm). Okumazsa "Fotoğraf çek ve oku"ya basın.';
@@ -555,7 +569,7 @@ async function camAc(){$('camK').classList.remove('hide');cam.akt=true;clearTime
      const a=ac[n++%ac.length]*Math.PI/180;cv.width=W;cv.height=bantH;cx.setTransform(1,0,0,1,0,0);cx.fillStyle='#fff';cx.fillRect(0,0,W,bantH);
      cx.translate(W/2,bantH/2);cx.rotate(a);cx.drawImage(v,0,vh*.25,vw,vh*.5,-W/2,-bantH/2,W,bantH);
      let t=cvDene(cx,W,bantH);if(!t&&n%ac.length===1){cv.width=W;cv.height=H;cx.setTransform(1,0,0,1,0,0);cx.drawImage(v,0,0,W,H);t=cvDene(cx,W,H)}
-     if(t)camBulundu(t)}}catch(e){}setTimeout(tur,90)};tur()}
+     if(t){if(t===cam.aday){cam.aday=null;camBulundu(t)}else cam.aday=t}}}catch(e){}setTimeout(tur,90)};tur()}
  }catch(e){$('camH').textContent='Kamera açılamadı: '+e.message;}}
 function camKapat(){cam.akt=false;try{$('camV').pause()}catch(e){}$('camV').srcObject=null;$('camK').classList.add('hide');$('sicil').focus();
  // akım 10 dk boşta kalırsa bırakılır (pil); o zamana kadar izin tekrar sorulmaz
@@ -569,7 +583,38 @@ async function fotoOku(file){$('camH').textContent='Fotoğraf okunuyor…';
    if(t)break}
   if(t){camBulundu(t)}else $('camH').textContent='Fotoğrafta barkod okunamadı. Barkodu daha yakın/net çekin veya sicili elle yazın.'
  }catch(e){$('camH').textContent='Okunamadı: '+e.message}}
+function camYetenek(){try{const tr=cam.stream&&cam.stream.getVideoTracks()[0];return tr&&tr.getCapabilities?{tr,cp:tr.getCapabilities()}:null}catch(e){return null}}
+$('camT').onclick=async()=>{const y=camYetenek();if(!y||!y.cp.torch){$('camH').textContent='Bu telefon/tarayıcı feneri tarayıcıdan açmıyor.';return}cam.fener=!cam.fener;try{await y.tr.applyConstraints({advanced:[{torch:cam.fener}]});$('camT').textContent=cam.fener?'🔦 Fener: AÇIK':'🔦 Fener'}catch(e){cam.fener=false}};
+$('camZ').onclick=async()=>{const y=camYetenek();if(!y||!y.cp.zoom){$('camH').textContent='Bu telefon yakınlaştırmayı tarayıcıdan desteklemiyor; biraz yaklaşın.';return}const z=y.cp.zoom,adim=[1,2,3].map(k=>Math.min(z.max,Math.max(z.min,k)));cam.zi=((cam.zi||0)+1)%adim.length;try{await y.tr.applyConstraints({advanced:[{zoom:adim[cam.zi]}]});$('camZ').textContent='🔍 Yakın: '+adim[cam.zi]+'x'}catch(e){}};
 $('camF').onclick=()=>$('camI').click();$('camI').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)fotoOku(f)};
+
+
+// ---------- asistan + pano ----------
+function panoCiz(){const ds=hesaplaTum(),o=yerOzet(TUM);
+ const hata=kayit.filter(k=>k.durum==='hata').length,bk=kayit.filter(k=>k.durum==='bekliyor').length,gitti=kayit.filter(k=>k.durum==='gitti').length;
+ const ad=new Map();for(const a of yerListe())ad.set(norm(a),a);for(const [n,l] of yerSet){if(!ad.has(n)){const r=l.find(x=>norm(x[9])===n)||l[0];ad.set(n,norm(r[9])===n?r[9]:r[11])}}
+ const st=new Map();for(const k of kayit){const n=norm(k.yer);const s=st.get(n)||st.set(n,{o:0,y:0,f:0,m:0}).get(n);s.o++;const d=ds.get(k.kimlik);if(d.t==='YERİNDE')s.y++;else if(d.t==='MÜKERRER')s.m++;else if(d.c==='faz'||d.c==='yer')s.f++}
+ const sat=[...ad.entries()].map(x=>{const k=(yerSet.get(x[0])||[]).length,s=st.get(x[0])||{o:0,y:0,f:0,m:0};return{n:x[0],ad:x[1],k,s}}).filter(x=>x.k>0||x.s.o>0);
+ const say=sat.filter(x=>x.s.o===0&&x.k>0);
+ const g=[];const ekle=(c,t,m,f)=>g.push('<div class="it '+(c==='ok'?'':c)+'"'+(f?' data-pf="'+f+'" style="cursor:pointer"':'')+'><b>'+esc(t)+'</b><small>'+esc(m)+'</small></div>');
+ if(hata)ekle('muk','Gönderilemeyen kayıt ('+hata+')','Dokunun: yeniden denensin.','tekrar');
+ if(bk)ekle('faz','Bekleyen kayıt ('+bk+')','İnternet/giriş gelince kendiliğinden gider. Dokunun: şimdi gönder.','gonder');
+ if(medKy.length)ekle('faz','Bekleyen resim/video ('+medKy.length+')','Dokunun: şimdi göndermeyi dene.','medya');
+ if(!hesap&&cid())ekle('muk','Microsoft girişi yok','Ayar sekmesinden giriş yapın; yoksa hiçbir şey OneDrive\'a gitmez.','ayar');
+ if(!bek.length)ekle('faz','Sistem listesi yok','Excel\'de Mobil Listeleri Yaz, sonra Ayar sekmesinden listeleri alın.','ayar');
+ if(o.muk)ekle('muk','Mükerrer ('+o.muk+')','Aynı sicil birden fazla okutulmuş. Özet sekmesinde bakın.','oz');
+ if(o.faz)ekle('faz','Fazla ('+o.faz+')','Raporda yok ya da başka yerde kayıtlı.','oz');
+ if(say.length)ekle('plain','Sayılmamış yer ('+say.length+')','Sıradaki: '+say[0].ad+(say.length>1?'  ·  '+say.slice(1,4).map(x=>x.ad).join('  ·  '):'')+'. Dokunun: ilkine geç.','say:'+say[0].ad);
+ else if(sat.length)ekle('ok','Tüm yerlerde okutma var','Listedeki her yerde en az bir okutma yapılmış.');
+ if(!g.length)ekle('ok','Her şey yolunda','Yapılacak bir şey görünmüyor.');
+ $('asL').innerHTML=g.join('');
+ $('pnK').innerHTML=cntHtml(o);const yz=o.kay?Math.round(100*o.yerinde/o.kay):0;$('pnB').style.width=yz+'%';$('pnM').textContent='%'+yz+' tamamlandı ('+o.yerinde+' / '+o.kay+') · '+sat.length+' yer/kişi · '+(sat.length-say.length)+' tanesinde okutma var';
+ sat.sort((a,b)=>(a.s.o?1:0)-(b.s.o?1:0)||a.ad.localeCompare(b.ad,'tr'));
+ $('pnY').innerHTML='<table class="t pn"><tr><th>Yer / Kişi</th><th></th><th>Yer./Kay.</th></tr>'+sat.map(x=>{const p=x.k?Math.min(100,Math.round(100*x.s.y/x.k)):0;return '<tr data-yy="'+esc(x.ad)+'" style="cursor:pointer"><td>'+esc(x.ad)+'</td><td><div class="pb'+(x.s.o?'':' z')+'"><i style="width:'+p+'%"></i></div></td><td>'+x.s.y+' / '+x.k+(x.s.f?' · F'+x.s.f:'')+(x.s.m?' · M'+x.s.m:'')+'</td></tr>'}).join('')+'</table>';
+ const bug=tarihTR(new Date()),bn=kayit.filter(k=>k.tarih===bug).length,son=kayit.length?kayit[kayit.length-1]:null;
+ $('pnC').innerHTML='<div class="kv"><b>Kullanıcı / cihaz</b><span>'+esc(LS.get('cihaz','')||'(adsız)')+' · '+cihazTur()+'</span><b>Toplam kayıt</b><span>'+kayit.length+' (gönderilen '+gitti+', bekleyen '+bk+', hatalı '+hata+')</span><b>Bugün</b><span>'+bn+' kayıt</span><b>Son kayıt</b><span>'+(son?esc(son.tarih+' '+son.saat):'—')+'</span><b>Bağlantı</b><span>'+(hesap?'giriş yapıldı':'girişsiz')+'</span></div>'}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-pf]');if(a){const f=a.dataset.pf;if(f==='tekrar')$('tekrar').click();else if(f==='gonder')gonder(true);else if(f==='medya')medKyGonder(true);else if(f==='ayar')document.querySelector('nav button[data-s=s-ay]').click();else if(f==='oz')document.querySelector('nav button[data-s=s-oz]').click();else if(f.startsWith('say:')){yerAt(f.slice(4));document.querySelector('nav button[data-s=s-say]').click()}setTimeout(panoCiz,300);return}
+ const t=e.target.closest('#pnY tr[data-yy]');if(t){yerAt(t.dataset.yy);document.querySelector('nav button[data-s=s-say]').click()}});
 
 // ---------- yapıştırma: pano -> Excel gibi temiz sicil (nokta, / ve boşluk gider) ----------
 function panoTemiz(t){const l=String(t||'').split(/\r?\n/).map(x=>x.trim()).find(x=>x)||'';return duzelt(l.split('\t')[0])}

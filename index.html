@@ -150,10 +150,13 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
  <div class="card"><h3>Pano · tüm sayım tek bakışta</h3><div class="cnt" id="pnK"></div><div class="bar"><i id="pnB"></i></div><div class="msg" id="pnM"></div></div>
  <div class="card"><h3>Yer / kişi bazında</h3><div class="msg">Çubuk: yerinde okutulan / sistemde kayıtlı. Bir satıra dokunun, o yere geçin.</div><div id="pnY" style="overflow-x:auto"></div></div>
  <div class="card"><h3>Bu cihaz</h3><div id="pnC"></div></div>
+ <div class="card"><h3>Gönderim raporu</h3><div id="rpOz"></div><button class="b" id="rpSor">Excel'de durumu sorgula</button><button class="b g" id="rpKop">Raporu kopyala</button><div class="msg" id="rpM"></div><div id="rpL"></div></div>
+ <div class="card"><h3>Bağlı cihazlar / kullanıcılar</h3><button class="b g" id="cihSor">Cihazları getir</button><div id="cihL"></div></div>
+ <div class="card"><h3>Günlük (son 100 olay)</h3><div id="glogL"></div></div>
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v9</div>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v10</div>
   <label>Kullanıcı / cihaz adı (kayıtlarda Kaynak olarak görünür; her kişi kendi adını yazsın)</label><input id="cihaz" class="giris" placeholder="ör. ahmet-iphone, ayse-tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -252,11 +255,10 @@ function onizle(){const s0=duzelt($('sicil').value);const gor=new Set(kayit.filt
  $('notBlok').classList.toggle('hide',gizle);$('adBlok').classList.toggle('hide',gizle);$('notAcW').classList.toggle('hide',!gizle);
  $('dzKutu').innerHTML='';$('ekle').textContent='Kaydet (Enter)';
  $('kart').innerHTML=kartHtml(d.r,d.r?[['Tarih / Saat',zamanPil(tarihTR(n)+' '+saatTR(n),d),1]]:[]);medyaTetik();return d}
-function duzeltBaslat(id){const k=kayit.find(x=>x.kimlik===id);if(!k)return;if(k.durum==='gitti'){alert('Bu kayıt Excel\'e gönderilmiş. Düzeltmeyi Excel\'de yapın.');return}
- dzId=id;$('yer').value=k.yer;LS.set('sonYer',k.yer);$('sicil').value=k.sicil;$('not').value=k.not||'';$('ad').value=k.malzeme||'';notZorla=true;
- $('dzBan').classList.remove('hide');$('dzBan').innerHTML='✎ <b>Düzeltme modu:</b> '+esc(k.sicil||k.malzeme)+' kaydı güncellenecek. Değiştirip Kaydet\'e basın. <a id="dzVaz" class="lnk" style="float:none;display:inline-block;margin-left:8px">Vazgeç</a>';hepsi();$('sicil').focus();window.scrollTo(0,0)}
+function duzeltBaslat(id){const k=kayit.find(x=>x.kimlik===id);if(!k)return;dzId=id;$('yer').value=k.yer;LS.set('sonYer',k.yer);$('sicil').value=k.sicil;$('not').value=k.not||'';$('ad').value=k.malzeme||'';notZorla=true;
+ $('dzBan').classList.remove('hide');$('dzBan').innerHTML='✎ <b>Düzeltme modu:</b> '+esc(k.sicil||k.malzeme)+(k.durum==='gitti'?' kaydı Excel\'de de güncellenecek (düzeltme dosyası gönderilir). ':' kaydı güncellenecek. ')+'Değiştirip Kaydet\'e basın. <a id="dzVaz" class="lnk" style="float:none;display:inline-block;margin-left:8px">Vazgeç</a> <a id="dzIpt" class="lnk" style="float:none;display:inline-block;margin-left:8px;color:var(--er)">Kaydı iptal et</a>';hepsi();$('sicil').focus();window.scrollTo(0,0)}
 function duzeltBitir(){dzId=null;notZorla=false;$('dzBan').classList.add('hide');$('sicil').value='';$('not').value='';$('ad').value='';hepsi()}
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-dz]');if(b){duzeltBaslat(b.dataset.dz);return}if(e.target.closest&&e.target.closest('[data-kay]')){ekle();return}if(e.target.id==='dzVaz')duzeltBitir()});
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-dz]');if(b){duzeltBaslat(b.dataset.dz);return}if(e.target.closest&&e.target.closest('[data-kay]')){ekle();return}if(e.target.id==='dzVaz')duzeltBitir();if(e.target.id==='dzIpt')kayitIptal()});
 const gecSn=()=>0;
 // ---------- yerleri sırayla gezme (telefon) ----------
 function yerListe(){return yerler.filter(x=>norm(x)!==TUMN)}
@@ -335,7 +337,7 @@ function sorgu(){const s=duzelt($('sq').value);if(!s){$('sqK').innerHTML='';$('s
  const r=anah.get(s)||(barm.get(s)||[])[0];$('sqK').innerHTML=r?kartHtml(r):'<span class="msg">Sistemde kayıt bulunamadı.</span>';
  $('sqS').innerHTML=kayit.filter(k=>duzelt(k.sicil)===s).map(k=>'<div class="it plain" data-cp="'+esc(k.sicil)+'">Sayımda okutuldu: <b>'+esc(k.yer)+'</b><small>'+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+'</small></div>').join('')}
 // ---------- kayıt satırları ----------
-function satir(k,d,sil){return '<div class="it '+(d.c==='ok'?'':d.c)+'"'+(k.sicil?' data-cp="'+esc(k.sicil)+'"':'')+'>'+(sil&&k.durum!=='gitti'?'<button class="x" data-sil="'+k.kimlik+'">×</button>':'')+'<b>'+esc(k.sicil||k.malzeme)+'</b> '+esc(d.t)+' <span class="msg">'+(k.durum==='gitti'?'✓':k.durum==='hata'?'⚠ hata':'⏳')+'</span><small>'+esc(k.yer)+' · '+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+(d.r?' · '+esc(d.r[4]):'')+'</small></div>'}
+function satir(k,d,sil){return '<div class="it '+(d.c==='ok'?'':d.c)+'"'+(k.sicil?' data-cp="'+esc(k.sicil)+'"':'')+'>'+(sil&&k.durum!=='gitti'?'<button class="x" data-sil="'+k.kimlik+'">×</button>':'')+(sil?'<button class="x" data-dz="'+k.kimlik+'" style="font-size:16px;margin-right:10px;color:var(--ac)">✎</button>':'')+'<b>'+esc(k.sicil||k.malzeme)+'</b> '+esc(d.t)+' <span class="msg">'+(k.durum==='gitti'?'✓':k.durum==='hata'?'⚠ hata':'⏳')+'</span><small>'+esc(k.yer)+' · '+k.tarih+' '+k.saat+(k.not?' · '+esc(k.not):'')+(d.r?' · '+esc(d.r[4]):'')+'</small></div>'}
 function liste(){const ds=hesaplaTum();const sr=[...kayit].sort((a,b)=>a.kimlik<b.kimlik?1:-1);
  $('son').innerHTML=sr.slice(0,6).map(k=>satir(k,ds.get(k.kimlik),true)).join('')||'<div class="msg">Henüz kayıt yok.</div>';
  const qs=norm($('ara').value).split(' ').filter(Boolean);const fy=norm(kfil.yer),fd=kfil.durum;const t=sr.filter(k=>(!fy||fy===TUMN||norm(k.yer)===fy)&&(!fd||ds.get(k.kimlik).t===fd)&&(!qs.length||(()=>{const d=ds.get(k.kimlik),m=norm([k.sicil,k.malzeme,k.yer,k.not,k.tarih,k.saat,d.t,d.r?d.r.join(' '):''].join(' '));return qs.every(w=>m.includes(w))})()));
@@ -351,9 +353,10 @@ async function ekle(){sicilGoster();const yer=yerAdi(),sicil=duzelt($('sicil').v
  if(!sicil&&!ad){$('sicil').focus();return}
  if(!yer){$('mesaj').className='msg er';$('mesaj').textContent='Önce sayım yerini / kişiyi seçin.';$('yer').focus();return}
  if(dzId){const k0=kayit.find(x=>x.kimlik===dzId);if(k0){const g0=new Set(kayit.filter(k=>k.kimlik!==dzId).map(k=>duzelt(k.sicil)).filter(Boolean));const d0=durum(sicil,ad,yer,g0);
-  k0.sicil=sicil;k0.malzeme=ad;k0.not=$('not').value||k0.not||'';k0.yer=yer;k0.durum='bekliyor';k0.deneme=0;k0.hata='';k0.ts=Date.now();
+  const xl0=k0.xl||{yer:k0.yer,sicil:k0.sicil,malzeme:k0.malzeme},gitti0=k0.durum==='gitti';
+  k0.sicil=sicil;k0.malzeme=ad;k0.not=$('not').value||k0.not||'';k0.yer=yer;if(gitti0){k0.xl={yer,sicil,malzeme:ad};dzK.push({kimlik:k0.kimlik,ad:k0.kimlik+'_d'+Date.now()+'.txt',metin:dzMetin('duzelt',k0,xl0),deneme:0,ts:Date.now()});await dzKaydet();gLog('düzeltme',k0.kimlik,'kuyrukta',(xl0.sicil||xl0.malzeme)+' → '+(sicil||ad))}else{k0.durum='bekliyor';k0.deneme=0;k0.hata='';k0.ts=Date.now()}
   try{await dbYaz(k0)}catch(e){$('mesaj').className='msg er';$('mesaj').textContent='KAYIT SAKLANAMADI: '+e.message;return}
-  dzId=null;notZorla=false;$('dzBan').classList.add('hide');$('sicil').value='';$('ad').value='';$('not').value='';$('mesaj').className='msg ok';$('mesaj').textContent='Düzeltildi: '+(sicil||ad)+' – '+d0.t;hepsi();$('sicil').focus();if(gecSn()>0)setTimeout(()=>gonder(false),(gecSn()+2)*1000);else gonder(false);return}}
+  dzId=null;notZorla=false;$('dzBan').classList.add('hide');$('sicil').value='';$('ad').value='';$('not').value='';$('mesaj').className='msg ok';$('mesaj').textContent='Düzeltildi: '+(sicil||ad)+' – '+d0.t;hepsi();$('sicil').focus();dzGonder(true);if(gecSn()>0)setTimeout(()=>gonder(false),(gecSn()+2)*1000);else gonder(false);return}}
  const t=Date.now();if(sicil&&sicil===sonS&&t-sonZ<1500){$('sicil').value='';return}sonS=sicil;sonZ=t;
  const gor=new Set(kayit.map(k=>duzelt(k.sicil)).filter(Boolean));const d=durum(sicil,ad,yer,gor);
  let nt=$('not').value;if(!nt){if(d.t==='FAZLA – başka yerde kayıtlı')nt='Başka odadan geldi';else if(d.t==='FAZLA – raporda yok')nt='Sistemde kaydı yok'}
@@ -452,8 +455,8 @@ async function medKyGonder(elle){if(medGon||!medKy.length)return;if(!hesap||!nav
   for(const j of medKy.slice()){if(!elle&&(j.deneme||0)>=10)continue;
    try{let kl=j.kok;if(!j.sicilMi)kl=j.kok+'/'+await yerKlasorBul(j.kok,j.yer,jt);$('medM').textContent='Yükleniyor: '+j.ad+'…';await buluta(kl,j.ad,j.blob,jt);
     if(j.eski){try{await eskiyiTasi(j.eski,jt)}catch(_){}}
-    medKy=medKy.filter(x=>x.id!==j.id);await medKyKaydet();ok++}
-   catch(e){j.deneme=(j.deneme||0)+1;j.hata=e.message;await medKyKaydet();$('medM').textContent='Gönderilemedi, tekrar denenecek: '+e.message;if(/HTTP 40[13]/.test(e.message))break}}
+    medKy=medKy.filter(x=>x.id!==j.id);await medKyKaydet();gLog('medya',j.ad,'ok',kl+'/'+j.ad);ok++}
+   catch(e){j.deneme=(j.deneme||0)+1;j.hata=e.message;await medKyKaydet();gLog('medya',j.ad,'hata',e.message);$('medM').textContent='Gönderilemedi, tekrar denenecek: '+e.message;if(/HTTP 40[13]/.test(e.message))break}}
  }catch(e){if(elle)$('medM').textContent='Gönderilemedi: '+e.message}
  medGon=false;medKyGoster();if(ok){$('medM').textContent=ok+' dosya gönderildi. Excel\'de Rapor Güncelle / Medya Bağla ile satıra bağlanır.';setTimeout(medyaAra,1500)}}
 async function medyaSec(inp,tur){const f=inp.files&&inp.files[0];inp.value='';if(!f)return;const s=md.h==='sicil';
@@ -506,8 +509,8 @@ async function gonder(elle){if(gon)return;if(!navigator.onLine){if(elle)$('gm').
  const gs=gecSn()*1000,bk=kayit.filter(k=>k.durum==='bekliyor'||k.durum==='hata');const b=kayit.filter(k=>k.durum==='bekliyor'&&(elle||!k.ts||Date.now()-k.ts>=gs)).sort((a,b)=>a.kimlik<b.kimlik?-1:1);if(!b.length){if(elle)$('gm').textContent='Gönderilecek kayıt yok.';return}
  if(!hesap){if(elle)$('gm').textContent='Giriş yok: "Dosya olarak paylaş" yolunu kullanın veya Ayarlar\'dan giriş yapın.';return}
  gon=true;let ok=0,h=0,jt;try{jt=await belirtec()}catch(e){gon=false;if(elle)$('gm').textContent='Gönderilemedi: '+e.message;return}
- for(const k of b){try{await yukle(k,jt);k.durum='gitti';k.hata='';await dbYaz(k);ok++}catch(e){k.deneme=(k.deneme||0)+1;k.hata=e.message;k.durum=k.deneme>=5?'hata':'bekliyor';await dbYaz(k);h++;if(/HTTP 40[13]/.test(e.message))break}}
- gon=false;liste();if(elle||h)$('gm').textContent=ok+' kayıt gönderildi'+(h?', '+h+' gönderilemedi (kuyrukta).':'. Excel açıkken 2 dk içinde alır.')}
+ for(const k of b){try{await yukle(k,jt);k.durum='gitti';k.hata='';k.xl={yer:k.yer,sicil:k.sicil,malzeme:k.malzeme};k.gTs=Date.now();await dbYaz(k);gLog('kayıt',k.kimlik,'ok','Gelen/'+k.kimlik+'.txt');ok++}catch(e){k.deneme=(k.deneme||0)+1;k.hata=e.message;k.durum=k.deneme>=5?'hata':'bekliyor';await dbYaz(k);gLog('kayıt',k.kimlik,'hata',e.message);h++;if(/HTTP 40[13]/.test(e.message))break}}
+ gon=false;liste();if(ok){LS.set('sonGon',tarihTR(new Date())+' '+saatTR(new Date()));cihazBildir(true)}dzGonder(false);if(elle||h)$('gm').textContent=ok+' kayıt gönderildi'+(h?', '+h+' gönderilemedi (kuyrukta).':'. Excel açıkken 2 dk içinde alır.')}
 $('gonder').onclick=()=>gonder(true);
 $('tekrar').onclick=async()=>{for(const k of kayit)if(k.durum==='hata'){k.durum='bekliyor';k.deneme=0;await dbYaz(k)}gonder(true)};
 function tsv(b){return '#SAYIM1\n'+b.map(k=>[k.yer,k.sicil,k.malzeme,k.not,isoTar(k),k.saat].map(temiz).join('\t')).join('\n')+'\n'}
@@ -590,7 +593,7 @@ $('camF').onclick=()=>$('camI').click();$('camI').onchange=e=>{const f=e.target.
 
 
 // ---------- asistan + pano ----------
-function panoCiz(){const ds=hesaplaTum(),o=yerOzet(TUM);
+function panoCiz(){rpOzCiz();const ds=hesaplaTum(),o=yerOzet(TUM);
  const hata=kayit.filter(k=>k.durum==='hata').length,bk=kayit.filter(k=>k.durum==='bekliyor').length,gitti=kayit.filter(k=>k.durum==='gitti').length;
  const ad=new Map();for(const a of yerListe())ad.set(norm(a),a);for(const [n,l] of yerSet){if(!ad.has(n)){const r=l.find(x=>norm(x[9])===n)||l[0];ad.set(n,norm(r[9])===n?r[9]:r[11])}}
  const st=new Map();for(const k of kayit){const n=norm(k.yer);const s=st.get(n)||st.set(n,{o:0,y:0,f:0,m:0}).get(n);s.o++;const d=ds.get(k.kimlik);if(d.t==='YERİNDE')s.y++;else if(d.t==='MÜKERRER')s.m++;else if(d.c==='faz'||d.c==='yer')s.f++}
@@ -616,6 +619,56 @@ function panoCiz(){const ds=hesaplaTum(),o=yerOzet(TUM);
 document.addEventListener('click',e=>{const a=e.target.closest('[data-pf]');if(a){const f=a.dataset.pf;if(f==='tekrar')$('tekrar').click();else if(f==='gonder')gonder(true);else if(f==='medya')medKyGonder(true);else if(f==='ayar')document.querySelector('nav button[data-s=s-ay]').click();else if(f==='oz')document.querySelector('nav button[data-s=s-oz]').click();else if(f.startsWith('say:')){yerAt(f.slice(4));document.querySelector('nav button[data-s=s-say]').click()}setTimeout(panoCiz,300);return}
  const t=e.target.closest('#pnY tr[data-yy]');if(t){yerAt(t.dataset.yy);document.querySelector('nav button[data-s=s-say]').click()}});
 
+
+// ---------- gönderim günlüğü, düzeltme kuyruğu, cihaz bildirimi, rapor ----------
+let glog=[],dzK=[],dzGon=false,sonBildir=0,rpSon=null;
+const dzKaydet=()=>kvS('dzKuyruk',dzK);
+function gLog(tur,id,sonuc,det){glog.unshift({t:Date.now(),k:tur,id:id||'',s:sonuc,d:det||''});if(glog.length>500)glog.length=500;kvS('glog',glog)}
+async function txtYukle(yol,metin,jt,cb){cb=cb||'fail';const r=await fetch(gUrl(yol)+':/content?@microsoft.graph.conflictBehavior='+cb,{method:'PUT',headers:{Authorization:'Bearer '+jt,'Content-Type':'text/plain; charset=utf-8'},body:new Blob([metin],{type:'text/plain;charset=utf-8'})});
+ if(r.status===409&&cb==='fail')return;if(!r.ok){let m='';try{m=(await r.json()).error.message}catch(e){}throw new Error('HTTP '+r.status+' '+m)}}
+function dzMetin(islem,k,eski){return ['islem='+islem,'kimlik='+k.kimlik,'eski_yer='+temiz(eski.yer),'eski_sicil='+temiz(eski.sicil),'eski_malzeme='+temiz(eski.malzeme),'tarih='+k.tarih,'saat='+k.saat,'yer='+temiz(k.yer),'sicil='+temiz(k.sicil),'malzeme='+temiz(k.malzeme),'not='+temiz(k.not),'cihaz='+temiz(LS.get('cihaz','')),'tur='+cihazTur()].join('\n')+'\n'}
+async function dzGonder(elle){if(dzGon||!dzK.length||!hesap||!navigator.onLine)return;dzGon=true;
+ try{const jt=await belirtec();for(const j of dzK.slice()){try{await txtYukle(mobYol('Gelen/'+j.ad),j.metin,jt);dzK=dzK.filter(x=>x!==j);await dzKaydet();gLog('düzeltme',j.kimlik,'ok','Gelen/'+j.ad)}catch(e){j.deneme=(j.deneme||0)+1;j.hata=e.message;await dzKaydet();gLog('düzeltme',j.kimlik,'hata',e.message);if(/HTTP 40[13]/.test(e.message))break}}}catch(e){}
+ dzGon=false;liste()}
+async function kayitIptal(){const k=kayit.find(x=>x.kimlik===dzId);if(!k)return;
+ if(!confirm('Bu kayıt iptal edilsin mi?'+(k.durum==='gitti'?' Excel\'deki satır da temizlenir.':''))) return;
+ if(k.durum==='gitti'){const xl=k.xl||{yer:k.yer,sicil:k.sicil,malzeme:k.malzeme};dzK.push({kimlik:k.kimlik,ad:k.kimlik+'_i'+Date.now()+'.txt',metin:dzMetin('iptal',k,xl),deneme:0,ts:Date.now()});await dzKaydet();gLog('iptal',k.kimlik,'kuyrukta',k.sicil||k.malzeme)}else gLog('iptal',k.kimlik,'ok','gönderilmemiş kayıt silindi');
+ await dbSil(k.kimlik);kayit=kayit.filter(x=>x.kimlik!==k.kimlik);duzeltBitir();dzGonder(true)}
+async function cihazBildir(zorla){if(!hesap||!navigator.onLine)return;if(!zorla&&Date.now()-sonBildir<120000)return;sonBildir=Date.now();
+ try{const jt=await belirtec();const ad=(temiz(LS.get('cihaz',''))||'adsiz').replace(/[^\w-]/g,'')||'adsiz',tr=cihazTur(),n=new Date();
+  const c=d=>kayit.filter(k=>k.durum===d).length;
+  const m=['cihaz='+temiz(LS.get('cihaz','')||'(adsız)'),'tur='+tr,'surum=v10','zaman='+tarihTR(n)+' '+saatTR(n),'hesap='+temiz(hesap.username||''),'yer='+temiz(yerAdi()),'toplam='+kayit.length,'gitti='+c('gitti'),'bekleyen='+c('bekliyor'),'hata='+c('hata'),'medya='+medKy.length,'duzeltme='+dzK.length,'son_gonderim='+temiz(LS.get('sonGon',''))].join('\n')+'\n';
+  await txtYukle(mobYol('Cihazlar/'+ad+'_'+tr.replace(/\W/g,'')+'.txt'),m,jt,'replace')}catch(e){}}
+async function listeKlasor(yol,jt){let u=gUrl(yol)+':/children?$select=name,size,lastModifiedDateTime&$top=999',o=[];while(u){const r=await fetch(u,{headers:{Authorization:'Bearer '+jt}});if(r.status===404)return[];if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();o.push(...j.value);u=j['@odata.nextLink']||null}return o}
+const yasS=ms=>{const d=Math.max(0,Math.round(ms/60000));return d<1?'şimdi':d<60?d+' dk önce':d<1440?Math.round(d/60)+' sa önce':Math.round(d/1440)+' gün önce'};
+const zS=t=>{const n=new Date(t);return tarihTR(n)+' '+saatTR(n)};
+function rpOzCiz(){const c=d=>kayit.filter(k=>k.durum===d).length;
+ $('rpOz').innerHTML='<div class="kv"><b>Telefonda kayıt</b><span>'+kayit.length+' (gönderilen '+c('gitti')+', bekleyen '+c('bekliyor')+', hatalı '+c('hata')+')</span><b>Bekleyen resim/video</b><span>'+medKy.length+'</span><b>Bekleyen düzeltme/iptal</b><span>'+dzK.length+'</span><b>Son gönderim</b><span>'+esc(LS.get('sonGon','—'))+'</span><b>Giriş</b><span>'+(hesap?esc(hesap.username):'yok (girişsiz)')+'</span></div>';
+ $('glogL').innerHTML=glog.slice(0,100).map(g=>'<div class="it '+(g.s==='hata'?'muk':g.s==='kuyrukta'?'faz':'')+'"><b>'+esc(g.k)+'</b> <span class="msg">'+esc(g.s)+' · '+zS(g.t)+'</span><small>'+esc(g.id)+(g.d?' → '+esc(g.d):'')+'</small></div>').join('')||'<div class="msg">Henüz günlük yok.</div>'}
+async function rpSor(){if(!hesap||!navigator.onLine){$('rpM').textContent='Giriş ve internet gerekli.';return}$('rpM').textContent='OneDrive klasörleri okunuyor…';
+ try{const jt=await belirtec();const [ge,isl,ha]=await Promise.all([listeKlasor(mobYol('Gelen'),jt),listeKlasor(mobYol('Islendi'),jt),listeKlasor(mobYol('Hata'),jt)]);
+  const gi=new Map(ge.map(f=>[f.name,f])),sf=(L,id)=>L.find(f=>f.name===id+'.txt'||f.name.endsWith('_'+id+'.txt'));
+  const sat={islendi:[],gelen:[],hata:[],yok:[],bek:[]};
+  for(const k of kayit){if(k.durum!=='gitti'){sat.bek.push([k,k.durum==='hata'?'Telefonda gönderilemedi: '+(k.hata||''):'Telefonda sırada']);continue}
+   const f1=sf(isl,k.kimlik),f2=sf(ge,k.kimlik),f3=sf(ha,k.kimlik);
+   if(f3)sat.hata.push([k,'Hata klasöründe (Excel okuyamadı)']);else if(f1)sat.islendi.push([k,'Excel işledi']);else if(f2)sat.gelen.push([k,'Gelen klasöründe bekliyor, '+yasS(Date.now()-new Date(f2.lastModifiedDateTime))]);else sat.yok.push([k,'Hiçbir klasörde bulunamadı'])}
+  const eskiG=ge.length?Math.max(...ge.map(f=>Date.now()-new Date(f.lastModifiedDateTime))):0;
+  rpSon={zaman:Date.now(),gelen:ge.length,islendi:isl.length,hata:ha.length,sat,eskiG};
+  const kt=(a,c)=>'<div class="it '+c+'"><b>'+a.length+'</b> '+({islendi:'Excel işledi',gelen:'Gelen kutusunda bekliyor',hata:'Hata klasöründe',yok:'Bulunamadı',bek:'Telefonda bekliyor/hatalı'})[a.k]+'</div>';
+  const blok=(ad,L,c)=>L.length?'<div class="msg" style="margin-top:8px"><b>'+ad+'</b></div>'+L.slice(0,40).map(([k,m])=>'<div class="it '+c+'"><b>'+esc(k.sicil||k.malzeme)+'</b> <span class="msg">'+esc(k.yer)+' · '+k.tarih+' '+k.saat+'</span><small>'+esc(m)+'</small></div>').join(''):'';
+  $('rpL').innerHTML='<div class="kv"><b>Gelen klasörü (herkesten)</b><span>'+ge.length+' dosya'+(ge.length?' · en eskisi '+yasS(eskiG):'')+'</span><b>İşlendi klasörü</b><span>'+isl.length+' dosya</span><b>Hata klasörü</b><span>'+ha.length+' dosya</span><b>Bu telefonun kayıtları</b><span>işlendi '+sat.islendi.length+' · gelende '+sat.gelen.length+' · hata '+sat.hata.length+' · bulunamadı '+sat.yok.length+' · telefonda '+sat.bek.length+'</span><b>Sorgu zamanı</b><span>'+zS(Date.now())+'</span></div>'+blok('Bulunamayanlar',sat.yok,'muk')+blok('Hata klasöründekiler',sat.hata,'muk')+blok('Gelen kutusunda bekleyenler (Excel açık değil / 2 dk içinde alır)',sat.gelen,'faz')+blok('Telefonda bekleyen / hatalı',sat.bek,'faz');
+  $('rpM').textContent='Tamam. '+(ge.length&&eskiG>600000?'Uyarı: Gelen kutusundaki dosyalar 10 dakikadan eski; Excel açık mı?':'')}catch(e){$('rpM').textContent='Sorgulanamadı: '+e.message}}
+async function cihSor(){if(!hesap||!navigator.onLine){$('cihL').innerHTML='<div class="msg">Giriş ve internet gerekli.</div>';return}$('cihL').innerHTML='<div class="msg">Okunuyor…</div>';
+ try{const jt=await belirtec();const L=(await listeKlasor(mobYol('Cihazlar'),jt)).filter(f=>/\.txt$/i.test(f.name));const o=[];
+  for(const f of L){try{const r=await fetch(gUrl(mobYol('Cihazlar/'+f.name))+':/content',{headers:{Authorization:'Bearer '+jt}});if(!r.ok)continue;const v={};for(const ln of(await r.text()).split(/\r?\n/)){const i=ln.indexOf('=');if(i>0)v[ln.slice(0,i)]=ln.slice(i+1)}v._yas=Date.now()-new Date(f.lastModifiedDateTime);v._d=f.lastModifiedDateTime;o.push(v)}catch(e){}}
+  o.sort((a,b)=>a._yas-b._yas);const bagli=o.filter(v=>v._yas<15*60000).length;
+  $('cihL').innerHTML='<div class="msg"><b>'+o.length+'</b> cihaz kayıtlı, <b>'+bagli+'</b> tanesi son 15 dakikada bağlandı.</div>'+(o.map(v=>'<div class="it '+(v._yas<15*60000?'':v._yas<86400000?'faz':'no')+'"><b>'+esc(v.cihaz||'?')+'</b> · '+esc(v.tur||'')+' <span class="msg">'+(v._yas<15*60000?'● BAĞLI':'son görülme '+yasS(v._yas))+'</span><small>Hesap: '+esc(v.hesap||'—')+' · sürüm '+esc(v.surum||'?')+' · toplam '+esc(v.toplam||'0')+' · gönderilen '+esc(v.gitti||'0')+' · bekleyen '+esc(v.bekleyen||'0')+' · hatalı '+esc(v.hata||'0')+' · medya '+esc(v.medya||'0')+' · son yer: '+esc(v.yer||'—')+'</small></div>').join('')||'<div class="msg">Henüz cihaz bildirimi yok. Telefon giriş yapıp kayıt gönderince görünür.</div>')}catch(e){$('cihL').innerHTML='<div class="msg er">Okunamadı: '+esc(e.message)+'</div>'}}
+$('rpSor').onclick=rpSor;$('cihSor').onclick=cihSor;
+$('rpKop').onclick=async()=>{const sat=rpSon&&rpSon.sat;let t='SAYIM GÖNDERİM RAPORU '+zS(Date.now())+'\nCihaz: '+(LS.get('cihaz','')||'(adsız)')+' / '+cihazTur()+'\nKayıt: '+kayit.length+' · medya bekleyen '+medKy.length+' · düzeltme bekleyen '+dzK.length+'\n';
+ if(rpSon)t+='Gelen '+rpSon.gelen+' · İşlendi '+rpSon.islendi+' · Hata '+rpSon.hata+'\nBu telefon: işlendi '+sat.islendi.length+', gelende '+sat.gelen.length+', hata '+sat.hata.length+', bulunamadı '+sat.yok.length+', telefonda '+sat.bek.length+'\n';
+ t+='\nGÜNLÜK\n'+glog.slice(0,200).map(g=>zS(g.t)+'\t'+g.k+'\t'+g.s+'\t'+g.id+'\t'+g.d).join('\n');
+ try{await navigator.clipboard.writeText(t);$('rpM').textContent='Rapor kopyalandı.'}catch(e){$('rpM').textContent='Kopyalanamadı; ekran görüntüsü alın.'}};
+
 // ---------- yapıştırma: pano -> Excel gibi temiz sicil (nokta, / ve boşluk gider) ----------
 function panoTemiz(t){const l=String(t||'').split(/\r?\n/).map(x=>x.trim()).find(x=>x)||'';return duzelt(l.split('\t')[0])}
 function yapistir(id,sonra){const el=$(id);const ver=t=>{const v=panoTemiz(t);if(!v){$('mesaj').className='msg er';$('mesaj').textContent='Panoda sicil bulunamadı.';return}el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}));if(sonra)sonra();Application_toast('Yapıştırıldı: '+v)};
@@ -627,12 +680,12 @@ setTimeout(kamHazirla,800);
 $('kam').onclick=()=>{if(!yerAdi()){$('mesaj').className='msg er';$('mesaj').textContent='Önce sayım yerini / kişiyi seçin.';$('yer').focus();return}camAc()};
 $('camX').onclick=camKapat;$('camS').onclick=()=>{cam.sur=!cam.sur;$('camS').textContent='Sürekli: '+(cam.sur?'AÇIK':'KAPALI')};
 $('sq').addEventListener('input',sorgu);$('ara').addEventListener('input',liste);
-window.addEventListener('online',()=>{gonder(false);medKyGonder(false)});setInterval(()=>{gonder(false);medKyGonder(false)},60000);$('girBanB').onclick=()=>$('giris').click();
+window.addEventListener('online',()=>{gonder(false);medKyGonder(false);dzGonder(false);cihazBildir(true)});setInterval(()=>{gonder(false);medKyGonder(false);dzGonder(false);cihazBildir(false)},60000);setTimeout(()=>cihazBildir(true),4000);$('girBanB').onclick=()=>$('giris').click();
 (async()=>{$('ru').textContent=location.origin+location.pathname.replace(/index\.html$/,'');
  $('oto').checked=!!LS.get('oto',false);$('cihaz').value=LS.get('cihaz','');$('cid').value=LS.get('cid','');$('kok').value=LS.get('kok','Sayım İşlemleri/Mobil');$('rk').value=LS.get('resimK','Sayım İşlemleri/Sayım Fotografları');$('vk').value=LS.get('videoK','Sayım İşlemleri/Sayım Videoları');
  try{await dbAc()}catch(e){$('mesaj').className='msg er';$('mesaj').textContent='Yerel depolama açılamadı: '+e.message;return}
  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
- kayit=(await dbHepsi()).sort((a,b)=>a.kimlik<b.kimlik?-1:1);await medKyYukle();
+ kayit=(await dbHepsi()).sort((a,b)=>a.kimlik<b.kimlik?-1:1);await medKyYukle();try{dzK=(await kvG('dzKuyruk'))||[];glog=(await kvG('glog'))||[]}catch(e){}
  listeKur(await kvG('yerler')??null,await kvG('notlar')??null,await kvG('beklenen')??null,await kvG('malzemeler')??null);
  $('yer').value='';LS.set('sonYer','');await oturum();hepsi();
  if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});

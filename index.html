@@ -156,7 +156,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v10</div>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v11</div>
   <label>Kullanıcı / cihaz adı (kayıtlarda Kaynak olarak görünür; her kişi kendi adını yazsın)</label><input id="cihaz" class="giris" placeholder="ör. ahmet-iphone, ayse-tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -351,6 +351,7 @@ let sonS='',sonZ=0;
 function sicilGoster(){const v=duzelt($('sicil').value);if(v&&v!==$('sicil').value)$('sicil').value=v}
 async function ekle(){sicilGoster();const yer=yerAdi(),sicil=duzelt($('sicil').value),ad=temiz($('ad').value);
  if(!sicil&&!ad){$('sicil').focus();return}
+ if(!LS.get('cihaz','')){$('mesaj').className='msg er';$('mesaj').textContent='Önce Ayarlar bölümünde kullanıcı / cihaz adını yazıp Kaydet\'e basın.';document.querySelector('nav button[data-s=s-ay]').click();setTimeout(()=>$('cihaz').focus(),50);return}
  if(!yer){$('mesaj').className='msg er';$('mesaj').textContent='Önce sayım yerini / kişiyi seçin.';$('yer').focus();return}
  if(dzId){const k0=kayit.find(x=>x.kimlik===dzId);if(k0){const g0=new Set(kayit.filter(k=>k.kimlik!==dzId).map(k=>duzelt(k.sicil)).filter(Boolean));const d0=durum(sicil,ad,yer,g0);
   const xl0=k0.xl||{yer:k0.yer,sicil:k0.sicil,malzeme:k0.malzeme},gitti0=k0.durum==='gitti';
@@ -532,7 +533,7 @@ $('cek').onclick=async()=>{try{const jt=await belirtec();let y,n,b,m;for(const[a
 $('dosya').onchange=async e=>{let y=null,n=null,b=null,m=null;for(const f of e.target.files){const t=await f.text(),a=f.name.toLowerCase();if(a.includes('bekle'))b=t;else if(a.includes('malzeme'))m=t;else if(a.includes('yer'))y=t;else if(a.includes('not'))n=t}
  if(y!=null)await kvS('yerler',y);if(n!=null)await kvS('notlar',n);if(m!=null)await kvS('malzemeler',m);if(b!=null)await kvS('beklenen',b);listeKur(y,n,b,m);hepsi();$('am').textContent='Listeler yüklendi.'};
 $('test').onclick=async()=>{try{const jt=await belirtec();const r=await fetch(gUrl(mobYol('TEST-'+damga(new Date())+'.tmp'))+':/content',{method:'PUT',headers:{Authorization:'Bearer '+jt,'Content-Type':'text/plain'},body:'test'});if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();await fetch('https://graph.microsoft.com/v1.0/me/drive/items/'+j.id,{method:'DELETE',headers:{Authorization:'Bearer '+jt}});$('am').textContent='Bağlantı çalışıyor (test dosyası yazıldı ve silindi).'}catch(e){$('am').textContent='Bağlantı kurulamadı: '+e.message}};
-$('kaydet').onclick=()=>{LS.set('cihaz',$('cihaz').value.trim()||'tel');LS.set('cid',$('cid').value.trim());LS.set('oto',$('oto').checked);LS.set('kok',$('kok').value.trim()||'Sayım İşlemleri/Mobil');LS.set('resimK',$('rk').value.trim()||'Sayım İşlemleri/Sayım Fotografları');LS.set('videoK',$('vk').value.trim()||'Sayım İşlemleri/Sayım Videoları');bagGoster();$('am').textContent+=' Kaydedildi.'};
+$('kaydet').onclick=()=>{if(!$('cihaz').value.trim()){$('am').textContent='Kullanıcı / cihaz adı boş olamaz: kayıtlarda kimin gönderdiği görünmesi için bir ad yazın.';$('cihaz').focus();return}LS.set('cihaz',$('cihaz').value.trim());LS.set('cid',$('cid').value.trim());LS.set('oto',$('oto').checked);LS.set('kok',$('kok').value.trim()||'Sayım İşlemleri/Mobil');LS.set('resimK',$('rk').value.trim()||'Sayım İşlemleri/Sayım Fotografları');LS.set('videoK',$('vk').value.trim()||'Sayım İşlemleri/Sayım Videoları');bagGoster();$('am').textContent+=' Kaydedildi.'};
 $('giris').onclick=async()=>{if(!cid()){$('am').textContent='Önce Client kimliğini girip Kaydet\'e basın.';return}if(!(window.crypto&&crypto.subtle)){$('am').textContent='Bu tarayıcı güvenli bağlantı (https) gerektiriyor.';return}hataKaydet('');$('am').textContent='Microsoft giriş sayfasına yönlendiriliyor…';try{await girisBaslat()}catch(e){hataKaydet(e.message);$('am').textContent='Giriş başlatılamadı → '+girisHata}};
 $('cikis').onclick=()=>{tok=null;hesap=null;LS.set('tok',null);LS.set('pkce',null);hataKaydet('');bagGoster()};
 $('sil').onclick=async()=>{if(!confirm('Gönderilmiş kayıtlar telefondan silinsin mi? (Okutma geçmişi / mükerrer kontrolü de bu kayıtlar için kalkar)'))return;for(const k of kayit.filter(k=>k.durum==='gitti'))await dbSil(k.kimlik);kayit=kayit.filter(k=>k.durum!=='gitti');hepsi()};
@@ -637,7 +638,7 @@ async function kayitIptal(){const k=kayit.find(x=>x.kimlik===dzId);if(!k)return;
 async function cihazBildir(zorla){if(!hesap||!navigator.onLine)return;if(!zorla&&Date.now()-sonBildir<120000)return;sonBildir=Date.now();
  try{const jt=await belirtec();const ad=(temiz(LS.get('cihaz',''))||'adsiz').replace(/[^\w-]/g,'')||'adsiz',tr=cihazTur(),n=new Date();
   const c=d=>kayit.filter(k=>k.durum===d).length;
-  const m=['cihaz='+temiz(LS.get('cihaz','')||'(adsız)'),'tur='+tr,'surum=v10','zaman='+tarihTR(n)+' '+saatTR(n),'hesap='+temiz(hesap.username||''),'yer='+temiz(yerAdi()),'toplam='+kayit.length,'gitti='+c('gitti'),'bekleyen='+c('bekliyor'),'hata='+c('hata'),'medya='+medKy.length,'duzeltme='+dzK.length,'son_gonderim='+temiz(LS.get('sonGon',''))].join('\n')+'\n';
+  const m=['cihaz='+temiz(LS.get('cihaz','')||'(adsız)'),'tur='+tr,'surum=v11','zaman='+tarihTR(n)+' '+saatTR(n),'hesap='+temiz(hesap.username||''),'yer='+temiz(yerAdi()),'toplam='+kayit.length,'gitti='+c('gitti'),'bekleyen='+c('bekliyor'),'hata='+c('hata'),'medya='+medKy.length,'duzeltme='+dzK.length,'son_gonderim='+temiz(LS.get('sonGon',''))].join('\n')+'\n';
   await txtYukle(mobYol('Cihazlar/'+ad+'_'+tr.replace(/\W/g,'')+'.txt'),m,jt,'replace')}catch(e){}}
 async function listeKlasor(yol,jt){let u=gUrl(yol)+':/children?$select=name,size,lastModifiedDateTime&$top=999',o=[];while(u){const r=await fetch(u,{headers:{Authorization:'Bearer '+jt}});if(r.status===404)return[];if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();o.push(...j.value);u=j['@odata.nextLink']||null}return o}
 const yasS=ms=>{const d=Math.max(0,Math.round(ms/60000));return d<1?'şimdi':d<60?d+' dk önce':d<1440?Math.round(d/60)+' sa önce':Math.round(d/1440)+' gün önce'};

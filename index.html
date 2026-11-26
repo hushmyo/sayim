@@ -156,7 +156,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v11</div>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v12</div>
   <label>Kullanıcı / cihaz adı (kayıtlarda Kaynak olarak görünür; her kişi kendi adını yazsın)</label><input id="cihaz" class="giris" placeholder="ör. ahmet-iphone, ayse-tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -638,7 +638,7 @@ async function kayitIptal(){const k=kayit.find(x=>x.kimlik===dzId);if(!k)return;
 async function cihazBildir(zorla){if(!hesap||!navigator.onLine)return;if(!zorla&&Date.now()-sonBildir<120000)return;sonBildir=Date.now();
  try{const jt=await belirtec();const ad=(temiz(LS.get('cihaz',''))||'adsiz').replace(/[^\w-]/g,'')||'adsiz',tr=cihazTur(),n=new Date();
   const c=d=>kayit.filter(k=>k.durum===d).length;
-  const m=['cihaz='+temiz(LS.get('cihaz','')||'(adsız)'),'tur='+tr,'surum=v11','zaman='+tarihTR(n)+' '+saatTR(n),'hesap='+temiz(hesap.username||''),'yer='+temiz(yerAdi()),'toplam='+kayit.length,'gitti='+c('gitti'),'bekleyen='+c('bekliyor'),'hata='+c('hata'),'medya='+medKy.length,'duzeltme='+dzK.length,'son_gonderim='+temiz(LS.get('sonGon',''))].join('\n')+'\n';
+  const m=['cihaz='+temiz(LS.get('cihaz','')||'(adsız)'),'tur='+tr,'surum=v12','zaman='+tarihTR(n)+' '+saatTR(n),'hesap='+temiz(hesap.username||''),'yer='+temiz(yerAdi()),'toplam='+kayit.length,'gitti='+c('gitti'),'bekleyen='+c('bekliyor'),'hata='+c('hata'),'medya='+medKy.length,'duzeltme='+dzK.length,'son_gonderim='+temiz(LS.get('sonGon',''))].join('\n')+'\n';
   await txtYukle(mobYol('Cihazlar/'+ad+'_'+tr.replace(/\W/g,'')+'.txt'),m,jt,'replace')}catch(e){}}
 async function listeKlasor(yol,jt){let u=gUrl(yol)+':/children?$select=name,size,lastModifiedDateTime&$top=999',o=[];while(u){const r=await fetch(u,{headers:{Authorization:'Bearer '+jt}});if(r.status===404)return[];if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();o.push(...j.value);u=j['@odata.nextLink']||null}return o}
 const yasS=ms=>{const d=Math.max(0,Math.round(ms/60000));return d<1?'şimdi':d<60?d+' dk önce':d<1440?Math.round(d/60)+' sa önce':Math.round(d/1440)+' gün önce'};
@@ -662,8 +662,8 @@ async function rpSor(){if(!hesap||!navigator.onLine){$('rpM').textContent='Giri�
 async function cihSor(){if(!hesap||!navigator.onLine){$('cihL').innerHTML='<div class="msg">Giriş ve internet gerekli.</div>';return}$('cihL').innerHTML='<div class="msg">Okunuyor…</div>';
  try{const jt=await belirtec();const L=(await listeKlasor(mobYol('Cihazlar'),jt)).filter(f=>/\.txt$/i.test(f.name));const o=[];
   for(const f of L){try{const r=await fetch(gUrl(mobYol('Cihazlar/'+f.name))+':/content',{headers:{Authorization:'Bearer '+jt}});if(!r.ok)continue;const v={};for(const ln of(await r.text()).split(/\r?\n/)){const i=ln.indexOf('=');if(i>0)v[ln.slice(0,i)]=ln.slice(i+1)}v._yas=Date.now()-new Date(f.lastModifiedDateTime);v._d=f.lastModifiedDateTime;o.push(v)}catch(e){}}
-  o.sort((a,b)=>a._yas-b._yas);const bagli=o.filter(v=>v._yas<15*60000).length;
-  $('cihL').innerHTML='<div class="msg"><b>'+o.length+'</b> cihaz kayıtlı, <b>'+bagli+'</b> tanesi son 15 dakikada bağlandı.</div>'+(o.map(v=>'<div class="it '+(v._yas<15*60000?'':v._yas<86400000?'faz':'no')+'"><b>'+esc(v.cihaz||'?')+'</b> · '+esc(v.tur||'')+' <span class="msg">'+(v._yas<15*60000?'● BAĞLI':'son görülme '+yasS(v._yas))+'</span><small>Hesap: '+esc(v.hesap||'—')+' · sürüm '+esc(v.surum||'?')+' · toplam '+esc(v.toplam||'0')+' · gönderilen '+esc(v.gitti||'0')+' · bekleyen '+esc(v.bekleyen||'0')+' · hatalı '+esc(v.hata||'0')+' · medya '+esc(v.medya||'0')+' · son yer: '+esc(v.yer||'—')+'</small></div>').join('')||'<div class="msg">Henüz cihaz bildirimi yok. Telefon giriş yapıp kayıt gönderince görünür.</div>')}catch(e){$('cihL').innerHTML='<div class="msg er">Okunamadı: '+esc(e.message)+'</div>'}}
+  o.sort((a,b)=>a._yas-b._yas);const bagli=o.filter(v=>v._yas<5*60000).length;
+  $('cihL').innerHTML='<div class="msg"><b>'+o.length+'</b> cihaz kayıtlı, <b>'+bagli+'</b> tanesi son 5 dakikada bağlandı.</div>'+(o.map(v=>'<div class="it '+(v._yas<5*60000?'':v._yas<86400000?'faz':'no')+'"><b>'+esc(v.cihaz||'?')+'</b> · '+esc(v.tur||'')+' <span class="msg">'+(v._yas<5*60000?'● BAĞLI':'son görülme '+yasS(v._yas))+'</span><small>Hesap: '+esc(v.hesap||'—')+' · sürüm '+esc(v.surum||'?')+' · toplam '+esc(v.toplam||'0')+' · gönderilen '+esc(v.gitti||'0')+' · bekleyen '+esc(v.bekleyen||'0')+' · hatalı '+esc(v.hata||'0')+' · medya '+esc(v.medya||'0')+' · son yer: '+esc(v.yer||'—')+'</small></div>').join('')||'<div class="msg">Henüz cihaz bildirimi yok. Telefon giriş yapıp kayıt gönderince görünür.</div>')}catch(e){$('cihL').innerHTML='<div class="msg er">Okunamadı: '+esc(e.message)+'</div>'}}
 $('rpSor').onclick=rpSor;$('cihSor').onclick=cihSor;
 $('rpKop').onclick=async()=>{const sat=rpSon&&rpSon.sat;let t='SAYIM GÖNDERİM RAPORU '+zS(Date.now())+'\nCihaz: '+(LS.get('cihaz','')||'(adsız)')+' / '+cihazTur()+'\nKayıt: '+kayit.length+' · medya bekleyen '+medKy.length+' · düzeltme bekleyen '+dzK.length+'\n';
  if(rpSon)t+='Gelen '+rpSon.gelen+' · İşlendi '+rpSon.islendi+' · Hata '+rpSon.hata+'\nBu telefon: işlendi '+sat.islendi.length+', gelende '+sat.gelen.length+', hata '+sat.hata.length+', bulunamadı '+sat.yok.length+', telefonda '+sat.bek.length+'\n';

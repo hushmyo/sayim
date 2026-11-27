@@ -156,7 +156,7 @@ table.y td{font-size:13px}table.y tr[data-yy]{cursor:pointer}
 </section>
 <!-- ============ AYARLAR ============ -->
 <section id="s-ay">
- <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v15</div>
+ <div class="card"><h3>Ayarlar</h3><div class="msg">Uygulama sürümü: v16</div>
   <label>Kullanıcı / cihaz adı (kayıtlarda Kaynak olarak görünür; her kişi kendi adını yazsın)</label><input id="cihaz" class="giris" placeholder="ör. ahmet-iphone, ayse-tablet">
   <label>Microsoft uygulama (Client) kimliği</label><input id="cid" class="giris" placeholder="Bilgi İşlem'den alınan kimlik; boşsa girişsiz mod">
   <label>OneDrive Mobil klasörü</label><input id="kok" class="giris">
@@ -245,6 +245,8 @@ function durum(sicil,ad,yer,gor){
 }
 function hesaplaTum(){const gor=new Set(),o=new Map();for(const k of kayit){const d=durum(k.sicil,k.malzeme,k.yer,gor);const s=duzelt(k.sicil);if(s)gor.add(s);o.set(k.kimlik,d)}return o}
 // ---------- bilgi kartı ----------
+function ilkOku(s,hid){if(!s)return null;for(const x of kayit){if(x.kimlik!==hid&&duzelt(x.sicil)===s)return x}return null}
+function ilkMetin(x){return x?(x.yer||'—')+' · '+x.tarih+' '+x.saat:''}
 function kartHtml(r,extra){if(!r)return'';
  const a=[['Açıklama',r[3]],['Ek Özellik',r[5]],['Kayıtlı Yer / Kişi',r[9]],['Kime verildi / kimde',r[11]],['Zimmet Tarihi',r[13]],['Fiş No',r[12]],['Fiş Son Durum',r[8]],['Sicil No',r[1]],['Bar_Kod',r[2]]].concat(extra||[]);
  return '<div class="bas">'+esc((r[4]||'')+' '+(r[6]||'')+' '+(r[7]||'')).trim()+'</div>'+a.filter(x=>x[1]&&String(x[1]).trim()).map(x=>'<b>'+x[0]+'</b><span'+((x[0]==='Sicil No'||x[0]==='Bar_Kod')?' data-cp="'+esc(x[1])+'" style="cursor:pointer;text-decoration:underline dotted"':'')+'>'+(x[2]?x[1]:esc(x[1]))+'</span>').join('')+izHtml(r[0])}
@@ -256,11 +258,11 @@ let dzId=null,notZorla=false,sonMS='',mt=null;
 function medyaTetik(){const s=duzelt($('sicil').value).replace(/[^0-9]/g,'');if(!s||s===sonMS)return;sonMS=s;clearTimeout(mt);mt=setTimeout(()=>{if(duzelt($('sicil').value).replace(/[^0-9]/g,'')===s)medyaGoster(s,yerAdi())},500)}
 function onizle(){const s0=duzelt($('sicil').value);const gor=new Set(kayit.filter(k=>k.kimlik!==dzId).map(k=>duzelt(k.sicil)).filter(Boolean));
  const d=durum($('sicil').value,$('ad').value,yerAdi(),gor);const n=new Date();
- $('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t)+(d.n?'<small>'+d.n+' kayıtta aynı barkod</small>':'');$('ban').classList.toggle('hide',!!d.r);
+ $('ban').className='ban '+d.c;const ik=d.t==='MÜKERRER'?ilkOku(s0,dzId):null;$('ban').innerHTML=esc(d.t)+(d.n?'<small>'+d.n+' kayıtta aynı barkod</small>':'')+(ik?'<small>İlk okutma: '+esc(ilkMetin(ik))+'</small>':'');$('ban').classList.toggle('hide',!!d.r);
  const gizle=!notZorla&&!$('not').value&&!$('ad').value;
  $('notBlok').classList.toggle('hide',gizle);$('adBlok').classList.toggle('hide',gizle);$('notAcW').classList.toggle('hide',!gizle);
  $('dzKutu').innerHTML='';$('ekle').textContent='Kaydet (Enter)';
- $('kart').innerHTML=kartHtml(d.r,d.r?[['Tarih / Saat',zamanPil(tarihTR(n)+' '+saatTR(n),d),1]]:[]);medyaTetik();return d}
+ $('kart').innerHTML=kartHtml(d.r,d.r?[['Tarih / Saat',zamanPil(tarihTR(n)+' '+saatTR(n),d),1]].concat(ik?[['⚠ İlk okutma',ilkMetin(ik)]]:[]):[]);medyaTetik();return d}
 function duzeltBaslat(id){const k=kayit.find(x=>x.kimlik===id);if(!k)return;dzId=id;$('yer').value=k.yer;LS.set('sonYer',k.yer);$('sicil').value=k.sicil;$('not').value=k.not||'';$('ad').value=k.malzeme||'';notZorla=true;
  $('dzBan').classList.remove('hide');$('dzBan').innerHTML='✎ <b>Düzeltme modu:</b> '+esc(k.sicil||k.malzeme)+(k.durum==='gitti'?' kaydı Excel\'de de güncellenecek (düzeltme dosyası gönderilir). ':' kaydı güncellenecek. ')+'Değiştirip Kaydet\'e basın. <a id="dzVaz" class="lnk" style="float:none;display:inline-block;margin-left:8px">Vazgeç</a> <a id="dzIpt" class="lnk" style="float:none;display:inline-block;margin-left:8px;color:var(--er)">Kaydı iptal et</a>';hepsi();$('sicil').focus();window.scrollTo(0,0)}
 function duzeltBitir(){dzId=null;notZorla=false;$('dzBan').classList.add('hide');$('sicil').value='';$('not').value='';$('ad').value='';hepsi()}
@@ -294,7 +296,7 @@ function ozetSayfa(){const y=yerAdi();$('ozYer').textContent=y?('Yer / kişi: '+
  $('fazla').innerHTML=o.fz.slice(0,500).map(x=>'<div class="it kfaz" data-cp="'+esc(x[0].sicil)+'"><b>'+esc(x[0].sicil||x[0].malzeme)+'</b> '+esc(x[1].t)+'<small>'+esc(x[1].r?(x[1].r[4]+' · kayıtlı: '+x[1].r[9]):'')+(x[0].not?' · '+esc(x[0].not):'')+'</small></div>').join('')||'<div class="msg">Fazla yok.</div>';
  const mk=[],sy=[];for(const k of kayit){if(!tum&&norm(k.yer)!==n)continue;const d=o.ds.get(k.kimlik);if(d.t==='MÜKERRER')mk.push([k,d]);else if(d.t==='YERİNDE')sy.push([k,d])}
  $('mukN').textContent='('+mk.length+')';$('sayN').textContent='('+sy.length+')';
- $('mukl').innerHTML=mk.map(x=>'<div class="it kmuk"><b>'+esc(x[0].sicil)+'</b> MÜKERRER<small>'+esc(x[0].yer)+' · '+x[0].tarih+' '+x[0].saat+'</small></div>').join('')||'<div class="msg">Mükerrer yok.</div>';
+ $('mukl').innerHTML=mk.map(x=>'<div class="it kmuk"><b>'+esc(x[0].sicil)+'</b> MÜKERRER<small>Bu okutma: '+esc(x[0].yer)+' · '+x[0].tarih+' '+x[0].saat+'</small>'+(()=>{const q=ilkOku(duzelt(x[0].sicil),x[0].kimlik);return q?'<small>İlk okutma: '+esc(ilkMetin(q))+'</small>':''})()+'</div>').join('')||'<div class="msg">Mükerrer yok.</div>';
  $('sayl').innerHTML=sy.map(x=>'<div class="it say"><b>'+esc(x[0].sicil)+'</b> '+esc(x[1].r?x[1].r[4]:'')+'<small>'+x[0].tarih+' '+x[0].saat+'</small></div>').join('')}
 async function kopya(s){try{await navigator.clipboard.writeText(s)}catch(e){const a=document.createElement('textarea');a.value=s;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}}
 $('nokKop').onclick=async()=>{const y=yerAdi();if(!y)return;const o=yerOzet(y);await kopya(o.nok.map(r=>r[1]).join('\n'));$('nokKop').textContent='Kopyalandı ('+o.nok.length+' sicil)';setTimeout(()=>$('nokKop').textContent='Noksan sicilleri kopyala',2000)};
@@ -371,9 +373,9 @@ async function ekle(){sicilGoster();const yer=yerAdi(),sicil=duzelt($('sicil').v
  const k={kimlik:damga(n)+'-'+temiz(LS.get('cihaz','tel')).replace(/[^\w-]/g,'')+'-'+rast(5),yer,tarih:tarihTR(n),saat:saatTR(n),sicil,malzeme:ad,not:nt,durum:'bekliyor',deneme:0,hata:'',medya:[],ts:Date.now()};
  try{await dbYaz(k)}catch(e){$('mesaj').className='msg er';$('mesaj').textContent='KAYIT SAKLANAMADI: '+e.message;return}
  kayit.push(k);LS.set('sonYer',yer);LS.set('yerGecmis',[yer,...LS.get('yerGecmis',[]).filter(x=>x!==yer)].slice(0,50));
- $('mesaj').className='msg '+(d.c==='ok'?'ok':'er');$('mesaj').textContent=(sicil||ad)+' – '+d.t;
+ $('mesaj').className='msg '+(d.c==='ok'?'ok':'er');const ik2=d.t==='MÜKERRER'?ilkOku(duzelt(sicil),k.kimlik):null;$('mesaj').textContent=(sicil||ad)+' – '+d.t+(ik2?' · ilk okutma: '+ilkMetin(ik2):'');
  ses(d.c);$('sicil').value='';$('ad').value='';$('not').value='';notZorla=false;sonMS='';
- hepsi();$('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t);$('ban').classList.toggle('hide',!!d.r);$('kart').innerHTML=kartHtml(d.r,[['Kaydedildi',zamanPil(k.tarih+' '+k.saat,d),1]]);
+ hepsi();$('ban').className='ban '+d.c;$('ban').innerHTML=esc(d.t);$('ban').classList.toggle('hide',!!d.r);$('kart').innerHTML=kartHtml(d.r,[['Kaydedildi',zamanPil(k.tarih+' '+k.saat,d),1]].concat(ik2?[['⚠ İlk okutma',ilkMetin(ik2)]]:[]));
  medyaGoster(sicil,yer);$('sicil').focus();gonder(false);if(gecSn()>0)setTimeout(()=>gonder(false),(gecSn()+2)*1000)}
 function ses(c){try{if(navigator.vibrate)navigator.vibrate(c==='ok'?[30]:c==='muk'?[40,40,40,40,40]:[120,60,120]);
  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;const x=ses.x||(ses.x=new AC());if(x.state==='suspended')x.resume();
@@ -651,7 +653,7 @@ async function kayitIptal(){const k=kayit.find(x=>x.kimlik===dzId);if(!k)return;
 async function cihazBildir(zorla){if(!hesap||!navigator.onLine)return;if(!zorla&&Date.now()-sonBildir<120000)return;sonBildir=Date.now();
  try{const jt=await belirtec();const ad=(temiz(LS.get('cihaz',''))||'adsiz').replace(/[^\w-]/g,'')||'adsiz',tr=cihazTur(),n=new Date();
   const c=d=>kayit.filter(k=>k.durum===d).length;
-  const m=['cihaz='+temiz(LS.get('cihaz','')||'(adsız)'),'tur='+tr,'surum=v15','zaman='+tarihTR(n)+' '+saatTR(n),'hesap='+temiz(hesap.username||''),'yer='+temiz(yerAdi()),'toplam='+kayit.length,'gitti='+c('gitti'),'bekleyen='+c('bekliyor'),'hata='+c('hata'),'medya='+medKy.length,'duzeltme='+dzK.length,'son_gonderim='+temiz(LS.get('sonGon',''))].join('\n')+'\n';
+  const m=['cihaz='+temiz(LS.get('cihaz','')||'(adsız)'),'tur='+tr,'surum=v16','zaman='+tarihTR(n)+' '+saatTR(n),'hesap='+temiz(hesap.username||''),'yer='+temiz(yerAdi()),'toplam='+kayit.length,'gitti='+c('gitti'),'bekleyen='+c('bekliyor'),'hata='+c('hata'),'medya='+medKy.length,'duzeltme='+dzK.length,'son_gonderim='+temiz(LS.get('sonGon',''))].join('\n')+'\n';
   await txtYukle(mobYol('Cihazlar/'+ad+'_'+tr.replace(/\W/g,'')+'.txt'),m,jt,'replace')}catch(e){}}
 async function listeKlasor(yol,jt){let u=gUrl(yol)+':/children?$select=name,size,lastModifiedDateTime&$top=999',o=[];while(u){const r=await fetch(u,{headers:{Authorization:'Bearer '+jt}});if(r.status===404)return[];if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();o.push(...j.value);u=j['@odata.nextLink']||null}return o}
 const yasS=ms=>{const d=Math.max(0,Math.round(ms/60000));return d<1?'şimdi':d<60?d+' dk önce':d<1440?Math.round(d/60)+' sa önce':Math.round(d/1440)+' gün önce'};
